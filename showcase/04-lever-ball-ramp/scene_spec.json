@@ -1,0 +1,359 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source_prompt": "生成一个实验台：拉下蓝色杠杆打开挡板，让紫色小球沿斜坡滚入目标托盘，然后用相机检查结果。杠杆、释放区、目标区和相机检查点都要作为可见交互点。",
+  "assumptions": [
+    "使用 SI 米制、Z 轴向上、重力为 [0, 0, -9.81]，随机种子固定为 17。",
+    "未提供网格资产，因此实验台、斜坡、杠杆、挡板、球和托盘均使用带语义标签的 MJCF primitive。",
+    "蓝色杠杆和挡板分别使用 hinge/slide joint 与 position actuator；拉杆动作同时给两者下发位置目标，模拟机械联动。",
+    "释放后小球只由 MuJoCo 重力、碰撞和摩擦驱动，不使用传送或直接修改球 qpos。",
+    "释放区和目标区动作是可执行的状态确认/等待契约；相机检查会生成 640 x 480 RGB-D 观测。",
+    "固定相机使用 MuJoCo 原生离屏渲染；macOS 上通过 MUJOCO_GL=glfw 选择 CGL 上下文。"
+  ],
+  "open_questions": [],
+  "scene": {
+    "name": "lever_ball_ramp_workbench",
+    "description": "拉动蓝色杠杆升起挡板，使紫色小球沿带护栏斜坡滚入目标托盘，并从固定相机检查结果。",
+    "runtime": {
+      "mujoco_version": "3.2.7",
+      "mode": "python",
+      "headless": true,
+      "gl_backend": "glfw"
+    },
+    "world": {
+      "units": "m",
+      "up_axis": "Z",
+      "gravity": [0, 0, -9.81],
+      "ground": true,
+      "seed": 17
+    }
+  },
+  "assets": [
+    {
+      "id": "lab_bench",
+      "kind": "primitive",
+      "body_name": "lab_bench",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [1.45, 0.8, 0.06],
+        "geom_name": "lab_bench_top_geom"
+      },
+      "pose": {
+        "position": [0, 0, 0.72],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.9, 0.01, 0.001]
+      },
+      "semantic": "support_surface"
+    },
+    {
+      "id": "ramp_track",
+      "kind": "primitive",
+      "body_name": "ramp_track",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [0.74, 0.28, 0.03],
+        "geom_name": "ramp_track_geom"
+      },
+      "pose": {
+        "position": [-0.15, 0, 0.9],
+        "orientation_xyzw": [0, 0.1218693434, 0, 0.9925461516]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.55, 0.01, 0.002]
+      },
+      "semantic": "inclined_track"
+    },
+    {
+      "id": "ramp_left_rail",
+      "kind": "primitive",
+      "body_name": "ramp_left_rail",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [0.74, 0.025, 0.075],
+        "geom_name": "ramp_left_rail_geom"
+      },
+      "pose": {
+        "position": [-0.15, 0.14, 0.93],
+        "orientation_xyzw": [0, 0.1218693434, 0, 0.9925461516]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.6, 0.01, 0.002]
+      },
+      "semantic": "track_guard"
+    },
+    {
+      "id": "ramp_right_rail",
+      "kind": "primitive",
+      "body_name": "ramp_right_rail",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [0.74, 0.025, 0.075],
+        "geom_name": "ramp_right_rail_geom"
+      },
+      "pose": {
+        "position": [-0.15, -0.14, 0.93],
+        "orientation_xyzw": [0, 0.1218693434, 0, 0.9925461516]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.6, 0.01, 0.002]
+      },
+      "semantic": "track_guard"
+    },
+    {
+      "id": "blue_lever",
+      "kind": "primitive",
+      "body_name": "blue_lever",
+      "geometry": {
+        "shape": "capsule",
+        "dimensions": [0.045, 0.045, 0.22],
+        "geom_name": "blue_lever_geom"
+      },
+      "pose": {
+        "position": [-0.48, -0.29, 0.83],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": true,
+        "joint_name": "lever_hinge",
+        "actuator_name": "lever_position",
+        "mass_kg": 0.12,
+        "contype": 0,
+        "conaffinity": 0,
+        "friction": [0.5, 0.01, 0.001]
+      },
+      "semantic": "lever"
+    },
+    {
+      "id": "release_gate",
+      "kind": "primitive",
+      "body_name": "release_gate",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [0.025, 0.27, 0.13],
+        "geom_name": "release_gate_geom"
+      },
+      "pose": {
+        "position": [-0.31, 0, 0.98],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": true,
+        "joint_name": "gate_slide",
+        "actuator_name": "gate_position",
+        "mass_kg": 0.18,
+        "contype": 2,
+        "conaffinity": 2,
+        "friction": [0.5, 0.01, 0.001]
+      },
+      "semantic": "release_barrier"
+    },
+    {
+      "id": "purple_ball",
+      "kind": "primitive",
+      "body_name": "purple_ball",
+      "geometry": {
+        "shape": "sphere",
+        "dimensions": [0.07, 0.07, 0.07],
+        "geom_name": "purple_ball_geom"
+      },
+      "pose": {
+        "position": [-0.44, 0, 1.02],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": true,
+        "joint_name": "purple_ball_free",
+        "mass_kg": 0.09,
+        "contype": 3,
+        "conaffinity": 3,
+        "friction": [0.45, 0.01, 0.003]
+      },
+      "semantic": "rolling_object"
+    },
+    {
+      "id": "target_tray",
+      "kind": "primitive",
+      "body_name": "target_tray",
+      "geometry": {
+        "shape": "open_box",
+        "dimensions": [0.4, 0.34, 0.13],
+        "interior_bounds": {
+          "min": [-0.17, -0.14, 0.025],
+          "max": [0.17, 0.14, 0.12]
+        },
+        "part_geom_names": [
+          "target_tray_bottom",
+          "target_tray_left",
+          "target_tray_right",
+          "target_tray_front",
+          "target_tray_back"
+        ]
+      },
+      "pose": {
+        "position": [0.41, 0, 0.755],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.7, 0.01, 0.002]
+      },
+      "semantic": "target_receptacle"
+    }
+  ],
+  "interaction_points": [
+    {
+      "id": "pull_blue_lever",
+      "affordance": "pull",
+      "target": {"type": "actuator", "name": "lever_position"},
+      "marker_site": "lever_interaction_marker",
+      "pose": {
+        "position": [-0.48, -0.29, 1.05],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "pull_blue_lever",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "pull_angle_rad": {"type": "number", "minimum": 0.8, "maximum": 1.05}
+          },
+          "required": []
+        }
+      },
+      "preconditions": ["lever_state == 'ready'"],
+      "success_conditions": ["lever_angle_rad <= -0.75", "gate_lift_m >= 0.1"],
+      "depends_on": [],
+      "effects": ["lever_state = 'pulled'", "gate_state = 'open'"],
+      "reset": {"lever_state": "ready", "gate_state": "closed"}
+    },
+    {
+      "id": "check_release_zone",
+      "affordance": "observe_release",
+      "target": {"type": "site", "name": "release_zone_marker"},
+      "marker_site": "release_zone_marker",
+      "pose": {
+        "position": [-0.41, 0, 1.06],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "check_release_zone",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "max_steps": {"type": "integer", "minimum": 1, "maximum": 1200}
+          },
+          "required": []
+        }
+      },
+      "preconditions": ["gate_state == 'open'"],
+      "success_conditions": ["ball_position_x > -0.25"],
+      "depends_on": ["pull_blue_lever"],
+      "effects": ["release_zone_state = 'cleared'"],
+      "reset": {"release_zone_state": "occupied"}
+    },
+    {
+      "id": "confirm_target_tray",
+      "affordance": "confirm_arrival",
+      "target": {"type": "body", "name": "target_tray"},
+      "marker_site": "target_zone_marker",
+      "pose": {
+        "position": [0.41, 0, 0.86],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "confirm_target_tray",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "max_steps": {"type": "integer", "minimum": 1, "maximum": 3000}
+          },
+          "required": []
+        }
+      },
+      "preconditions": ["release_zone_state == 'cleared'"],
+      "success_conditions": ["ball center inside target_tray.interior_bounds", "ball_speed_mps < 0.15"],
+      "depends_on": ["check_release_zone"],
+      "effects": ["target_state = 'occupied'"],
+      "reset": {"target_state": "empty"}
+    },
+    {
+      "id": "inspect_with_camera",
+      "affordance": "inspect",
+      "target": {"type": "camera", "name": "inspection_camera"},
+      "marker_site": "camera_checkpoint_marker",
+      "pose": {
+        "position": [1.2, -1.2, 1.42],
+        "orientation_xyzw": [0.5235515583, 0.216862156, 0.3153052722, 0.7612142645]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "inspect_with_camera",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "output_dir": {"type": "string"}
+          },
+          "required": ["output_dir"]
+        }
+      },
+      "preconditions": ["target_state == 'occupied'"],
+      "success_conditions": ["observation contains 640x480 RGB and finite depth"],
+      "depends_on": ["confirm_target_tray"],
+      "effects": ["inspection_state = 'captured'"],
+      "reset": {"inspection_state": "pending"}
+    }
+  ],
+  "sensors": [
+    {
+      "id": "inspection_rgbd",
+      "type": "camera",
+      "camera_name": "inspection_camera",
+      "pose": {
+        "position": [1.2, -1.2, 1.42],
+        "orientation_xyzw": [0.5235515583, 0.216862156, 0.3153052722, 0.7612142645]
+      },
+      "frequency_hz": 30,
+      "data": ["rgb", "depth", "camera_pose"]
+    }
+  ],
+  "task": {
+    "goal": "拉下蓝色杠杆升起挡板，让紫色小球沿斜坡滚入目标托盘，再用固定 RGB-D 相机确认结果。",
+    "success_conditions": [
+      "lever_state == 'pulled'",
+      "gate_state == 'open'",
+      "release_zone_state == 'cleared'",
+      "target_state == 'occupied'",
+      "inspection_state == 'captured'"
+    ],
+    "failure_conditions": [
+      "non_finite_state == true",
+      "ball_out_of_workspace == true"
+    ],
+    "reset_policy": "mj_resetData_and_task_state"
+  },
+  "outputs": {
+    "save_mjcf": true,
+    "mjcf_path": "./model.xml",
+    "save_mjb": false,
+    "resolution": [640, 480]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "manifest_version": "1.0",
+  "scene": "lever_ball_ramp_workbench",
+  "envelope_schema": {
+    "type": "object",
+    "properties": {
+      "id": {"type": "string"},
+      "payload": {"type": "object"}
+    },
+    "required": ["id", "payload"]
+  },
+  "interaction_points": [
+    {
+      "id": "pull_blue_lever",
+      "target": {"type": "actuator", "name": "lever_position"},
+      "marker_site": "lever_interaction_marker",
+      "depends_on": [],
+      "action_schema": {
+        "type": "object",
+        "properties": {"pull_angle_rad": {"type": "number", "minimum": 0.8, "maximum": 1.05}},
+        "required": []
+      },
+      "observable_success": ["lever_angle_rad <= -0.75", "gate_lift_m >= 0.1"],
+      "runtime_effect": "Position-control the lever and linked gate; ball dynamics remain physical."
+    },
+    {
+      "id": "check_release_zone",
+      "target": {"type": "site", "name": "release_zone_marker"},
+      "marker_site": "release_zone_marker",
+      "depends_on": ["pull_blue_lever"],
+      "action_schema": {
+        "type": "object",
+        "properties": {"max_steps": {"type": "integer", "minimum": 1, "maximum": 1200}},
+        "required": []
+      },
+      "observable_success": ["ball_position_x > -0.25"],
+      "runtime_effect": "Step physics until the ball has visibly cleared the marked release zone."
+    },
+    {
+      "id": "confirm_target_tray",
+      "target": {"type": "body", "name": "target_tray"},
+      "marker_site": "target_zone_marker",
+      "depends_on": ["check_release_zone"],
+      "action_schema": {
+        "type": "object",
+        "properties": {"max_steps": {"type": "integer", "minimum": 1, "maximum": 3000}},
+        "required": []
+      },
+      "observable_success": ["ball center inside tray local bounds", "ball_speed_mps < 0.15"],
+      "runtime_effect": "Step physics until the released ball enters and settles in the tray."
+    },
+    {
+      "id": "inspect_with_camera",
+      "target": {"type": "camera", "name": "inspection_camera"},
+      "marker_site": "camera_checkpoint_marker",
+      "depends_on": ["confirm_target_tray"],
+      "action_schema": {
+        "type": "object",
+        "properties": {"output_dir": {"type": "string"}},
+        "required": ["output_dir"]
+      },
+      "observable_success": ["RGB shape is 480 x 640 x 3", "depth contains finite geometry"],
+      "runtime_effect": "Capture and persist an RGB-D observation from inspection_camera."
+    }
+  ],
+  "dependency_order": [
+    "pull_blue_lever",
+    "check_release_zone",
+    "confirm_target_tray",
+    "inspect_with_camera"
+  ],
+  "reset": "mj_resetData, actuator controls, deterministic RNG, and all task state/history"
+}

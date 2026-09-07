@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "json_parse": "PASS",
+  "xml_parse": "PASS",
+  "manifest_consistency": "PASS",
+  "typed_target_resolution": "PASS",
+  "geometry_conversion": "PASS",
+  "python_compile": "PASS",
+  "interaction_ids": [
+    "press_start_button",
+    "grasp_red_cube",
+    "place_cube_in_box",
+    "inspect_rgbd"
+  ]
+}

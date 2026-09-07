@@ -1,0 +1,53 @@
+[
+  {
+    "query": "在桌面上放一个按钮、红色方块和带内部空间的盒子，按按钮后抓取方块并放入盒子，用 RGB-D 相机观察。",
+    "package": "01-button-cube-box",
+    "path": "01-button-cube-box",
+    "source_fixture": "01-button-cube-box",
+    "physics": "pass",
+    "render": "pass",
+    "interaction_points": [
+      "press_start_button",
+      "grasp_red_cube",
+      "place_cube_in_box",
+      "inspect_rgbd"
+    ]
+  },
+  {
+    "query": "生成一个桌面工具柜。先按绿色解锁按钮，再拉开抽屉 22 cm，最后用固定相机检查抽屉已经打开。需要把解锁点、把手和相机检查点标成可见交互点。",
+    "package": "02-smart-drawer",
+    "path": "02-smart-drawer",
+    "physics": "pass",
+    "render": "pass",
+    "interaction_points": [
+      "press_unlock_button",
+      "pull_drawer_22cm",
+      "inspect_open_drawer"
+    ]
+  },
+  {
+    "query": "生成一个小型仓库导航场景：一个橙色移动机器人从起点出发，必须先到黄色检查点 A，再绕开货架到绿色检查点 B，最后用顶视相机确认任务完成。两个检查点和相机检查必须是可见交互点。",
+    "package": "03-warehouse-navigation",
+    "path": "03-warehouse-navigation",
+    "physics": "pass",
+    "render": "pass",
+    "interaction_points": [
+      "reach_checkpoint_a",
+      "reach_checkpoint_b",
+      "inspect_top_camera"
+    ]
+  },
+  {
+    "query": "生成一个实验台：拉下蓝色杠杆打开挡板，让紫色小球沿斜坡滚入目标托盘，然后用相机检查结果。杠杆、释放区、目标区和相机检查点都要作为可见交互点。",
+    "package": "04-lever-ball-ramp",
+    "path": "04-lever-ball-ramp",
+    "physics": "pass",
+    "render": "skipped_context_error",
+    "interaction_points": [
+      "pull_blue_lever",
+      "check_release_zone",
+      "confirm_target_tray",
+      "inspect_with_camera"
+    ]
+  }
+]

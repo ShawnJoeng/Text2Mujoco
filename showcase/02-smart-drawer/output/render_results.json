@@ -1,0 +1,66 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "command": "render_smoke.py",
+  "render_backend_requested": "glfw",
+  "renderer_context": "glfw",
+  "resolution": [
+    640,
+    480
+  ],
+  "screenshots": {
+    "before": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/02-smart-drawer/output/screenshots/before.png",
+    "after": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/02-smart-drawer/output/screenshots/after.png"
+  },
+  "visible_markers": {
+    "yellow": {
+      "before_centroid_px": [
+        420.5626621638318,
+        249.38202709937812
+      ],
+      "after_centroid_px": [
+        461.58809314586995,
+        258.10204305799647
+      ],
+      "before_pixels": 24281,
+      "after_pixels": 18208,
+      "movement_px": 41.941920146561394
+    },
+    "cyan": {
+      "before_centroid_px": [
+        315.14659685863876,
+        194.67015706806282
+      ],
+      "after_centroid_px": [
+        262.9264069264069,
+        209.22510822510822
+      ],
+      "before_pixels": 191,
+      "after_pixels": 231,
+      "movement_px": 54.21065245634243
+    },
+    "magenta": {
+      "before_centroid_px": [
+        394.17518248175185,
+        83.91605839416059
+      ],
+      "after_centroid_px": [
+        394.17518248175185,
+        83.91605839416059
+      ],
+      "before_pixels": 274,
+      "after_pixels": 274,
+      "movement_px": 0.0
+    }
+  },
+  "drawer_articulation_m": 0.2180230231609386,
+  "changed_depth_pixels": 13700,
+  "task_success": true,
+  "interaction_sequence": [
+    "press_unlock_button",
+    "pull_drawer_22cm",
+    "inspect_open_drawer"
+  ]
+}

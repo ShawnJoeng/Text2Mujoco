@@ -1,0 +1,14 @@
+{
+  "status": "FAIL",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "command": "render_smoke.py",
+  "render_backend_requested": "glfw",
+  "renderer_verified": "SKIPPED",
+  "marker_visibility": "SKIPPED (renderer context unavailable)",
+  "rgb_depth_checks": "SKIPPED (renderer context unavailable)",
+  "before_after_pixel_check": "SKIPPED (renderer context unavailable)",
+  "error_type": "CGLError",
+  "error": "invalid CoreGraphics connection",
+  "traceback": "Traceback (most recent call last):\n  File \"/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/04-lever-ball-ramp/render_smoke.py\", line 92, in main\n    result = run(args)\n  File \"/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/04-lever-ball-ramp/render_smoke.py\", line 48, in run\n    before_rgb, before_depth = capture(env, args.screenshot_dir / \"before\")\n  File \"/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/04-lever-ball-ramp/render_smoke.py\", line 24, in capture\n    renderer = mujoco.Renderer(env.model, height=height, width=width)\n  File \"/private/tmp/text2mujoco-local-env/lib/python3.9/site-packages/mujoco/renderer.py\", line 84, in __init__\n    self._gl_context = gl_context.GLContext(width, height)\n  File \"/private/tmp/text2mujoco-local-env/lib/python3.9/site-packages/mujoco/cgl/__init__.py\", line 47, in __init__\n    cgl.CGLChoosePixelFormat(\n  File \"/private/tmp/text2mujoco-local-env/lib/python3.9/site-packages/mujoco/cgl/cgl.py\", line 132, in checked_func\n    raise CGLError(_CGLErrorString(err).decode())\nmujoco.cgl.cgl.CGLError: invalid CoreGraphics connection\n"
+}

@@ -1,0 +1,243 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source_prompt": "生成一个小型仓库导航场景：一个橙色移动机器人从起点出发，必须先到黄色检查点 A，再绕开货架到绿色检查点 B，最后用顶视相机确认任务完成。两个检查点和相机检查必须是可见交互点。",
+  "assumptions": [
+    "场景使用 SI 米制、Z 轴向上、6.0 m x 4.5 m 地面与固定顶视相机。",
+    "移动机器人使用圆柱形 primitive 和两个正交 slide joint；位置执行器实现平面导航。",
+    "导航动作采用确定性的闭环航点控制器，A 到 B 强制经过主货架南侧，安全间距按机器人 0.23 m 半径检查。",
+    "检查点 A、B 和相机检查触发器使用高亮、无碰撞 marker site，确保在顶视图中可见。",
+    "inspect_top_camera 需要可用的 MuJoCo 离屏渲染后端，并输出 640 x 480 RGB-D 证据。"
+  ],
+  "open_questions": [
+    "若需要轮胎打滑、差速驱动或激光雷达避障，应进一步指定底盘和传感器模型。"
+  ],
+  "scene": {
+    "name": "small_warehouse_navigation",
+    "description": "橙色移动机器人按 A、绕架、B、顶视相机检查的依赖顺序完成仓库导航。",
+    "runtime": {
+      "mujoco_version": "3.2.7",
+      "mode": "python",
+      "headless": true,
+      "gl_backend": "auto"
+    },
+    "world": {
+      "units": "m",
+      "up_axis": "Z",
+      "gravity": [0, 0, -9.81],
+      "ground": true,
+      "seed": 37
+    }
+  },
+  "assets": [
+    {
+      "id": "mobile_robot",
+      "kind": "primitive",
+      "body_name": "mobile_robot",
+      "geometry": {
+        "shape": "cylinder",
+        "dimensions": [0.46, 0.46, 0.24],
+        "geom_name": "mobile_robot_geom"
+      },
+      "pose": {
+        "position": [-2.35, -1.35, 0.14],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": true,
+        "joint_name": "robot_x",
+        "actuator_name": "robot_x_motor",
+        "mass_kg": 6.0,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.9, 0.01, 0.001]
+      },
+      "semantic": "mobile_robot"
+    },
+    {
+      "id": "central_shelf",
+      "kind": "primitive",
+      "body_name": "central_shelf",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [0.7, 2.2, 1.4],
+        "geom_name": "central_shelf_geom"
+      },
+      "pose": {
+        "position": [0.0, 0.25, 0.7],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.8, 0.01, 0.001]
+      },
+      "semantic": "route_obstacle"
+    },
+    {
+      "id": "north_shelf",
+      "kind": "primitive",
+      "body_name": "north_shelf",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [1.7, 0.55, 1.4],
+        "geom_name": "north_shelf_geom"
+      },
+      "pose": {
+        "position": [-1.75, 1.72, 0.7],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.8, 0.01, 0.001]
+      },
+      "semantic": "warehouse_shelf"
+    },
+    {
+      "id": "east_shelf",
+      "kind": "primitive",
+      "body_name": "east_shelf",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [0.55, 1.25, 1.4],
+        "geom_name": "east_shelf_geom"
+      },
+      "pose": {
+        "position": [2.35, -0.25, 0.7],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.8, 0.01, 0.001]
+      },
+      "semantic": "warehouse_shelf"
+    }
+  ],
+  "interaction_points": [
+    {
+      "id": "reach_checkpoint_a",
+      "affordance": "navigate",
+      "target": {"type": "site", "name": "checkpoint_a_marker"},
+      "marker_site": "checkpoint_a_marker",
+      "pose": {
+        "position": [-1.55, 0.75, 0.025],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "reach_checkpoint_a",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.2}
+          },
+          "required": []
+        }
+      },
+      "preconditions": ["robot_state == 'at_start'"],
+      "success_conditions": ["distance(robot, checkpoint_a) <= 0.10 m"],
+      "depends_on": [],
+      "effects": ["robot_state = 'at_checkpoint_a'", "checkpoint_a_reached = true"],
+      "reset": {"checkpoint_a_reached": false, "robot_state": "at_start"}
+    },
+    {
+      "id": "reach_checkpoint_b",
+      "affordance": "navigate",
+      "target": {"type": "site", "name": "checkpoint_b_marker"},
+      "marker_site": "checkpoint_b_marker",
+      "pose": {
+        "position": [1.55, 0.80, 0.025],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "reach_checkpoint_b",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.2}
+          },
+          "required": []
+        }
+      },
+      "preconditions": ["checkpoint_a_reached == true"],
+      "success_conditions": [
+        "distance(robot, checkpoint_b) <= 0.10 m",
+        "route_history contains every south bypass waypoint",
+        "no robot-shelf contact occurred"
+      ],
+      "depends_on": ["reach_checkpoint_a"],
+      "effects": ["robot_state = 'at_checkpoint_b'", "checkpoint_b_reached = true"],
+      "reset": {"checkpoint_b_reached": false}
+    },
+    {
+      "id": "inspect_top_camera",
+      "affordance": "inspect",
+      "target": {"type": "camera", "name": "top_camera"},
+      "marker_site": "inspect_top_camera_marker",
+      "pose": {
+        "position": [2.45, 1.65, 0.035],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "inspect_top_camera",
+        "schema": {
+          "type": "object",
+          "properties": {"output_dir": {"type": "string"}},
+          "required": ["output_dir"]
+        }
+      },
+      "preconditions": ["checkpoint_b_reached == true"],
+      "success_conditions": [
+        "top-camera RGB and depth arrays are valid",
+        "robot is visibly located at checkpoint B"
+      ],
+      "depends_on": ["reach_checkpoint_b"],
+      "effects": ["camera_inspection_complete = true"],
+      "reset": {"camera_inspection_complete": false}
+    }
+  ],
+  "sensors": [
+    {
+      "id": "top_camera_sensor",
+      "type": "camera",
+      "camera_name": "top_camera",
+      "pose": {
+        "position": [0.0, 0.0, 7.2],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "frequency_hz": 20,
+      "data": ["rgb", "depth", "camera_pose"]
+    }
+  ],
+  "task": {
+    "goal": "橙色机器人从起点依次到达黄色 A，绕过主货架到达绿色 B，并以顶视 RGB-D 相机确认完成。",
+    "success_conditions": [
+      "checkpoint_a_reached == true",
+      "checkpoint_b_reached == true",
+      "camera_inspection_complete == true",
+      "no robot-shelf contact occurred"
+    ],
+    "failure_conditions": [
+      "interaction dependency is violated",
+      "robot contacts any shelf",
+      "controller leaves warehouse bounds"
+    ],
+    "reset_policy": "mj_resetData_and_task_state_with_seed_37"
+  },
+  "outputs": {
+    "save_mjcf": true,
+    "mjcf_path": "./output/model.xml",
+    "save_mjb": true,
+    "mjb_path": "./output/model.mjb",
+    "resolution": [640, 480],
+    "screenshots": ["./output/screenshots/before.png", "./output/screenshots/after.png"],
+    "depth": ["./output/screenshots/before_depth.npy", "./output/screenshots/after_depth.npy"]
+  }
+}

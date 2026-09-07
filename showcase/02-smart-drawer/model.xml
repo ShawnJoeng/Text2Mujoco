@@ -1,0 +1,74 @@
+<mujoco model="smart_desktop_tool_drawer">
+  <compiler angle="degree" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton"/>
+  <statistic center="0 -0.05 0.85" extent="1.55"/>
+  <visual>
+    <global offwidth="640" offheight="480"/>
+    <quality shadowsize="2048"/>
+    <map znear="0.01" zfar="8"/>
+    <headlight ambient="0.35 0.35 0.38" diffuse="0.72 0.72 0.70" specular="0.18 0.18 0.18"/>
+  </visual>
+  <asset>
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.20 0.22 0.24" rgb2="0.30 0.32 0.34" width="512" height="512"/>
+    <material name="floor_mat" texture="floor_tex" texrepeat="5 5" reflectance="0.05"/>
+    <material name="bench_mat" rgba="0.52 0.38 0.24 1" roughness="0.75"/>
+    <material name="cabinet_mat" rgba="0.66 0.69 0.72 1" roughness="0.55" metallic="0.25"/>
+    <material name="drawer_mat" rgba="0.28 0.32 0.36 1" roughness="0.48" metallic="0.35"/>
+    <material name="inside_mat" rgba="0.13 0.15 0.17 1" roughness="0.75"/>
+    <material name="handle_mat" rgba="0.06 0.07 0.08 1" roughness="0.3" metallic="0.7"/>
+    <material name="green_mat" rgba="0.03 0.82 0.20 1" emission="0.10"/>
+  </asset>
+  <default>
+    <geom friction="0.7 0.01 0.001" condim="3" solref="0.01 1"/>
+  </default>
+  <worldbody>
+    <light name="key_light" pos="-1 -1 2.7" dir="0.3 0.4 -1" directional="true" castshadow="true"/>
+    <light name="fill_light" pos="1.4 -0.2 1.8" dir="-0.8 0 -0.8" directional="true" diffuse="0.4 0.42 0.46"/>
+    <camera name="fixed_inspection_camera" pos="1.20 -1.45 1.38" quat="0.7612142645 0.5235515583 0.2168621560 0.3153052722" fovy="48"/>
+    <geom name="ground_geom" type="plane" size="2 2 0.1" material="floor_mat"/>
+    <body name="workbench" pos="0 0 0.75">
+      <geom name="workbench_top_geom" type="box" size="0.70 0.45 0.03" material="bench_mat"/>
+      <geom name="bench_leg_left" type="box" pos="-0.60 0 -0.375" size="0.035 0.34 0.375" material="handle_mat"/>
+      <geom name="bench_leg_right" type="box" pos="0.60 0 -0.375" size="0.035 0.34 0.375" material="handle_mat"/>
+    </body>
+    <body name="cabinet" pos="0 0.04 1.01">
+      <geom name="cabinet_back_geom" type="box" pos="0 0.215 0" size="0.29 0.015 0.23" material="cabinet_mat"/>
+      <geom name="cabinet_left_geom" type="box" pos="-0.275 0 0" size="0.015 0.215 0.23" material="cabinet_mat"/>
+      <geom name="cabinet_right_geom" type="box" pos="0.275 0 0" size="0.015 0.215 0.23" material="cabinet_mat"/>
+      <geom name="cabinet_top_geom" type="box" pos="0 0 0.215" size="0.26 0.215 0.015" material="cabinet_mat"/>
+      <geom name="cabinet_bottom_geom" type="box" pos="0 0 -0.215" size="0.26 0.215 0.015" material="cabinet_mat"/>
+      <geom name="cabinet_divider_geom" type="box" pos="0 0 0.035" size="0.26 0.215 0.012" material="cabinet_mat"/>
+      <geom name="upper_drawer_false_front" type="box" pos="0 -0.217 0.125" size="0.25 0.012 0.075" material="drawer_mat"/>
+      <geom name="upper_handle" type="capsule" fromto="-0.10 -0.242 0.125 0.10 -0.242 0.125" size="0.012" material="handle_mat"/>
+      <site name="camera_check_marker" type="sphere" pos="0.24 -0.235 0.235" size="0.027" rgba="1 0.05 0.78 1" group="2"/>
+    </body>
+    <body name="unlock_button_mount" pos="-0.20 -0.215 1.245" quat="0.70710678 0.70710678 0 0">
+      <geom name="unlock_button_bezel" type="cylinder" pos="0 0 0.008" size="0.039 0.009" material="handle_mat" contype="0" conaffinity="0"/>
+      <body name="unlock_button" pos="0 0 0.018">
+        <joint name="unlock_button_slide" type="slide" axis="0 0 -1" range="0 0.012" damping="3"/>
+        <geom name="unlock_button_geom" type="cylinder" size="0.0275 0.011" mass="0.04" material="green_mat" contype="0" conaffinity="0"/>
+        <site name="unlock_point_marker" type="sphere" pos="0 0 0.035" size="0.023" rgba="1 0.82 0.02 1" group="2"/>
+      </body>
+    </body>
+    <body name="tool_drawer" pos="0 -0.005 0.86">
+      <joint name="drawer_slide" type="slide" axis="0 -1 0" range="0 0.22" damping="12" frictionloss="1.0"/>
+      <geom name="drawer_bottom_geom" type="box" pos="0 0 0" size="0.245 0.19 0.012" mass="1.8" material="inside_mat"/>
+      <geom name="drawer_left_geom" type="box" pos="-0.233 0 0.075" size="0.012 0.19 0.075" mass="0.2" material="drawer_mat"/>
+      <geom name="drawer_right_geom" type="box" pos="0.233 0 0.075" size="0.012 0.19 0.075" mass="0.2" material="drawer_mat"/>
+      <geom name="drawer_back_geom" type="box" pos="0 0.178 0.075" size="0.221 0.012 0.075" mass="0.2" material="drawer_mat"/>
+      <geom name="drawer_front_geom" type="box" pos="0 -0.202 0.03" size="0.255 0.014 0.08" mass="0.5" material="drawer_mat"/>
+      <geom name="drawer_handle_geom" type="capsule" fromto="-0.105 -0.235 0.03 0.105 -0.235 0.03" size="0.014" mass="0.1" material="handle_mat" contype="0" conaffinity="0"/>
+      <site name="drawer_handle_marker" type="sphere" pos="0 -0.265 0.03" size="0.026" rgba="0.02 0.95 1 1" group="2"/>
+      <geom name="tool_red" type="box" pos="-0.11 0.02 0.045" size="0.055 0.075 0.025" rgba="0.82 0.08 0.06 1" contype="0" conaffinity="0" mass="0.0"/>
+      <geom name="tool_yellow" type="cylinder" pos="0.09 0.03 0.05" size="0.035 0.04" rgba="0.94 0.62 0.03 1" contype="0" conaffinity="0" mass="0.0"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="unlock_button_press" joint="unlock_button_slide" kp="450" ctrlrange="0 0.012"/>
+    <position name="drawer_pull" joint="drawer_slide" kp="900" kv="70" ctrlrange="0 0.22"/>
+  </actuator>
+  <sensor>
+    <jointpos name="drawer_position_sensor" joint="drawer_slide"/>
+    <jointpos name="unlock_button_position_sensor" joint="unlock_button_slide"/>
+  </sensor>
+</mujoco>

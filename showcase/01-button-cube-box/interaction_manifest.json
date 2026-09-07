@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source": "scene_spec.json",
+  "action_envelope": {
+    "shape": "{id: string, payload: object}",
+    "payload_schema": true
+  },
+  "runtime_status": "verified_physics_remote_a100_render_local_cgl",
+  "points": [
+    {
+      "id": "press_start_button",
+      "marker_site": "press_start_button_marker",
+      "target": {"type": "joint", "name": "button_slide"},
+      "pose": {"position": [0.38, -0.18, 0.845], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "press",
+      "activation": {"mode": "direct", "command": "press_start_button"},
+      "action_schema": {"type": "object", "properties": {"press_depth_m": {"type": "number", "minimum": 0.014, "maximum": 0.02}}, "required": []},
+      "preconditions": ["button_state == 'ready'"],
+      "success_conditions": ["button_joint_qpos <= -0.014"],
+      "depends_on": [],
+      "effects": ["button_state = 'pressed'"],
+      "reset": {"button_state": "ready"},
+      "status": "verified_local_and_remote_physics"
+    },
+    {
+      "id": "grasp_red_cube",
+      "marker_site": "grasp_red_cube_marker",
+      "target": {"type": "body", "name": "red_cube"},
+      "pose": {"position": [-0.12, -0.03, 0.9], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "grasp",
+      "activation": {"mode": "direct", "command": "grasp_red_cube"},
+      "action_schema": {"type": "object", "properties": {"close": {"type": "boolean"}}, "required": ["close"]},
+      "preconditions": ["button_state == 'pressed'", "cube_state == 'free'"],
+      "success_conditions": ["cube_state == 'grasped'"],
+      "depends_on": ["press_start_button"],
+      "effects": ["cube_state = 'grasped'"],
+      "reset": {"cube_state": "free", "cube_position": [-0.12, -0.03, 0.825]},
+      "status": "verified_local_and_remote_physics"
+    },
+    {
+      "id": "place_cube_in_box",
+      "marker_site": "place_cube_in_box_marker",
+      "target": {"type": "body", "name": "target_box"},
+      "pose": {"position": [0.3, 0.18, 0.86], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "pick_place",
+      "activation": {"mode": "direct", "command": "place_cube_in_box"},
+      "action_schema": {"type": "object", "properties": {"pose": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3}, "release": {"type": "boolean"}}, "required": ["pose", "release"]},
+      "preconditions": ["button_state == 'pressed'", "cube_state == 'grasped'"],
+      "success_conditions": ["cube center inside target_box.intersection", "cube_speed_mps < 0.1"],
+      "depends_on": ["grasp_red_cube"],
+      "effects": ["cube_state = 'inside_box'", "cube_released = true"],
+      "reset": {"cube_state": "free", "cube_released": false},
+      "status": "verified_local_and_remote_physics"
+    },
+    {
+      "id": "inspect_rgbd",
+      "marker_site": "inspect_rgbd_marker",
+      "target": {"type": "camera", "name": "overhead_rgbd"},
+      "pose": {"position": [1.2, -1.2, 1.4], "orientation_xyzw": [0.5235515582861913, 0.2168621560437084, 0.3153052722090142, 0.7612142644547425]},
+      "affordance": "inspect",
+      "activation": {"mode": "direct", "command": "inspect_rgbd"},
+      "action_schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"]},
+      "preconditions": ["cube_state == 'inside_box'"],
+      "success_conditions": ["observation contains rgb and finite depth"],
+      "depends_on": ["place_cube_in_box"],
+      "effects": ["last_observation_updated = true"],
+      "reset": {"last_observation_updated": false},
+      "status": "verified_local_cgl"
+    }
+  ]
+}

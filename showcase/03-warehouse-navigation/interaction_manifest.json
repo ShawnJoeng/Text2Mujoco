@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "scene": "small_warehouse_navigation",
+  "action_envelope": {
+    "type": "object",
+    "properties": {
+      "id": {"type": "string", "enum": ["reach_checkpoint_a", "reach_checkpoint_b", "inspect_top_camera"]},
+      "payload": {"type": "object"}
+    },
+    "required": ["id", "payload"],
+    "additionalProperties": false
+  },
+  "interaction_points": [
+    {
+      "id": "reach_checkpoint_a",
+      "target": {"type": "site", "name": "checkpoint_a_marker"},
+      "marker_site": "checkpoint_a_marker",
+      "visible": true,
+      "marker_color": "yellow",
+      "affordance": "navigate",
+      "pose": {"position": [-1.55, 0.75, 0.025], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {"mode": "direct", "command": "reach_checkpoint_a", "schema": {"type": "object", "properties": {"speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.2}}, "required": []}},
+      "preconditions": ["robot_state == 'at_start'"],
+      "success_conditions": ["distance(robot, checkpoint_a) <= 0.10 m"],
+      "depends_on": [],
+      "effects": ["robot_state = 'at_checkpoint_a'", "checkpoint_a_reached = true"],
+      "reset": {"checkpoint_a_reached": false, "robot_state": "at_start"}
+    },
+    {
+      "id": "reach_checkpoint_b",
+      "target": {"type": "site", "name": "checkpoint_b_marker"},
+      "marker_site": "checkpoint_b_marker",
+      "visible": true,
+      "marker_color": "green",
+      "affordance": "navigate",
+      "pose": {"position": [1.55, 0.80, 0.025], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {"mode": "direct", "command": "reach_checkpoint_b", "schema": {"type": "object", "properties": {"speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.2}}, "required": []}},
+      "preconditions": ["checkpoint_a_reached == true"],
+      "success_conditions": ["distance(robot, checkpoint_b) <= 0.10 m", "route_history contains every south bypass waypoint", "no robot-shelf contact occurred"],
+      "depends_on": ["reach_checkpoint_a"],
+      "effects": ["robot_state = 'at_checkpoint_b'", "checkpoint_b_reached = true"],
+      "reset": {"checkpoint_b_reached": false}
+    },
+    {
+      "id": "inspect_top_camera",
+      "target": {"type": "camera", "name": "top_camera"},
+      "marker_site": "inspect_top_camera_marker",
+      "visible": true,
+      "marker_color": "magenta",
+      "affordance": "inspect",
+      "pose": {"position": [2.45, 1.65, 0.035], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {"mode": "direct", "command": "inspect_top_camera", "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"]}},
+      "preconditions": ["checkpoint_b_reached == true"],
+      "success_conditions": ["top-camera RGB and depth arrays are valid", "robot is visibly located at checkpoint B"],
+      "depends_on": ["reach_checkpoint_b"],
+      "effects": ["camera_inspection_complete = true"],
+      "reset": {"camera_inspection_complete": false}
+    }
+  ]
+}

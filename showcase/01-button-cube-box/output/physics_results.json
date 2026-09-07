@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "host": "AnastasiadeMacBook-Pro.local",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "command": "physics_smoke.py --output-dir output --result output/physics_results.json",
+  "mujoco_gl": "disable",
+  "model_checks": {
+    "named_objects": 20,
+    "open_box_colliders": 5,
+    "gravity": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "timestep_s": 0.002,
+    "cube_mass_kg": 0.2,
+    "quaternion_conversion": "PASS",
+    "declared_pose_consistency": "PASS"
+  },
+  "physics": {
+    "mj_step": "PASS",
+    "button_actuator": "PASS",
+    "gravity_release": "PASS",
+    "open_box_contact": "PASS",
+    "finite_state": "PASS",
+    "cube_position": [
+      0.3000000000001864,
+      0.17999999999632382,
+      0.8449713261561786
+    ],
+    "cube_linear_speed_mps": 2.1832683853301037e-14
+  },
+  "interaction_sequence": [
+    "press_start_button",
+    "grasp_red_cube",
+    "place_cube_in_box"
+  ],
+  "invalid_action_checks": 11,
+  "invalid_step_count_checks": 4,
+  "invalid_reset_seed_checks": 4,
+  "grasp_hold": "PASS",
+  "deterministic_reset": "PASS",
+  "mjcf_reload": "PASS",
+  "mjb_reload": "PASS",
+  "output_flags": "PASS",
+  "artifacts": {
+    "mjcf": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/model.xml",
+    "mjb": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/model.mjb"
+  }
+}

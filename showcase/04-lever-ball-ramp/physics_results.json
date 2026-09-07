@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "command": "physics_smoke.py",
+  "mujoco_gl": "disable",
+  "model_compile": "PASS",
+  "typed_targets": "PASS",
+  "marker_sites_resolved": "PASS",
+  "xyzw_to_wxyz": "PASS",
+  "invalid_action_checks": 3,
+  "physics": {
+    "lever_actuator": "PASS",
+    "gate_lift_m": 0.11656407732540523,
+    "release_zone": "PASS",
+    "tray_settling": "PASS",
+    "tray_contact": "PASS",
+    "ball_position": [
+      0.5496575061965692,
+      0.0,
+      0.8099304591698587
+    ],
+    "ball_speed_mps": 0.0002767681449783004,
+    "finite_state": "PASS"
+  },
+  "interaction_sequence": [
+    "pull_blue_lever",
+    "check_release_zone",
+    "confirm_target_tray"
+  ],
+  "deterministic_reset": "PASS",
+  "mjcf_reload": "PASS"
+}

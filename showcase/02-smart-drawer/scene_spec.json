@@ -1,0 +1,146 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source_prompt": "生成一个桌面工具柜。先按绿色解锁按钮，再拉开抽屉 22 cm，最后用固定相机检查抽屉已经打开。需要把解锁点、把手和相机检查点标成可见交互点。",
+  "assumptions": [
+    "使用 SI 米制、Z 轴向上、重力 [0, 0, -9.81] 和确定性种子 22。",
+    "工具柜采用无外部资源的 MJCF primitive，放在 0.75 m 高桌面上。",
+    "抽屉沿世界 -Y 方向向前拉出，关态 qpos 为 0 m，开态目标 qpos 为 0.22 m。",
+    "绿色按钮使用 12 mm 行程的 slide joint 和 position actuator；解锁由按钮达到至少 10 mm 压下深度触发。",
+    "拉动使用位置执行器驱动真实抽屉 slide joint，不模拟机器人手爪接触。",
+    "固定相机输出 640 x 480 RGB-D；检查动作在抽屉达到目标后采集图像。",
+    "黄色、青色和品红色非碰撞 site 分别标记解锁点、把手和相机检查点。"
+  ],
+  "open_questions": [],
+  "scene": {
+    "name": "smart_desktop_tool_drawer",
+    "description": "带顺序解锁、22 cm 抽屉行程和固定 RGB-D 检查的桌面工具柜。",
+    "runtime": {
+      "mujoco_version": "3.2.7",
+      "mode": "python",
+      "headless": true,
+      "gl_backend": "auto"
+    },
+    "world": {
+      "units": "m",
+      "up_axis": "Z",
+      "gravity": [0, 0, -9.81],
+      "ground": true,
+      "seed": 22
+    }
+  },
+  "assets": [
+    {
+      "id": "workbench",
+      "kind": "primitive",
+      "body_name": "workbench",
+      "geometry": {"shape": "box", "dimensions": [1.4, 0.9, 0.06], "geom_name": "workbench_top_geom"},
+      "pose": {"position": [0, 0, 0.75], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.9, 0.01, 0.001]},
+      "semantic": "support_surface"
+    },
+    {
+      "id": "cabinet",
+      "kind": "primitive",
+      "body_name": "cabinet",
+      "geometry": {"shape": "box", "dimensions": [0.58, 0.46, 0.46], "geom_name": "cabinet_back_geom"},
+      "pose": {"position": [0, 0.04, 1.01], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.7, 0.01, 0.001]},
+      "semantic": "tool_cabinet"
+    },
+    {
+      "id": "unlock_button",
+      "kind": "primitive",
+      "body_name": "unlock_button",
+      "geometry": {"shape": "cylinder", "dimensions": [0.055, 0.055, 0.022], "geom_name": "unlock_button_geom"},
+      "pose": {"position": [-0.20, -0.205, 1.245], "orientation_xyzw": [0.70710678, 0, 0, 0.70710678]},
+      "physics": {"dynamic": true, "joint_name": "unlock_button_slide", "actuator_name": "unlock_button_press", "mass_kg": 0.04, "contype": 0, "conaffinity": 0, "friction": [0.5, 0.01, 0.001]},
+      "semantic": "green_unlock_button"
+    },
+    {
+      "id": "tool_drawer",
+      "kind": "primitive",
+      "body_name": "tool_drawer",
+      "geometry": {"shape": "box", "dimensions": [0.49, 0.38, 0.18], "geom_name": "drawer_bottom_geom"},
+      "pose": {"position": [0, -0.005, 0.86], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "drawer_slide", "actuator_name": "drawer_pull", "mass_kg": 3.0, "contype": 1, "conaffinity": 1, "friction": [0.5, 0.01, 0.001]},
+      "semantic": "sliding_drawer"
+    }
+  ],
+  "interaction_points": [
+    {
+      "id": "press_unlock_button",
+      "affordance": "press",
+      "target": {"type": "joint", "name": "unlock_button_slide"},
+      "marker_site": "unlock_point_marker",
+      "pose": {"position": [-0.20, -0.24, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "press_unlock_button",
+        "schema": {"type": "object", "properties": {"press_depth_m": {"type": "number", "minimum": 0.01, "maximum": 0.012}}, "required": []}
+      },
+      "preconditions": ["lock_state == 'locked'"],
+      "success_conditions": ["unlock_button_joint_qpos >= 0.01", "lock_state == 'unlocked'"],
+      "depends_on": [],
+      "effects": ["lock_state = 'unlocked'"],
+      "reset": {"lock_state": "locked", "unlock_button_joint_qpos": 0}
+    },
+    {
+      "id": "pull_drawer_22cm",
+      "affordance": "open",
+      "target": {"type": "joint", "name": "drawer_slide"},
+      "marker_site": "drawer_handle_marker",
+      "pose": {"position": [0, -0.255, 0.89], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "pull_drawer_22cm",
+        "schema": {"type": "object", "properties": {"distance_m": {"type": "number", "minimum": 0.22, "maximum": 0.22}}, "required": ["distance_m"]}
+      },
+      "preconditions": ["lock_state == 'unlocked'", "drawer_state == 'closed'"],
+      "success_conditions": ["abs(drawer_joint_qpos - 0.22) <= 0.002"],
+      "depends_on": ["press_unlock_button"],
+      "effects": ["drawer_state = 'open_22cm'"],
+      "reset": {"drawer_state": "closed", "drawer_joint_qpos": 0}
+    },
+    {
+      "id": "inspect_open_drawer",
+      "affordance": "inspect",
+      "target": {"type": "camera", "name": "fixed_inspection_camera"},
+      "marker_site": "camera_check_marker",
+      "pose": {"position": [0.24, -0.235, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "inspect_open_drawer",
+        "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"]}
+      },
+      "preconditions": ["drawer_state == 'open_22cm'"],
+      "success_conditions": ["fixed camera RGB-D capture is valid", "drawer_joint_qpos >= 0.218"],
+      "depends_on": ["pull_drawer_22cm"],
+      "effects": ["inspection_state = 'verified_open'"],
+      "reset": {"inspection_state": "pending"}
+    }
+  ],
+  "sensors": [
+    {
+      "id": "fixed_drawer_rgbd",
+      "type": "camera",
+      "camera_name": "fixed_inspection_camera",
+      "pose": {"position": [1.20, -1.45, 1.38], "orientation_xyzw": [0.5235515583, 0.2168621560, 0.3153052722, 0.7612142645]},
+      "frequency_hz": 30,
+      "data": ["rgb", "depth", "camera_pose", "drawer_joint_qpos"]
+    }
+  ],
+  "task": {
+    "goal": "按下绿色按钮解锁，将抽屉拉开 0.22 m，再由固定相机确认打开状态。",
+    "success_conditions": ["lock_state == 'unlocked'", "drawer_state == 'open_22cm'", "inspection_state == 'verified_open'"],
+    "failure_conditions": ["non_finite_state == true", "drawer_joint_qpos outside [0, 0.22]"],
+    "reset_policy": "mj_resetData_and_task_state"
+  },
+  "outputs": {
+    "save_mjcf": true,
+    "mjcf_path": "./output/model.xml",
+    "save_mjb": true,
+    "mjb_path": "./output/model.mjb",
+    "resolution": [640, 480]
+  }
+}

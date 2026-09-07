@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "scene": "smart_desktop_tool_drawer",
+  "sequence": ["press_unlock_button", "pull_drawer_22cm", "inspect_open_drawer"],
+  "interaction_points": [
+    {
+      "id": "press_unlock_button",
+      "label_zh": "绿色解锁按钮",
+      "target": {"type": "joint", "name": "unlock_button_slide"},
+      "marker_site": "unlock_point_marker",
+      "marker_color": "yellow",
+      "action": {"id": "press_unlock_button", "payload": {"press_depth_m": 0.012}},
+      "depends_on": [],
+      "observable_result": "unlock_button_joint_qpos >= 0.01 and lock_state == unlocked"
+    },
+    {
+      "id": "pull_drawer_22cm",
+      "label_zh": "抽屉把手",
+      "target": {"type": "joint", "name": "drawer_slide"},
+      "marker_site": "drawer_handle_marker",
+      "marker_color": "cyan",
+      "action": {"id": "pull_drawer_22cm", "payload": {"distance_m": 0.22}},
+      "depends_on": ["press_unlock_button"],
+      "observable_result": "abs(drawer_joint_qpos - 0.22) <= 0.002"
+    },
+    {
+      "id": "inspect_open_drawer",
+      "label_zh": "固定相机检查点",
+      "target": {"type": "camera", "name": "fixed_inspection_camera"},
+      "marker_site": "camera_check_marker",
+      "marker_color": "magenta",
+      "action": {"id": "inspect_open_drawer", "payload": {"output_dir": "./output/screenshots/after_capture"}},
+      "depends_on": ["pull_drawer_22cm"],
+      "observable_result": "640x480 RGB-D exists and inspection_state == verified_open"
+    }
+  ]
+}

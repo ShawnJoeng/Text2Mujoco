@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "host": "AnastasiadeMacBook-Pro.local",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "command": "runtime_probe.py",
+  "mujoco_gl": "disable",
+  "mjcf_compile": "PASS",
+  "mjdata_create": "PASS",
+  "mj_step": "PASS",
+  "finite_state": "PASS",
+  "nq": 8,
+  "nv": 7,
+  "ngeom": 14
+}

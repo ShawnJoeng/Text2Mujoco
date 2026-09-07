@@ -1,0 +1,74 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "command": "physics_smoke.py",
+  "mujoco_gl": "disable",
+  "static_checks": {
+    "xml_parse": "PASS",
+    "mjcf_compile": "PASS",
+    "manifest_spec_parity": "PASS",
+    "typed_target_resolution": "PASS",
+    "dependency_order": "PASS",
+    "visible_markers": "PASS",
+    "geometry_half_sizes": "PASS",
+    "quaternion_conversion": "PASS"
+  },
+  "physics": {
+    "mj_step": "PASS",
+    "finite_state": "PASS",
+    "robot_shelf_contacts": 0
+  },
+  "route": {
+    "checkpoint_a": {
+      "minimum_clearance_m": 0.4650000000000001,
+      "closest_shelf": "north_shelf_geom",
+      "sample_count": 114
+    },
+    "checkpoint_b_south_bypass": {
+      "minimum_clearance_m": 0.27000000000000013,
+      "closest_shelf": "central_shelf_geom",
+      "sample_count": 330
+    },
+    "required_waypoints": [
+      [
+        -1.25,
+        -1.35
+      ],
+      [
+        0.75,
+        -1.35
+      ],
+      [
+        1.15,
+        -0.95
+      ],
+      [
+        1.55,
+        0.8
+      ]
+    ],
+    "trace_samples": 112,
+    "checkpoint_b_position": [
+      1.5596321650165361,
+      0.8459603219645082,
+      0.14
+    ]
+  },
+  "dependency_enforcement": "PASS",
+  "invalid_action_checks": 7,
+  "deterministic_reset": "PASS",
+  "mjcf_reload": "PASS",
+  "mjb_reload": "PASS",
+  "initial_position": [
+    -2.35,
+    -1.35,
+    0.14
+  ],
+  "artifacts": {
+    "mjcf": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/model.xml",
+    "mjb": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/model.mjb"
+  }
+}

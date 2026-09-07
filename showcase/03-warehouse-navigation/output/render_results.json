@@ -1,0 +1,112 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "command": "render_smoke.py",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via MuJoCo glfw backend",
+  "resolution": [
+    640,
+    480
+  ],
+  "task_success": true,
+  "interaction_sequence": [
+    "reach_checkpoint_a",
+    "reach_checkpoint_b",
+    "inspect_top_camera"
+  ],
+  "visible_interaction_markers": {
+    "status": "PASS",
+    "pixels": {
+      "yellow": 6048,
+      "green": 1641,
+      "magenta": 1118
+    },
+    "centroids_px": {
+      "yellow": [
+        260.0720899470899,
+        208.90410052910053
+      ],
+      "green": [
+        438.4801950030469,
+        178.0822669104205
+      ],
+      "magenta": [
+        507.87388193202145,
+        112.61270125223614
+      ]
+    }
+  },
+  "robot_pixel_movement": {
+    "status": "PASS",
+    "before_centroid_px": [
+      143.2741935483871,
+      342.2096774193548
+    ],
+    "after_centroid_px": [
+      432.23741007194246,
+      180.23741007194243
+    ],
+    "movement_px": 331.2623671552517,
+    "before_pixels": 62,
+    "after_pixels": 139
+  },
+  "reset_render": {
+    "status": "PASS",
+    "centroid_error_px": 0.0,
+    "reset_pixels": 62
+  },
+  "screenshots": {
+    "before": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/before.png",
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "dtype": "uint8"
+    },
+    "after": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/after.png",
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "dtype": "uint8"
+    },
+    "reset": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/reset.png",
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "dtype": "uint8"
+    }
+  },
+  "depth": {
+    "before": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/before_depth.npy",
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 183965,
+      "min_m": 5.780043601989746,
+      "max_m": 7.199990272521973
+    },
+    "after": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/after_depth.npy",
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 183965,
+      "min_m": 5.780043601989746,
+      "max_m": 7.199990272521973
+    }
+  }
+}

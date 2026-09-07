@@ -1,0 +1,74 @@
+<mujoco model="button_cube_box_rgbd_workcell">
+  <compiler angle="degree" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton"/>
+  <size nconmax="200" njmax="500"/>
+  <statistic center="0 0 0.65" extent="1.6"/>
+  <visual>
+    <global offwidth="640" offheight="480"/>
+    <quality shadowsize="2048"/>
+    <map znear="0.01" zfar="10"/>
+    <headlight ambient="0.28 0.28 0.3" diffuse="0.7 0.7 0.68" specular="0.15 0.15 0.15"/>
+  </visual>
+
+  <asset>
+    <texture name="ground_texture" type="2d" builtin="checker" rgb1="0.15 0.17 0.2" rgb2="0.25 0.27 0.3" width="512" height="512"/>
+    <material name="ground_material" texture="ground_texture" texrepeat="4 4" reflectance="0.08"/>
+    <material name="table_material" rgba="0.55 0.57 0.6 1" specular="0.15" roughness="0.7"/>
+    <material name="red_material" rgba="0.9 0.04 0.04 1" specular="0.3" roughness="0.35"/>
+    <material name="green_material" rgba="0.04 0.75 0.12 1" specular="0.25" roughness="0.4"/>
+    <material name="blue_material" rgba="0.08 0.32 0.85 0.72" specular="0.2" roughness="0.45"/>
+    <material name="blue_front_material" rgba="0.08 0.32 0.85 0.18" specular="0.1" roughness="0.55"/>
+    <material name="dark_material" rgba="0.09 0.1 0.12 1"/>
+    <material name="marker_material" rgba="1 0.78 0.05 1" emission="0.25"/>
+  </asset>
+
+  <default>
+    <geom friction="0.8 0.01 0.001" condim="3" solref="0.01 1"/>
+    <site type="sphere" material="marker_material" size="0.018" group="2"/>
+  </default>
+
+  <worldbody>
+    <light name="key_light" pos="-1.2 -1.0 2.8" dir="0.35 0.35 -1" directional="true" castshadow="true"/>
+    <light name="fill_light" pos="1.2 -0.2 1.8" dir="-0.7 0.15 -1" directional="true" diffuse="0.35 0.38 0.45" specular="0.05 0.05 0.05"/>
+    <camera name="overhead_rgbd" pos="1.2 -1.2 1.4" quat="0.7612142645 0.5235515583 0.2168621560 0.3153052722" fovy="50"/>
+    <site name="inspect_rgbd_marker" pos="1.2 -1.2 1.4" quat="0.7612142645 0.5235515583 0.2168621560 0.3153052722" size="0.001" rgba="0 0 0 0"/>
+
+    <geom name="ground_geom" type="plane" size="2 2 0.1" material="ground_material"/>
+
+    <body name="table" pos="0 0 0.75">
+      <geom name="table_geom" type="box" size="0.6 0.4 0.025" material="table_material"/>
+      <geom name="table_leg_fl" type="box" pos="-0.52 -0.32 -0.375" size="0.035 0.035 0.375" material="dark_material"/>
+      <geom name="table_leg_fr" type="box" pos="0.52 -0.32 -0.375" size="0.035 0.035 0.375" material="dark_material"/>
+      <geom name="table_leg_bl" type="box" pos="-0.52 0.32 -0.375" size="0.035 0.035 0.375" material="dark_material"/>
+      <geom name="table_leg_br" type="box" pos="0.52 0.32 -0.375" size="0.035 0.035 0.375" material="dark_material"/>
+    </body>
+
+    <body name="button_base" pos="0.38 -0.18 0.775">
+      <geom name="button_base_geom" type="cylinder" pos="0 0 0.012" size="0.052 0.012" material="dark_material"/>
+      <body name="button_cap" pos="0 0 0.04">
+        <joint name="button_slide" type="slide" axis="0 0 1" range="-0.02 0" damping="2"/>
+        <geom name="start_button_geom" type="cylinder" size="0.04 0.015" mass="0.05" material="green_material" contype="0" conaffinity="0"/>
+        <site name="press_start_button_marker" pos="0 0 0.03" size="0.016"/>
+      </body>
+    </body>
+
+    <body name="red_cube" pos="-0.12 -0.03 0.825">
+      <freejoint name="cube_free"/>
+      <geom name="red_cube_geom" type="box" size="0.05 0.05 0.05" mass="0.2" material="red_material"/>
+      <site name="grasp_red_cube_marker" pos="0 0 0.075" size="0.016"/>
+    </body>
+
+    <body name="target_box" pos="0.3 0.18 0.775">
+      <geom name="box_bottom" type="box" pos="0 0 0.01" size="0.18 0.15 0.01" material="blue_material"/>
+      <geom name="box_left" type="box" pos="-0.17 0 0.11" size="0.01 0.15 0.09" material="blue_material"/>
+      <geom name="box_right" type="box" pos="0.17 0 0.11" size="0.01 0.15 0.09" material="blue_material"/>
+      <geom name="box_front" type="box" pos="0 -0.14 0.11" size="0.16 0.01 0.09" material="blue_front_material"/>
+      <geom name="box_back" type="box" pos="0 0.14 0.11" size="0.16 0.01 0.09" material="blue_material"/>
+      <site name="place_cube_in_box_marker" pos="0 0 0.085" size="0.024"/>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="button_press" joint="button_slide" kp="400" ctrlrange="-0.02 0"/>
+  </actuator>
+</mujoco>

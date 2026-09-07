@@ -1,0 +1,83 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "host": "AnastasiadeMacBook-Pro.local",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "command": "render_smoke.py --screenshot-dir output/screenshots --result output/render_glfw_results.json",
+  "render_backend_requested": "glfw",
+  "renderer_context": "mujoco.cgl.GLContext",
+  "renderer_verified": "PASS",
+  "rgb_verified": "PASS",
+  "depth_verified": "PASS",
+  "interaction_sequence": [
+    "press_start_button",
+    "grasp_red_cube",
+    "place_cube_in_box",
+    "inspect_rgbd"
+  ],
+  "task_success": true,
+  "red_cube": {
+    "initial_centroid_px": [
+      289.8677621283255,
+      213.93896713615024
+    ],
+    "final_centroid_px": [
+      420.1799844840962,
+      221.26609775019395
+    ],
+    "movement_px": 130.5180529211767,
+    "initial_red_pixels": 1278,
+    "final_red_pixels": 1289
+  },
+  "screenshots": {
+    "initial": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/screenshots/initial/rgb.png",
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "mean": 49.28672634548611,
+      "std": 65.48309808982803,
+      "dynamic_range": 255
+    },
+    "final": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/screenshots/final/rgb.png",
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "mean": 49.83035807291667,
+      "std": 65.91660070518121,
+      "dynamic_range": 255
+    }
+  },
+  "depth": {
+    "initial": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/screenshots/initial/depth.npy",
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 161229,
+      "min_m": 1.1489711999893188,
+      "max_m": 3.6283583641052246,
+      "far_plane_m": 16.0
+    },
+    "final": {
+      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/screenshots/final/depth.npy",
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 161229,
+      "min_m": 1.1489711999893188,
+      "max_m": 3.6283583641052246,
+      "far_plane_m": 16.0
+    },
+    "changed_geometry_pixels": 1815
+  }
+}

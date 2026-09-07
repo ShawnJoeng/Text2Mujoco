@@ -1,0 +1,271 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source_prompt": "在桌面上放一个按钮、红色方块和带内部空间的盒子，按按钮后抓取方块并放入盒子，用 RGB-D 相机观察。",
+  "assumptions": [
+    "桌面默认尺寸为 1.2 m x 0.8 m，桌面高度为 0.75 m。",
+    "未提供机器人或网格资产，按钮、方块、盒子和桌子使用 MJCF primitive。",
+    "按钮通过 slide joint 和 position actuator 物理驱动。",
+    "抓取采用任务级 qpos 抽象；释放后的下落、碰撞和稳定由 MuJoCo 动力学计算。",
+    "RGB-D 使用固定 MuJoCo camera；优先 EGL，缺少图形能力时使用 OSMesa CPU 渲染。"
+  ],
+  "open_questions": [
+    "若后续要求真实机械臂接触抓取，需要提供机器人 MJCF/mesh 和控制器。"
+  ],
+  "scene": {
+    "name": "button_cube_box_rgbd_workcell",
+    "description": "按钮触发的桌面方块放置任务，包含开放容器、交互 site 和 RGB-D 观察。",
+    "runtime": {
+      "mujoco_version": "3.2.7",
+      "mode": "python",
+      "headless": true,
+      "gl_backend": "auto"
+    },
+    "world": {
+      "units": "m",
+      "up_axis": "Z",
+      "gravity": [0, 0, -9.81],
+      "ground": true,
+      "seed": 7
+    }
+  },
+  "assets": [
+    {
+      "id": "table",
+      "kind": "primitive",
+      "body_name": "table",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [1.2, 0.8, 0.05],
+        "geom_name": "table_geom"
+      },
+      "pose": {
+        "position": [0.0, 0.0, 0.75],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.8, 0.01, 0.001]
+      },
+      "semantic": "support_surface"
+    },
+    {
+      "id": "start_button",
+      "kind": "primitive",
+      "body_name": "button_cap",
+      "geometry": {
+        "shape": "cylinder",
+        "dimensions": [0.08, 0.08, 0.03],
+        "geom_name": "start_button_geom"
+      },
+      "pose": {
+        "position": [0.38, -0.18, 0.815],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": true,
+        "joint_name": "button_slide",
+        "actuator_name": "button_press",
+        "mass_kg": 0.05,
+        "contype": 0,
+        "conaffinity": 0,
+        "friction": [0.5, 0.01, 0.001]
+      },
+      "semantic": "button"
+    },
+    {
+      "id": "red_cube",
+      "kind": "primitive",
+      "body_name": "red_cube",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [0.1, 0.1, 0.1],
+        "geom_name": "red_cube_geom"
+      },
+      "pose": {
+        "position": [-0.12, -0.03, 0.825],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": true,
+        "joint_name": "cube_free",
+        "mass_kg": 0.2,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.8, 0.01, 0.001]
+      },
+      "semantic": "manipulable_object"
+    },
+    {
+      "id": "target_box",
+      "kind": "primitive",
+      "body_name": "target_box",
+      "geometry": {
+        "shape": "open_box",
+        "dimensions": [0.36, 0.3, 0.2],
+        "interior_bounds": {
+          "min": [-0.13, -0.1, 0.045],
+          "max": [0.13, 0.1, 0.16]
+        },
+        "part_geom_names": [
+          "box_bottom",
+          "box_left",
+          "box_right",
+          "box_front",
+          "box_back"
+        ]
+      },
+      "pose": {
+        "position": [0.3, 0.18, 0.775],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.8, 0.01, 0.001]
+      },
+      "semantic": "container"
+    }
+  ],
+  "interaction_points": [
+    {
+      "id": "press_start_button",
+      "affordance": "press",
+      "target": {"type": "joint", "name": "button_slide"},
+      "marker_site": "press_start_button_marker",
+      "pose": {
+        "position": [0.38, -0.18, 0.845],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "press_start_button",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "press_depth_m": {"type": "number", "minimum": 0.014, "maximum": 0.02}
+          },
+          "required": []
+        }
+      },
+      "preconditions": ["button_state == 'ready'"],
+      "success_conditions": ["button_joint_qpos <= -0.014"],
+      "depends_on": [],
+      "effects": ["button_state = 'pressed'"],
+      "reset": {"button_state": "ready"}
+    },
+    {
+      "id": "grasp_red_cube",
+      "affordance": "grasp",
+      "target": {"type": "body", "name": "red_cube"},
+      "marker_site": "grasp_red_cube_marker",
+      "pose": {
+        "position": [-0.12, -0.03, 0.9],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "grasp_red_cube",
+        "schema": {
+          "type": "object",
+          "properties": {"close": {"type": "boolean"}},
+          "required": ["close"]
+        }
+      },
+      "preconditions": ["button_state == 'pressed'", "cube_state == 'free'"],
+      "success_conditions": ["cube_state == 'grasped'"],
+      "depends_on": ["press_start_button"],
+      "effects": ["cube_state = 'grasped'"],
+      "reset": {"cube_state": "free", "cube_position": [-0.12, -0.03, 0.825]}
+    },
+    {
+      "id": "place_cube_in_box",
+      "affordance": "pick_place",
+      "target": {"type": "body", "name": "target_box"},
+      "marker_site": "place_cube_in_box_marker",
+      "pose": {
+        "position": [0.3, 0.18, 0.86],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "place_cube_in_box",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "pose": {
+              "type": "array",
+              "items": {"type": "number"},
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "release": {"type": "boolean"}
+          },
+          "required": ["pose", "release"]
+        }
+      },
+      "preconditions": ["button_state == 'pressed'", "cube_state == 'grasped'"],
+      "success_conditions": ["cube center inside target_box.intersection", "cube_speed_mps < 0.1"],
+      "depends_on": ["grasp_red_cube"],
+      "effects": ["cube_state = 'inside_box'", "cube_released = true"],
+      "reset": {"cube_state": "free", "cube_released": false}
+    },
+    {
+      "id": "inspect_rgbd",
+      "affordance": "inspect",
+      "target": {"type": "camera", "name": "overhead_rgbd"},
+      "marker_site": "inspect_rgbd_marker",
+      "pose": {
+        "position": [1.2, -1.2, 1.4],
+        "orientation_xyzw": [0.5235515582861913, 0.2168621560437084, 0.3153052722090142, 0.7612142644547425]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "inspect_rgbd",
+        "schema": {
+          "type": "object",
+          "properties": {"output_dir": {"type": "string"}},
+          "required": ["output_dir"]
+        }
+      },
+      "preconditions": ["cube_state == 'inside_box'"],
+      "success_conditions": ["observation contains rgb and finite depth"],
+      "depends_on": ["place_cube_in_box"],
+      "effects": ["last_observation_updated = true"],
+      "reset": {"last_observation_updated": false}
+    }
+  ],
+  "sensors": [
+    {
+      "id": "overhead_rgbd",
+      "type": "camera",
+      "camera_name": "overhead_rgbd",
+      "pose": {
+        "position": [1.2, -1.2, 1.4],
+        "orientation_xyzw": [0.5235515582861913, 0.2168621560437084, 0.3153052722090142, 0.7612142644547425]
+      },
+      "frequency_hz": 30,
+      "data": ["rgb", "depth", "camera_pose"]
+    }
+  ],
+  "task": {
+    "goal": "按下按钮后抓取红色方块，将其释放到开放盒内，并获取 RGB-D 观察。",
+    "success_conditions": [
+      "button_state == 'pressed'",
+      "cube_state == 'inside_box'",
+      "last_observation_updated == true"
+    ],
+    "failure_conditions": ["non_finite_state == true", "cube_out_of_workspace == true"],
+    "reset_policy": "mj_resetData_and_task_state"
+  },
+  "outputs": {
+    "save_mjcf": true,
+    "mjcf_path": "./output/model.xml",
+    "save_mjb": true,
+    "mjb_path": "./output/model.mjb",
+    "resolution": [640, 480]
+  }
+}

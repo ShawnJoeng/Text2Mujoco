@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "command": "physics_smoke.py",
+  "mujoco_gl": "disable",
+  "mjcf_compile": "PASS",
+  "finite_state": "PASS",
+  "unlock_actuator": "PASS",
+  "drawer_actuator": "PASS",
+  "target_distance_m": 0.22,
+  "measured_distance_m": 0.2180230231609386,
+  "visible_marker_names": [
+    "unlock_point_marker",
+    "drawer_handle_marker",
+    "camera_check_marker"
+  ],
+  "invalid_action_checks": 5,
+  "deterministic_reset": "PASS",
+  "mjcf_reload": "PASS",
+  "mjb_reload": "PASS",
+  "artifacts": {
+    "mjcf": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/02-smart-drawer/output/model.xml",
+    "mjb": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/02-smart-drawer/output/model.mjb"
+  }
+}

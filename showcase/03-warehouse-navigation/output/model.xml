@@ -1,0 +1,73 @@
+<mujoco model="small_warehouse_navigation">
+  <compiler angle="degree" autolimits="true"/>
+  <option timestep="0.004" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton"/>
+  <size nconmax="300" njmax="600"/>
+  <statistic center="0 0 0.5" extent="4.0"/>
+  <visual>
+    <global offwidth="640" offheight="480"/>
+    <quality shadowsize="2048"/>
+    <map znear="0.01" zfar="20"/>
+    <headlight ambient="0.35 0.35 0.36" diffuse="0.75 0.75 0.72" specular="0.12 0.12 0.12"/>
+  </visual>
+  <asset>
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.62 0.64 0.66" rgb2="0.50 0.52 0.55" width="512" height="512"/>
+    <material name="floor_mat" texture="floor_tex" texrepeat="6 5" reflectance="0.04"/>
+    <material name="orange_mat" rgba="1.0 0.30 0.035 1" specular="0.28" roughness="0.4"/>
+    <material name="robot_dark" rgba="0.08 0.09 0.10 1"/>
+    <material name="shelf_mat" rgba="0.24 0.31 0.38 1" specular="0.12" roughness="0.7"/>
+    <material name="shelf_edge" rgba="0.86 0.49 0.08 1"/>
+    <material name="wall_mat" rgba="0.86 0.88 0.89 1"/>
+    <material name="start_mat" rgba="0.15 0.42 0.92 1" emission="0.12"/>
+    <material name="yellow_marker" rgba="1.0 0.82 0.02 1" emission="0.35"/>
+    <material name="green_marker" rgba="0.05 0.82 0.20 1" emission="0.30"/>
+    <material name="camera_marker" rgba="0.92 0.08 0.72 1" emission="0.35"/>
+  </asset>
+  <default>
+    <geom friction="0.8 0.01 0.001" condim="3" solref="0.01 1"/>
+  </default>
+  <worldbody>
+    <light name="warehouse_key" pos="-2 -2 7" dir="0.25 0.25 -1" directional="true" castshadow="true"/>
+    <light name="warehouse_fill" pos="2 2 5" dir="-0.25 -0.2 -1" directional="true" diffuse="0.35 0.38 0.42"/>
+    <camera name="top_camera" pos="0 0 7.2" quat="1 0 0 0" fovy="47"/>
+
+    <geom name="ground_geom" type="plane" size="3 2.25 0.1" material="floor_mat"/>
+    <geom name="wall_north" type="box" pos="0 2.23 0.25" size="3.0 0.02 0.25" material="wall_mat"/>
+    <geom name="wall_south" type="box" pos="0 -2.23 0.25" size="3.0 0.02 0.25" material="wall_mat"/>
+    <geom name="wall_west" type="box" pos="-2.98 0 0.25" size="0.02 2.25 0.25" material="wall_mat"/>
+    <geom name="wall_east" type="box" pos="2.98 0 0.25" size="0.02 2.25 0.25" material="wall_mat"/>
+
+    <site name="start_marker" type="cylinder" pos="-2.35 -1.35 0.012" size="0.28 0.012" material="start_mat" group="2"/>
+    <site name="checkpoint_a_marker" type="cylinder" pos="-1.55 0.75 0.014" size="0.30 0.014" material="yellow_marker" group="2"/>
+    <site name="checkpoint_b_marker" type="cylinder" pos="1.55 0.80 0.014" size="0.30 0.014" material="green_marker" group="2"/>
+    <site name="inspect_top_camera_marker" type="cylinder" pos="2.45 1.65 0.018" size="0.24 0.018" material="camera_marker" group="2"/>
+    <site name="bypass_1_marker" type="sphere" pos="-1.25 -1.35 0.025" size="0.04" rgba="1 1 1 0.55" group="3"/>
+    <site name="bypass_2_marker" type="sphere" pos="0.75 -1.35 0.025" size="0.04" rgba="1 1 1 0.55" group="3"/>
+    <site name="bypass_3_marker" type="sphere" pos="1.15 -0.95 0.025" size="0.04" rgba="1 1 1 0.55" group="3"/>
+
+    <body name="central_shelf" pos="0 0.25 0.7">
+      <geom name="central_shelf_geom" type="box" size="0.35 1.10 0.70" material="shelf_mat"/>
+      <geom name="central_shelf_edge_w" type="box" pos="-0.36 0 0" size="0.025 1.13 0.72" material="shelf_edge" contype="0" conaffinity="0"/>
+      <geom name="central_shelf_edge_e" type="box" pos="0.36 0 0" size="0.025 1.13 0.72" material="shelf_edge" contype="0" conaffinity="0"/>
+    </body>
+    <body name="north_shelf" pos="-1.75 1.72 0.7">
+      <geom name="north_shelf_geom" type="box" size="0.85 0.275 0.70" material="shelf_mat"/>
+      <geom name="north_shelf_edge" type="box" pos="0 -0.285 0" size="0.87 0.025 0.72" material="shelf_edge" contype="0" conaffinity="0"/>
+    </body>
+    <body name="east_shelf" pos="2.35 -0.25 0.7">
+      <geom name="east_shelf_geom" type="box" size="0.275 0.625 0.70" material="shelf_mat"/>
+      <geom name="east_shelf_edge" type="box" pos="-0.285 0 0" size="0.025 0.645 0.72" material="shelf_edge" contype="0" conaffinity="0"/>
+    </body>
+
+    <body name="mobile_robot" pos="-2.35 -1.35 0.14">
+      <joint name="robot_x" type="slide" axis="1 0 0" range="-0.35 5.0" damping="40"/>
+      <joint name="robot_y" type="slide" axis="0 1 0" range="-0.45 3.25" damping="40"/>
+      <geom name="mobile_robot_geom" type="cylinder" size="0.23 0.12" mass="6" material="orange_mat"/>
+      <geom name="robot_top" type="cylinder" pos="0 0 0.13" size="0.13 0.035" material="robot_dark" contype="0" conaffinity="0"/>
+      <geom name="robot_heading" type="box" pos="0.14 0 0.13" size="0.08 0.025 0.025" material="orange_mat" contype="0" conaffinity="0"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="robot_x_motor" joint="robot_x" kp="320" ctrlrange="-0.35 5.0"/>
+    <position name="robot_y_motor" joint="robot_y" kp="320" ctrlrange="-0.45 3.25"/>
+  </actuator>
+</mujoco>
