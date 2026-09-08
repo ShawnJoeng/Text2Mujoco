@@ -125,23 +125,38 @@ def font(size: int) -> ImageFont.ImageFont:
 
 
 def write_contact_sheet(frames: List[Path], labels: List[str], output_path: Path) -> None:
-    tile_w, tile_h = 320, 240
     label_h, gap = 34, 12
-    columns = 2
+    # Use three columns for longer storyboards so five/six frames stay
+    # compact; keep four-frame layouts at two columns for larger thumbnails.
+    columns = 2 if len(frames) <= 4 else 3
+    tile_w = (676 - (columns + 1) * gap) // columns
+    tile_h = round(tile_w * 480 / 640)
     rows = (len(frames) + columns - 1) // columns
-    sheet = Image.new("RGB", (columns * tile_w + (columns + 1) * gap, rows * (tile_h + label_h) + (rows + 1) * gap), "#f4f6f8")
+    sheet_width = columns * tile_w + (columns + 1) * gap
+    sheet = Image.new("RGB", (sheet_width, rows * (tile_h + label_h) + (rows + 1) * gap), "#f4f6f8")
     draw = ImageDraw.Draw(sheet)
-    label_font = font(17)
     for index, (frame, label) in enumerate(zip(frames, labels)):
         source = Image.open(frame).convert("RGB")
         resampling = getattr(Image, "Resampling", Image)
         thumb = ImageOps.contain(source, (tile_w, tile_h), method=resampling.LANCZOS)
         col, row = index % columns, index // columns
-        x = gap + col * tile_w + (tile_w - thumb.width) // 2
+        row_start = row * columns
+        row_count = min(columns, len(frames) - row_start)
+        row_width = row_count * tile_w + (row_count - 1) * gap
+        row_left = (sheet_width - row_width) // 2
+        tile_left = row_left + col * (tile_w + gap)
+        x = tile_left + (tile_w - thumb.width) // 2
         y = gap + row * (tile_h + label_h) + (tile_h - thumb.height) // 2
         sheet.paste(thumb, (x, y))
+        label = label.replace("_", " ")
+        label_size = 17
+        label_font = font(label_size)
+        while label_size > 11 and draw.textbbox((0, 0), label, font=label_font)[2] > tile_w - 4:
+            label_size -= 1
+            label_font = font(label_size)
+        label_width = draw.textbbox((0, 0), label, font=label_font)[2]
         label_y = gap + row * (tile_h + label_h) + tile_h + 7
-        draw.text((gap + col * tile_w, label_y), label, fill="#16202a", font=label_font)
+        draw.text((tile_left + (tile_w - label_width) // 2, label_y), label, fill="#16202a", font=label_font)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(output_path, "PNG", optimize=True)
 
