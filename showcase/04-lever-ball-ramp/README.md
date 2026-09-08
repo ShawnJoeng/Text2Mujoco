@@ -1,14 +1,26 @@
-# Lever Ball Ramp Workbench
+# Lever and Ramp Ball Workbench
 
-这是一个 MuJoCo 3.2.7 生成场景：拉下蓝色杠杆，黄色挡板升起，紫色小球沿斜坡滚入绿色目标托盘，最后由固定 RGB-D 相机检查结果。四个交互点都在 MJCF 中有可见 site 标记，并在 `interaction_manifest.json` 中声明了目标类型、动作 schema、依赖、效果和 reset 状态。
+This generated MuJoCo 3.2.7 scene models a workbench where a blue lever raises a yellow gate, a purple ball rolls down a guarded ramp into a green target tray, and a fixed RGB-D camera verifies the result. All four interaction points have visible MJCF site markers and are declared in `interaction_manifest.json` with typed targets, dependencies, effects, and reset state.
 
-## 交互顺序
+## Interaction Sequence
 
 `pull_blue_lever` -> `check_release_zone` -> `confirm_target_tray` -> `inspect_with_camera`
 
-杠杆和挡板使用真实 hinge/slide joint 与 position actuator。球使用 free joint；释放后的位置、碰撞、滚动和稳定均由 MuJoCo 物理计算。释放区和目标区交互会推进物理并检查球的位置/速度，`inspect_with_camera` 保存 RGB 与深度数组。
+The lever and gate use real hinge/slide joints with position actuators. The ball uses a free joint; after release, MuJoCo gravity, collision, friction, rolling, and settling determine its motion. The release-zone and target-tray actions advance physics and check position and speed. `inspect_with_camera` persists RGB and depth observations.
 
-## 运行
+## Files
+
+- `scene_spec.json`: normalized scene contract and assumptions.
+- `model.xml`: editable MJCF source.
+- `environment.py`: executable interaction, observation, reset, and success API.
+- `interaction_manifest.json`: typed targets, marker sites, action schemas, and dependencies.
+- `physics_smoke.py`: actuator, release, settling, contact, reset, and reload checks.
+- `render_smoke.py`: native CGL RGB-D, marker visibility, before/after change, and storyboard checks.
+- `output/sequence_results.json`: complete keyframe capture report.
+
+## Run
+
+From this directory:
 
 ```bash
 python3 ../../text2mujoco_codex/scripts/validate_scene_spec.py scene_spec.json --json
@@ -16,8 +28,14 @@ MUJOCO_GL=disable python3 physics_smoke.py
 MUJOCO_GL=glfw mjpython render_smoke.py
 ```
 
-渲染命令在 macOS 使用 MuJoCo 原生 CGL 上下文；使用 MuJoCo wheel 附带的 `mjpython` 可确保进程接入图形会话。项目级连续截图也可从仓库根目录运行：`MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --scene 04-lever-ball-ramp`。若当前主机没有可用图形上下文，测试会保存失败报告而不会伪造截图；Linux 可在新进程中分别尝试 `MUJOCO_GL=egl` 与 `MUJOCO_GL=osmesa`。
+On macOS, use MuJoCo's `mjpython` trampoline with `MUJOCO_GL=glfw` so the native CGL context is available. On Linux, try `MUJOCO_GL=egl` and then `MUJOCO_GL=osmesa` in separate processes. The project-level collector can regenerate the complete storyboard from the repository root:
 
-## 输出
+```bash
+MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --scene 04-lever-ball-ramp
+```
 
-默认生成 `physics_results.json`、`render_results.json`、`output/sequence_results.json`，以及 `output/screenshots/before.png`、`after.png`、`sequence.png` 和多页 `sequence.tif`。每个阶段的 RGB-D 数据位于 `output/screenshots/sequence/`。`scene_spec.json` 是规范输入，`model.xml` 是可编辑 MJCF 源文件。
+The collector writes a paced `sequence.gif`, a contact-sheet PNG, and a multi-page TIFF. The GIF keeps each keyframe visible for `1.6 s` and the final state for `2.6 s`; it is a readable animation of discrete interaction keyframes, not a frame-by-frame physics recording. The TIFF is a full-resolution keyframe archive and does not define a universal viewer playback speed.
+
+## Output
+
+The scene writes `physics_results.json`, `render_results.json`, and `output/sequence_results.json`, plus `output/screenshots/before.png`, `after.png`, `sequence.gif`, `sequence.png`, and `sequence.tif`. Per-stage RGB-D arrays are stored under `output/screenshots/sequence/`. `scene_spec.json` is the canonical input and `model.xml` is the editable MJCF source.

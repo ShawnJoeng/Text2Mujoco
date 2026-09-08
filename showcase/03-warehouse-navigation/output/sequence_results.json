@@ -134,5 +134,10 @@
   "tiff": "output/screenshots/sequence.tif",
   "before": "output/screenshots/before.png",
   "after": "output/screenshots/after.png",
-  "task_success": true
+  "task_success": true,
+  "gif": "output/screenshots/sequence.gif",
+  "gif_frame_duration_ms": 1600,
+  "gif_final_frame_duration_ms": 2600,
+  "sequence_kind": "discrete interaction keyframes",
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation"
 }

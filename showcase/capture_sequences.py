@@ -3,8 +3,8 @@
 
 The script deliberately renders each state in a fresh, short-lived MuJoCo
 renderer. This keeps the capture independent from viewer timing and produces
-both a multi-page TIFF (full-size frames) and a small PNG contact sheet for
-README pages.
+both a paced GIF for README playback, a multi-page TIFF (full-size keyframes),
+and a small PNG contact sheet for README pages.
 """
 
 from __future__ import annotations
@@ -171,6 +171,57 @@ def write_tiff(frames: List[Path], output_path: Path) -> None:
         image.close()
 
 
+def write_gif(
+    frames: List[Path],
+    labels: List[str],
+    output_path: Path,
+    frame_duration_ms: int = 1600,
+    final_duration_ms: int = 2600,
+) -> None:
+    """Write a deliberately paced animation of the interaction keyframes."""
+    if not frames:
+        raise AssertionError("no frames to write")
+    if len(frames) != len(labels):
+        raise ValueError("GIF frames and labels must have the same length")
+    if frame_duration_ms < 100 or final_duration_ms < 100:
+        raise ValueError("GIF frame durations must be at least 100 ms")
+
+    images = []
+    for index, (frame, label) in enumerate(zip(frames, labels), start=1):
+        source = Image.open(frame).convert("RGB")
+        label_height = 48
+        canvas = Image.new("RGB", (source.width, source.height + label_height), "#f4f6f8")
+        canvas.paste(source, (0, 0))
+        draw = ImageDraw.Draw(canvas)
+        clean_label = re.sub(r"^\d+\s+", "", label).replace("_", " ")
+        caption = f"{index}/{len(frames)}  {clean_label}"
+        caption_font = font(22)
+        caption_width = draw.textbbox((0, 0), caption, font=caption_font)[2]
+        draw.text(
+            ((canvas.width - caption_width) // 2, source.height + 10),
+            caption,
+            fill="#16202a",
+            font=caption_font,
+        )
+        images.append(canvas.convert("P", palette=Image.Palette.ADAPTIVE))
+        source.close()
+
+    durations = [frame_duration_ms] * len(images)
+    durations[-1] = final_duration_ms
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    images[0].save(
+        output_path,
+        save_all=True,
+        append_images=images[1:],
+        duration=durations,
+        loop=0,
+        optimize=False,
+        disposal=2,
+    )
+    for image in images:
+        image.close()
+
+
 def compact_observation(scene_name: str, observation: Dict[str, Any]) -> Dict[str, Any]:
     if scene_name == "01-button-cube-box":
         return {
@@ -302,8 +353,10 @@ def run_scene(scene_name: str, scene_cfg: Dict[str, Any], output_root: Path) -> 
     # under sequence/ so they can be inspected or regenerated independently.
     contact_sheet = screenshot_dir / "sequence.png"
     tiff_path = screenshot_dir / "sequence.tif"
+    gif_path = screenshot_dir / "sequence.gif"
     write_contact_sheet(frame_paths, labels, contact_sheet)
     write_tiff(frame_paths, tiff_path)
+    write_gif(frame_paths, labels, gif_path)
     shutil.copy2(frame_paths[0], screenshot_dir / "before.png")
     shutil.copy2(frame_paths[-1], screenshot_dir / "after.png")
     np.save(screenshot_dir / "before_depth.npy", depth_frames[0])
@@ -323,6 +376,11 @@ def run_scene(scene_name: str, scene_cfg: Dict[str, Any], output_root: Path) -> 
         "frames": frames,
         "contact_sheet": str(contact_sheet.relative_to(scene_dir)),
         "tiff": str(tiff_path.relative_to(scene_dir)),
+        "gif": str(gif_path.relative_to(scene_dir)),
+        "sequence_kind": "discrete interaction keyframes",
+        "gif_frame_duration_ms": 1600,
+        "gif_final_frame_duration_ms": 2600,
+        "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
         "before": str((screenshot_dir / "before.png").relative_to(scene_dir)),
         "after": str((screenshot_dir / "after.png").relative_to(scene_dir)),
         "before_depth": str((screenshot_dir / "before_depth.npy").relative_to(scene_dir)),

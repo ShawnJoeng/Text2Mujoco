@@ -55,7 +55,8 @@
     "after_rgb": "output/screenshots/after.png",
     "sequence_contact_sheet": "output/screenshots/sequence.png",
     "sequence_tiff": "output/screenshots/sequence.tif",
-    "sequence_directory": "output/screenshots/sequence"
+    "sequence_directory": "output/screenshots/sequence",
+    "sequence_gif": "output/screenshots/sequence.gif"
   },
   "sequence": {
     "status": "PASS",
@@ -313,6 +314,10 @@
     "after": "output/screenshots/after.png",
     "before_depth": "output/screenshots/before_depth.npy",
     "after_depth": "output/screenshots/after_depth.npy",
-    "task_success": true
+    "task_success": true,
+    "gif": "output/screenshots/sequence.gif",
+    "gif_frame_duration_ms": 1600,
+    "gif_final_frame_duration_ms": 2600,
+    "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation"
   }
 }

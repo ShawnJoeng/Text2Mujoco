@@ -36,7 +36,7 @@
           -0.03,
           0.8249714970506437
         ],
-        "cube_speed_mps": 4.383795478977281e-06,
+        "cube_speed_mps": 0.000004383795478977281,
         "cube_contacts_box_bottom": false
       }
     },
@@ -65,7 +65,7 @@
           -0.03,
           0.8249713261561805
         ],
-        "cube_speed_mps": 2.3212708399928007e-14,
+        "cube_speed_mps": 2.3212708399928007E-14,
         "cube_contacts_box_bottom": false
       }
     },
@@ -126,7 +126,7 @@
           0.1799999999963238,
           0.8449713261561786
         ],
-        "cube_speed_mps": 2.1833944732177327e-14,
+        "cube_speed_mps": 2.1833944732177327E-14,
         "cube_contacts_box_bottom": true
       }
     },
@@ -158,7 +158,7 @@
           0.1799999999963238,
           0.8449713261561786
         ],
-        "cube_speed_mps": 2.1833944732177327e-14,
+        "cube_speed_mps": 2.1833944732177327E-14,
         "cube_contacts_box_bottom": true
       }
     }
@@ -167,5 +167,10 @@
   "tiff": "output/screenshots/sequence.tif",
   "before": "output/screenshots/before.png",
   "after": "output/screenshots/after.png",
-  "task_success": true
+  "task_success": true,
+  "gif": "output/screenshots/sequence.gif",
+  "gif_frame_duration_ms": 1600,
+  "gif_final_frame_duration_ms": 2600,
+  "sequence_kind": "discrete interaction keyframes",
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation"
 }

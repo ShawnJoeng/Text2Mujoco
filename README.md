@@ -14,13 +14,13 @@
 <p align="center">
   <a href="#showcase">Showcase</a> |
   <a href="#usage">Usage</a> |
-  <a href="text2mujoco_codex/SKILL.md">Codex</a> |
-  <a href="text2mujoco_claude/SKILL.md">Claude Code</a>
+  <a href="text2mujoco_codex/README.md">Codex</a> |
+  <a href="text2mujoco_claude/README.md">Claude Code</a>
 </p>
 
 Text2MuJoCo turns a scene or task description into a loadable MuJoCo package. It resolves objects, physics, sensors, action order, success conditions, and visible interaction points, then validates the result with machine-readable reports.
 
-Use the [Codex skill](text2mujoco_codex/SKILL.md) or the [Claude Code skill](text2mujoco_claude/SKILL.md).
+Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](text2mujoco_claude/README.md).
 
 ## Showcase
 
@@ -35,12 +35,12 @@ Use the [Codex skill](text2mujoco_codex/SKILL.md) or the [Claude Code skill](tex
 **Verified result** - **PASS**. The cube settles inside the open box, contacts the bottom, and moves `130.52 px` in the camera image.
 
 <p align="center">
-  <a href="showcase/01-button-cube-box/output/screenshots/sequence.png">
-    <img src="showcase/01-button-cube-box/output/screenshots/sequence.png" alt="Button, cube, and box interaction sequence" width="676">
+  <a href="showcase/01-button-cube-box/output/screenshots/sequence.gif">
+    <img src="showcase/01-button-cube-box/output/screenshots/sequence.gif" alt="Button, cube, and box paced interaction sequence" width="676">
   </a>
 </p>
 
-[Environment](showcase/01-button-cube-box) | [Test report](showcase/01-button-cube-box/TEST_REPORT.md) | [Render report](showcase/01-button-cube-box/output/render_results.json) | [Sequence report](showcase/01-button-cube-box/output/sequence_results.json) | [TIFF](showcase/01-button-cube-box/output/screenshots/sequence.tif)
+[Environment](showcase/01-button-cube-box) | [Test report](showcase/01-button-cube-box/TEST_REPORT.md) | [Render report](showcase/01-button-cube-box/output/render_results.json) | [Sequence JSON](showcase/01-button-cube-box/output/sequence_results.json) | [GIF (1.6s/frame)](showcase/01-button-cube-box/output/screenshots/sequence.gif) | [TIFF keyframes](showcase/01-button-cube-box/output/screenshots/sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -64,12 +64,12 @@ Use the [Codex skill](text2mujoco_codex/SKILL.md) or the [Claude Code skill](tex
 **Verified result** - **PASS**. The drawer reaches `0.218023 m` against a `0.22 m` target, the handle moves `54.21 px`, and depth changes across `13,700` pixels.
 
 <p align="center">
-  <a href="showcase/02-smart-drawer/output/screenshots/sequence.png">
-    <img src="showcase/02-smart-drawer/output/screenshots/sequence.png" alt="Smart tool cabinet interaction sequence" width="676">
+  <a href="showcase/02-smart-drawer/output/screenshots/sequence.gif">
+    <img src="showcase/02-smart-drawer/output/screenshots/sequence.gif" alt="Smart tool cabinet paced interaction sequence" width="676">
   </a>
 </p>
 
-[Environment](showcase/02-smart-drawer) | [Render report](showcase/02-smart-drawer/output/render_results.json) | [Sequence report](showcase/02-smart-drawer/output/sequence_results.json) | [TIFF](showcase/02-smart-drawer/output/screenshots/sequence.tif)
+[Environment](showcase/02-smart-drawer) | [Render report](showcase/02-smart-drawer/output/render_results.json) | [Sequence JSON](showcase/02-smart-drawer/output/sequence_results.json) | [GIF (1.6s/frame)](showcase/02-smart-drawer/output/screenshots/sequence.gif) | [TIFF keyframes](showcase/02-smart-drawer/output/screenshots/sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -93,12 +93,12 @@ Use the [Codex skill](text2mujoco_codex/SKILL.md) or the [Claude Code skill](tex
 **Verified result** - **PASS**. The robot follows the south-side bypass with zero shelf contacts, keeps `0.270 m` minimum clearance, and moves `331.26 px` in the image.
 
 <p align="center">
-  <a href="showcase/03-warehouse-navigation/output/screenshots/sequence.png">
-    <img src="showcase/03-warehouse-navigation/output/screenshots/sequence.png" alt="Warehouse navigation interaction sequence" width="676">
+  <a href="showcase/03-warehouse-navigation/output/screenshots/sequence.gif">
+    <img src="showcase/03-warehouse-navigation/output/screenshots/sequence.gif" alt="Warehouse navigation paced interaction sequence" width="676">
   </a>
 </p>
 
-[Environment](showcase/03-warehouse-navigation) | [Render report](showcase/03-warehouse-navigation/output/render_results.json) | [Sequence report](showcase/03-warehouse-navigation/output/sequence_results.json) | [TIFF](showcase/03-warehouse-navigation/output/screenshots/sequence.tif)
+[Environment](showcase/03-warehouse-navigation) | [Render report](showcase/03-warehouse-navigation/output/render_results.json) | [Sequence JSON](showcase/03-warehouse-navigation/output/sequence_results.json) | [GIF (1.6s/frame)](showcase/03-warehouse-navigation/output/screenshots/sequence.gif) | [TIFF keyframes](showcase/03-warehouse-navigation/output/screenshots/sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -122,12 +122,12 @@ Use the [Codex skill](text2mujoco_codex/SKILL.md) or the [Claude Code skill](tex
 **Verified result** - **PASS**. The gate lifts `0.11656 m`; the ball enters the target tray and settles at `0.000277 m/s`; all four marker color families remain visible.
 
 <p align="center">
-  <a href="showcase/04-lever-ball-ramp/output/screenshots/sequence.png">
-    <img src="showcase/04-lever-ball-ramp/output/screenshots/sequence.png" alt="Lever and ramp ball interaction sequence" width="676">
+  <a href="showcase/04-lever-ball-ramp/output/screenshots/sequence.gif">
+    <img src="showcase/04-lever-ball-ramp/output/screenshots/sequence.gif" alt="Lever and ramp ball paced interaction sequence" width="676">
   </a>
 </p>
 
-[Environment](showcase/04-lever-ball-ramp) | [Render report](showcase/04-lever-ball-ramp/render_results.json) | [Sequence report](showcase/04-lever-ball-ramp/output/sequence_results.json) | [Physics report](showcase/04-lever-ball-ramp/physics_results.json) | [TIFF](showcase/04-lever-ball-ramp/output/screenshots/sequence.tif)
+[Environment](showcase/04-lever-ball-ramp) | [Render report](showcase/04-lever-ball-ramp/render_results.json) | [Sequence JSON](showcase/04-lever-ball-ramp/output/sequence_results.json) | [Physics report](showcase/04-lever-ball-ramp/physics_results.json) | [GIF (1.6s/frame)](showcase/04-lever-ball-ramp/output/screenshots/sequence.gif) | [TIFF keyframes](showcase/04-lever-ball-ramp/output/screenshots/sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -175,11 +175,13 @@ MUJOCO_GL=glfw mjpython render_smoke.py
 
 On macOS, `mjpython` gives the renderer access to the native CGL session. On headless Linux, try `MUJOCO_GL=egl` and then `MUJOCO_GL=osmesa` in separate processes.
 
-Regenerate every interaction storyboard and multi-page TIFF from the repository root:
+Regenerate every paced interaction GIF, storyboard, and multi-page TIFF from the repository root:
 
 ```bash
 MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --scene all
 ```
+
+The GIFs are paced animations of discrete, physically verified interaction keyframes: each frame stays visible for `1.6 s`, and the final state stays for `2.6 s`. The TIFFs contain the same full-resolution keyframes as an archive; TIFF playback speed is viewer-dependent and is not used as the animation preview.
 
 <details>
 <summary>Generated package structure and interaction API</summary>
@@ -191,7 +193,7 @@ environment.py              # Interaction, observation, reset, and success logic
 interaction_manifest.json   # Targets, dependencies, and action schemas
 physics_smoke.py            # Physics and state-machine validation
 render_smoke.py             # RGB-D and visual-change validation
-output/                     # Reports, screenshots, depth arrays, and TIFF sequence
+output/                     # Reports, screenshots, depth arrays, GIF, and TIFF sequence
 ```
 
 ```python

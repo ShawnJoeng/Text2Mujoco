@@ -42,7 +42,7 @@ The suite verifies:
 - dependency/payload failure branches and the valid interaction sequence;
 - real MuJoCo before/after RGB, depth arrays, image variation, red-cube visibility, and pixel movement.
 
-Expected simulator images are `output/screenshots/initial/rgb.png` and `output/screenshots/final/rgb.png`. The project-wide collector additionally writes `output/screenshots/sequence.png` and the multi-page `output/screenshots/sequence.tif`. A report screenshot or synthetic image is not accepted as simulator evidence.
+Expected simulator images are `output/screenshots/initial/rgb.png` and `output/screenshots/final/rgb.png`. The project-wide collector additionally writes a paced `output/screenshots/sequence.gif`, a contact sheet, and the multi-page `output/screenshots/sequence.tif`. The GIF is an animation of discrete verified keyframes, not a render of every physics timestep; the TIFF is the full-resolution keyframe archive. A report screenshot or synthetic image is not accepted as simulator evidence.
 
 ## Verified runs (2026-09-07)
 
