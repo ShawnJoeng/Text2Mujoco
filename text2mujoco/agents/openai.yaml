@@ -1,4 +1,0 @@
-interface:
-  display_name: "Text2MuJoCo"
-  short_description: "Generate runnable MuJoCo scenes from natural language"
-  default_prompt: "Create a validated MuJoCo environment from my description, including MJCF, executable interactions, physics tests, and headless render checks."

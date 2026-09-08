@@ -1,0 +1,258 @@
+{
+  "status": "PASS",
+  "scene": "04-lever-ball-ramp",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
+  "interaction_sequence": [
+    "pull_blue_lever",
+    "check_release_zone",
+    "confirm_target_tray",
+    "inspect_with_camera"
+  ],
+  "frame_count": 6,
+  "frames": [
+    {
+      "index": 0,
+      "label": "initial",
+      "rgb": "output/screenshots/sequence/00_initial/rgb.png",
+      "depth": "output/screenshots/sequence/00_initial/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 71.12073242111501,
+      "rgb_dynamic_range": 255,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 171304,
+      "finite_depth_min_m": 1.0819425582885742,
+      "finite_depth_max_m": 4.8791823387146,
+      "observation": {
+        "history": [],
+        "lever_state": "ready",
+        "gate_state": "closed",
+        "target_state": "empty",
+        "inspection_state": "pending",
+        "lever_angle_rad": 0.0,
+        "gate_lift_m": -0.00034288657219633836,
+        "ball_position": [
+          -0.43679063396138335,
+          0.0,
+          1.0230007965503913
+        ],
+        "ball_speed_mps": 0.07912530506919548,
+        "ball_inside_target": false
+      }
+    },
+    {
+      "index": 1,
+      "label": "pull_blue_lever",
+      "rgb": "output/screenshots/sequence/01_pull_blue_lever/rgb.png",
+      "depth": "output/screenshots/sequence/01_pull_blue_lever/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 71.75474209087318,
+      "rgb_dynamic_range": 255,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 172941,
+      "finite_depth_min_m": 1.0819425582885742,
+      "finite_depth_max_m": 4.8791823387146,
+      "observation": {
+        "history": [
+          "pull_blue_lever"
+        ],
+        "lever_state": "pulled",
+        "gate_state": "open",
+        "target_state": "empty",
+        "inspection_state": "pending",
+        "lever_angle_rad": -0.7500922811271031,
+        "gate_lift_m": 0.11656385066363964,
+        "ball_position": [
+          -0.3999619378041093,
+          0.0,
+          1.0137985678255228
+        ],
+        "ball_speed_mps": 0.30522598294175046,
+        "ball_inside_target": false
+      }
+    },
+    {
+      "index": 2,
+      "label": "check_release_zone",
+      "rgb": "output/screenshots/sequence/02_check_release_zone/rgb.png",
+      "depth": "output/screenshots/sequence/02_check_release_zone/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 71.76669835518796,
+      "rgb_dynamic_range": 255,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 172986,
+      "finite_depth_min_m": 1.0819425582885742,
+      "finite_depth_max_m": 4.8791823387146,
+      "observation": {
+        "history": [
+          "pull_blue_lever",
+          "check_release_zone"
+        ],
+        "lever_state": "pulled",
+        "gate_state": "open",
+        "target_state": "empty",
+        "inspection_state": "pending",
+        "lever_angle_rad": -0.9358690023059729,
+        "gate_lift_m": 0.12363920304179792,
+        "ball_position": [
+          -0.24959237993784042,
+          0.0,
+          0.9763889056571854
+        ],
+        "ball_speed_mps": 0.6693421541598792,
+        "ball_inside_target": false
+      }
+    },
+    {
+      "index": 3,
+      "label": "confirm_target_tray",
+      "rgb": "output/screenshots/sequence/03_confirm_target_tray/rgb.png",
+      "depth": "output/screenshots/sequence/03_confirm_target_tray/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 71.95840279831937,
+      "rgb_dynamic_range": 255,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 172974,
+      "finite_depth_min_m": 1.0819425582885742,
+      "finite_depth_max_m": 4.8791823387146,
+      "observation": {
+        "history": [
+          "pull_blue_lever",
+          "check_release_zone",
+          "confirm_target_tray"
+        ],
+        "lever_state": "pulled",
+        "gate_state": "open",
+        "target_state": "occupied",
+        "inspection_state": "pending",
+        "lever_angle_rad": -0.9521737623603361,
+        "gate_lift_m": 0.12369357125159919,
+        "ball_position": [
+          0.5558329544974634,
+          0.0,
+          0.8126840719123649
+        ],
+        "ball_speed_mps": 0.14820210756120322,
+        "ball_inside_target": true
+      }
+    },
+    {
+      "index": 4,
+      "label": "settled_after_confirm_target_tray",
+      "rgb": "output/screenshots/sequence/04_settled_after_confirm_target_tray/rgb.png",
+      "depth": "output/screenshots/sequence/04_settled_after_confirm_target_tray/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 71.96013835401907,
+      "rgb_dynamic_range": 255,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 172974,
+      "finite_depth_min_m": 1.0819425582885742,
+      "finite_depth_max_m": 4.8791823387146,
+      "observation": {
+        "history": [
+          "pull_blue_lever",
+          "check_release_zone",
+          "confirm_target_tray"
+        ],
+        "lever_state": "pulled",
+        "gate_state": "open",
+        "target_state": "occupied",
+        "inspection_state": "pending",
+        "lever_angle_rad": -0.9521942308425543,
+        "gate_lift_m": 0.12369357142410849,
+        "ball_position": [
+          0.5496575061968766,
+          0.0,
+          0.8099304591698587
+        ],
+        "ball_speed_mps": 0.0002767681449457293,
+        "ball_inside_target": true
+      }
+    },
+    {
+      "index": 5,
+      "label": "inspect_with_camera",
+      "rgb": "output/screenshots/sequence/05_inspect_with_camera/rgb.png",
+      "depth": "output/screenshots/sequence/05_inspect_with_camera/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 71.96013835401907,
+      "rgb_dynamic_range": 255,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 172974,
+      "finite_depth_min_m": 1.0819425582885742,
+      "finite_depth_max_m": 4.8791823387146,
+      "observation": {
+        "history": [
+          "pull_blue_lever",
+          "check_release_zone",
+          "confirm_target_tray",
+          "inspect_with_camera"
+        ],
+        "lever_state": "pulled",
+        "gate_state": "open",
+        "target_state": "occupied",
+        "inspection_state": "captured",
+        "lever_angle_rad": -0.9521942308425543,
+        "gate_lift_m": 0.12369357142410849,
+        "ball_position": [
+          0.5496575061968766,
+          0.0,
+          0.8099304591698587
+        ],
+        "ball_speed_mps": 0.0002767681449457293,
+        "ball_inside_target": true
+      }
+    }
+  ],
+  "contact_sheet": "output/screenshots/sequence.png",
+  "tiff": "output/screenshots/sequence.tif",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "before_depth": "output/screenshots/before_depth.npy",
+  "after_depth": "output/screenshots/after_depth.npy",
+  "task_success": true
+}

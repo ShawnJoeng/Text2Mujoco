@@ -26,12 +26,14 @@
 从本目录执行：
 
 ```bash
-python ../../text2mujoco/scripts/validate_scene_spec.py scene_spec.json
-MUJOCO_GL=disable /tmp/text2mujoco-local-env/bin/python physics_smoke.py
-MUJOCO_GL=glfw /tmp/text2mujoco-local-env/bin/python render_smoke.py
+python3 ../../text2mujoco_codex/scripts/validate_scene_spec.py scene_spec.json
+MUJOCO_GL=disable python3 physics_smoke.py
+MUJOCO_GL=glfw mjpython render_smoke.py
 ```
 
 macOS 上 `MUJOCO_GL=glfw` 使用 MuJoCo 的本地 CGL 上下文。渲染成功时，关闭/打开截图分别写入 `output/screenshots/before.png` 和 `output/screenshots/after.png`，完整 RGB-D 帧位于相邻的 `before_capture/`、`after_capture/` 目录。
+
+项目根目录的 `showcase/capture_sequences.py` 会额外保存每个交互状态的连续 RGB 帧、`output/screenshots/sequence.png` contact sheet 和多页 `sequence.tif`；运行它时在 macOS 同样使用 `mjpython`。
 
 ## 验证边界
 

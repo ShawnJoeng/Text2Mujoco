@@ -68,7 +68,7 @@
     0.14
   ],
   "artifacts": {
-    "mjcf": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/model.xml",
-    "mjb": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/model.mjb"
+    "mjcf": "output/model.xml",
+    "mjb": "output/model.mjb"
   }
 }

@@ -5,7 +5,7 @@
   "python_version": "3.9.6",
   "host": "AnastasiadeMacBook-Pro.local",
   "platform": "macOS-26.6.2-arm64-arm-64bit",
-  "command": "physics_smoke.py --output-dir output --result output/physics_results.json",
+  "command": "physics_smoke.py",
   "mujoco_gl": "disable",
   "model_checks": {
     "named_objects": 20,
@@ -47,7 +47,7 @@
   "mjb_reload": "PASS",
   "output_flags": "PASS",
   "artifacts": {
-    "mjcf": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/model.xml",
-    "mjb": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/model.mjb"
+    "mjcf": "output/model.xml",
+    "mjb": "output/model.mjb"
   }
 }

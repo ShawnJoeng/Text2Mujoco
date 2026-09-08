@@ -21,7 +21,7 @@
   "mjcf_reload": "PASS",
   "mjb_reload": "PASS",
   "artifacts": {
-    "mjcf": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/02-smart-drawer/output/model.xml",
-    "mjb": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/02-smart-drawer/output/model.mjb"
+    "mjcf": "output/model.xml",
+    "mjb": "output/model.mjb"
   }
 }

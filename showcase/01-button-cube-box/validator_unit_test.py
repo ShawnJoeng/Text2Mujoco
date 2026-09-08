@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 BASE = Path(__file__).resolve().parent
-VALIDATOR_DIR = BASE.parents[1] / "text2mujoco" / "scripts"
+VALIDATOR_DIR = BASE.parents[1] / "text2mujoco_codex" / "scripts"
 sys.path.insert(0, str(VALIDATOR_DIR))
 
 from validate_scene_spec import validate  # noqa: E402

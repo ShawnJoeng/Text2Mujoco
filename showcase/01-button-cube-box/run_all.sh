@@ -2,7 +2,7 @@
 set -euo pipefail
 
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILL_DIR="$(cd "$TEST_DIR/../.." && pwd)/text2mujoco"
+SKILL_DIR="$(cd "$TEST_DIR/../.." && pwd)/text2mujoco_codex"
 MUJOCO_PYTHON="${MUJOCO_PYTHON:-python3}"
 RENDER_BACKEND="${MUJOCO_RENDER_BACKEND:-auto}"
 export PYTHONPYCACHEPREFIX="${PYTHONPYCACHEPREFIX:-/tmp/text2mujoco-pycache}"
@@ -27,7 +27,13 @@ run_render() {
 }
 
 if [[ "$RENDER_BACKEND" == "auto" && "$(uname -s)" == "Darwin" ]]; then
-  run_render glfw | tee output/render_glfw.log
+  if command -v mjpython >/dev/null 2>&1; then
+    MUJOCO_GL=glfw mjpython render_smoke.py \
+      --screenshot-dir output/screenshots \
+      --result output/render_glfw_results.json | tee output/render_glfw.log
+  else
+    run_render glfw | tee output/render_glfw.log
+  fi
   cp output/render_glfw_results.json output/render_results.json
   printf 'Render backend: glfw (macOS native CGL context)\n'
 elif [[ "$RENDER_BACKEND" == "auto" ]]; then

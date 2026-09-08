@@ -139,7 +139,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mjcf_reload": "PASS",
         "mjb_reload": "PASS",
         "initial_position": initial["robot_position"],
-        "artifacts": {"mjcf": str(mjcf_copy.resolve()), "mjb": str(mjb_path.resolve())},
+        "artifacts": {
+            "mjcf": str(mjcf_copy.relative_to(Path(__file__).resolve().parent)),
+            "mjb": str(mjb_path.relative_to(Path(__file__).resolve().parent)),
+        },
     }
 
 
@@ -176,4 +179,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -11,8 +11,8 @@
     480
   ],
   "screenshots": {
-    "before": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/02-smart-drawer/output/screenshots/before.png",
-    "after": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/02-smart-drawer/output/screenshots/after.png"
+    "before": "output/screenshots/before.png",
+    "after": "output/screenshots/after.png"
   },
   "visible_markers": {
     "yellow": {

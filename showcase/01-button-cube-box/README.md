@@ -6,9 +6,9 @@ This is the generated package for:
 
 The button uses a real slide joint and position actuator; its action uses `press_depth_m` in meters, matching the actuator's position target. The cube uses a free joint. Grasp is deliberately a task-level qpos abstraction because no robot was requested; while grasped, the generated environment holds the free-joint pose until release, after which gravity, contact, and settling are simulated by MuJoCo. The receptacle is five separate colliders rather than a solid box.
 
-The fixture tests in this directory are intentionally tied to the named, axis-aligned button/cube/box example. The reusable `text2mujoco` skill and validator support other asset names, optional markers, additional open-box colliders, and rotated models; a newly generated package must regenerate its runtime handlers and tests rather than reuse these fixture assertions. The generated fixture uses the declared grasp interaction pose and the supplied placement z as the release target, while the final resting pose is determined by physics. Manifest point statuses record evidence provenance: the first three points were exercised in both the remote physics run and local rerun; the inspect point was verified in the local CGL render run.
+The fixture tests in this directory are intentionally tied to the named, axis-aligned button/cube/box example. The reusable `text2mujoco_codex` skill and validator support other asset names, optional markers, additional open-box colliders, and rotated models; a newly generated package must regenerate its runtime handlers and tests rather than reuse these fixture assertions. The generated fixture uses the declared grasp interaction pose and the supplied placement z as the release target, while the final resting pose is determined by physics. Manifest point statuses record evidence provenance: the first three points were exercised in both the remote physics run and local rerun; the inspect point was verified in the local CGL render run.
 
-This test directory expects the sibling `../../text2mujoco/scripts/validate_scene_spec.py`; run it in the repository layout shown here. Copying the test directory alone is not a self-contained skill installation.
+This test directory expects the sibling `../../text2mujoco_codex/scripts/validate_scene_spec.py`; run it in the repository layout shown here. Copying the test directory alone is not a self-contained skill installation.
 
 ## Run
 
@@ -42,7 +42,7 @@ The suite verifies:
 - dependency/payload failure branches and the valid interaction sequence;
 - real MuJoCo before/after RGB, depth arrays, image variation, red-cube visibility, and pixel movement.
 
-Expected simulator images are `output/screenshots/initial/rgb.png` and `output/screenshots/final/rgb.png`. A report screenshot or synthetic image is not accepted as simulator evidence.
+Expected simulator images are `output/screenshots/initial/rgb.png` and `output/screenshots/final/rgb.png`. The project-wide collector additionally writes `output/screenshots/sequence.png` and the multi-page `output/screenshots/sequence.tif`. A report screenshot or synthetic image is not accepted as simulator evidence.
 
 ## Verified runs (2026-09-07)
 

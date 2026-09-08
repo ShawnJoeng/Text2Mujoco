@@ -1,0 +1,163 @@
+{
+  "status": "PASS",
+  "scene": "02-smart-drawer",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
+  "interaction_sequence": [
+    "press_unlock_button",
+    "pull_drawer_22cm",
+    "inspect_open_drawer"
+  ],
+  "frame_count": 5,
+  "frames": [
+    {
+      "index": 0,
+      "label": "initial",
+      "rgb": "output/screenshots/sequence/00_initial/rgb.png",
+      "depth": "output/screenshots/sequence/00_initial/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 62.18275950322052,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [],
+        "lock_state": "locked",
+        "drawer_state": "closed",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.0,
+        "drawer_body_position": [
+          0.0,
+          -0.005,
+          0.86
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "label": "press_unlock_button",
+      "rgb": "output/screenshots/sequence/01_press_unlock_button/rgb.png",
+      "depth": "output/screenshots/sequence/01_press_unlock_button/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 62.17745702326536,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "press_unlock_button"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "closed",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.0,
+        "drawer_body_position": [
+          0.0,
+          -0.005,
+          0.86
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "label": "pull_drawer_22cm",
+      "rgb": "output/screenshots/sequence/02_pull_drawer_22cm/rgb.png",
+      "depth": "output/screenshots/sequence/02_pull_drawer_22cm/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 60.88695486645594,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "press_unlock_button",
+          "pull_drawer_22cm"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "open_22cm",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.2180230231609386,
+        "drawer_body_position": [
+          0.0,
+          -0.22261543613148543,
+          0.86
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "label": "settled_after_pull_drawer_22cm",
+      "rgb": "output/screenshots/sequence/03_settled_after_pull_drawer_22cm/rgb.png",
+      "depth": "output/screenshots/sequence/03_settled_after_pull_drawer_22cm/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 60.87071061160615,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "press_unlock_button",
+          "pull_drawer_22cm"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "open_22cm",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.22000991422553703,
+        "drawer_body_position": [
+          0.0,
+          -0.22501018710503645,
+          0.86
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "label": "inspect_open_drawer",
+      "rgb": "output/screenshots/sequence/04_inspect_open_drawer/rgb.png",
+      "depth": "output/screenshots/sequence/04_inspect_open_drawer/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 60.87071061160615,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "press_unlock_button",
+          "pull_drawer_22cm",
+          "inspect_open_drawer"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "open_22cm",
+        "inspection_state": "verified_open",
+        "drawer_joint_qpos": 0.22000991422553703,
+        "drawer_body_position": [
+          0.0,
+          -0.22501018710503645,
+          0.86
+        ]
+      }
+    }
+  ],
+  "contact_sheet": "output/screenshots/sequence.png",
+  "tiff": "output/screenshots/sequence.tif",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "task_success": true
+}

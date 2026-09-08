@@ -11,13 +11,13 @@
 ## 运行
 
 ```bash
-/tmp/text2mujoco-local-env/bin/python ../../text2mujoco/scripts/validate_scene_spec.py scene_spec.json --json
-MUJOCO_GL=disable /tmp/text2mujoco-local-env/bin/python physics_smoke.py
-MUJOCO_GL=glfw /tmp/text2mujoco-local-env/bin/python render_smoke.py
+python3 ../../text2mujoco_codex/scripts/validate_scene_spec.py scene_spec.json --json
+MUJOCO_GL=disable python3 physics_smoke.py
+MUJOCO_GL=glfw mjpython render_smoke.py
 ```
 
-渲染命令在 macOS 使用 MuJoCo 原生 CGL 上下文。若当前主机没有可用图形上下文，`render_smoke.py` 会保存失败报告而不会伪造截图；Linux 可在新进程中分别尝试 `MUJOCO_GL=egl` 与 `MUJOCO_GL=osmesa`。
+渲染命令在 macOS 使用 MuJoCo 原生 CGL 上下文；使用 MuJoCo wheel 附带的 `mjpython` 可确保进程接入图形会话。项目级连续截图也可从仓库根目录运行：`MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --scene 04-lever-ball-ramp`。若当前主机没有可用图形上下文，测试会保存失败报告而不会伪造截图；Linux 可在新进程中分别尝试 `MUJOCO_GL=egl` 与 `MUJOCO_GL=osmesa`。
 
 ## 输出
 
-默认生成 `physics_results.json`、`render_results.json`，以及渲染成功时的 `screenshots/before/rgb.png`、`screenshots/after/rgb.png` 和对应 `depth.npy`。`scene_spec.json` 是规范输入，`model.xml` 是可编辑 MJCF 源文件。
+默认生成 `physics_results.json`、`render_results.json`、`output/sequence_results.json`，以及 `output/screenshots/before.png`、`after.png`、`sequence.png` 和多页 `sequence.tif`。每个阶段的 RGB-D 数据位于 `output/screenshots/sequence/`。`scene_spec.json` 是规范输入，`model.xml` 是可编辑 MJCF 源文件。

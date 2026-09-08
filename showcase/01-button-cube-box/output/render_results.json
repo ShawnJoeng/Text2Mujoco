@@ -5,7 +5,7 @@
   "python_version": "3.9.6",
   "host": "AnastasiadeMacBook-Pro.local",
   "platform": "macOS-26.6.2-arm64-arm-64bit",
-  "command": "render_smoke.py --screenshot-dir output/screenshots --result output/render_glfw_results.json",
+  "command": "render_smoke.py",
   "render_backend_requested": "glfw",
   "renderer_context": "mujoco.cgl.GLContext",
   "renderer_verified": "PASS",
@@ -33,7 +33,7 @@
   },
   "screenshots": {
     "initial": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/screenshots/initial/rgb.png",
+      "path": "output/screenshots/initial/rgb.png",
       "shape": [
         480,
         640,
@@ -44,7 +44,7 @@
       "dynamic_range": 255
     },
     "final": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/screenshots/final/rgb.png",
+      "path": "output/screenshots/final/rgb.png",
       "shape": [
         480,
         640,
@@ -57,7 +57,7 @@
   },
   "depth": {
     "initial": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/screenshots/initial/depth.npy",
+      "path": "output/screenshots/initial/depth.npy",
       "shape": [
         480,
         640
@@ -68,7 +68,7 @@
       "far_plane_m": 16.0
     },
     "final": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/tests/button-cube-box-mujoco3/output/screenshots/final/depth.npy",
+      "path": "output/screenshots/final/depth.npy",
       "shape": [
         480,
         640

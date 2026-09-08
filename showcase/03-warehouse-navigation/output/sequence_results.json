@@ -1,0 +1,138 @@
+{
+  "status": "PASS",
+  "scene": "03-warehouse-navigation",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
+  "interaction_sequence": [
+    "reach_checkpoint_a",
+    "reach_checkpoint_b",
+    "inspect_top_camera"
+  ],
+  "frame_count": 4,
+  "frames": [
+    {
+      "index": 0,
+      "label": "initial",
+      "rgb": "output/screenshots/sequence/00_initial/rgb.png",
+      "depth": "output/screenshots/sequence/00_initial/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 114.32863652077549,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -2.35,
+          -1.35,
+          0.14
+        ],
+        "distance_to_a_m": 2.247220505424423,
+        "distance_to_b_m": 4.453369510831097,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "index": 1,
+      "label": "reach_checkpoint_a",
+      "rgb": "output/screenshots/sequence/01_reach_checkpoint_a/rgb.png",
+      "depth": "output/screenshots/sequence/01_reach_checkpoint_a/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 114.32057195903607,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.533334604796508,
+          0.7937466624091662,
+          0.14
+        ],
+        "distance_to_a_m": 0.046813522290361106,
+        "distance_to_b_m": 3.0833409460140246,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "index": 2,
+      "label": "reach_checkpoint_b",
+      "rgb": "output/screenshots/sequence/02_reach_checkpoint_b/rgb.png",
+      "depth": "output/screenshots/sequence/02_reach_checkpoint_b/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 114.42052895344844,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "reach_checkpoint_a",
+          "reach_checkpoint_b"
+        ],
+        "robot_state": "at_checkpoint_b",
+        "robot_position": [
+          1.5596321650165361,
+          0.8459603219645082,
+          0.14
+        ],
+        "distance_to_a_m": 3.1111124353029997,
+        "distance_to_b_m": 0.046958809588692016,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "index": 3,
+      "label": "inspect_top_camera",
+      "rgb": "output/screenshots/sequence/03_inspect_top_camera/rgb.png",
+      "depth": "output/screenshots/sequence/03_inspect_top_camera/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 114.42052895344844,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "reach_checkpoint_a",
+          "reach_checkpoint_b",
+          "inspect_top_camera"
+        ],
+        "robot_state": "at_checkpoint_b",
+        "robot_position": [
+          1.5596321650165361,
+          0.8459603219645082,
+          0.14
+        ],
+        "distance_to_a_m": 3.1111124353029997,
+        "distance_to_b_m": 0.046958809588692016,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": true
+      }
+    }
+  ],
+  "contact_sheet": "output/screenshots/sequence.png",
+  "tiff": "output/screenshots/sequence.tif",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "task_success": true
+}

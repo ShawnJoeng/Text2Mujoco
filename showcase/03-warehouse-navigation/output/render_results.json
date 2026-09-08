@@ -60,7 +60,7 @@
   },
   "screenshots": {
     "before": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/before.png",
+      "path": "output/screenshots/before.png",
       "shape": [
         480,
         640,
@@ -69,7 +69,7 @@
       "dtype": "uint8"
     },
     "after": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/after.png",
+      "path": "output/screenshots/after.png",
       "shape": [
         480,
         640,
@@ -78,7 +78,7 @@
       "dtype": "uint8"
     },
     "reset": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/reset.png",
+      "path": "output/screenshots/reset.png",
       "shape": [
         480,
         640,
@@ -89,7 +89,7 @@
   },
   "depth": {
     "before": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/before_depth.npy",
+      "path": "output/screenshots/before_depth.npy",
       "shape": [
         480,
         640
@@ -99,7 +99,7 @@
       "max_m": 7.199990272521973
     },
     "after": {
-      "path": "/Users/anastasiayeung/Downloads/Github/2.issac sim gen/showcase/03-warehouse-navigation/output/screenshots/after_depth.npy",
+      "path": "output/screenshots/after_depth.npy",
       "shape": [
         480,
         640

@@ -114,7 +114,12 @@ def run(args: argparse.Namespace) -> dict:
         "deterministic_reset": "PASS",
         "mjcf_reload": "PASS",
         "mjb_reload": "PASS",
-        "artifacts": artifacts,
+        "artifacts": {
+            key: str(
+                Path(value).resolve().relative_to(Path(__file__).resolve().parent)
+            )
+            for key, value in artifacts.items()
+        },
     }
 
 

@@ -42,7 +42,7 @@
     "package": "04-lever-ball-ramp",
     "path": "04-lever-ball-ramp",
     "physics": "pass",
-    "render": "skipped_context_error",
+    "render": "pass",
     "interaction_points": [
       "pull_blue_lever",
       "check_release_zone",

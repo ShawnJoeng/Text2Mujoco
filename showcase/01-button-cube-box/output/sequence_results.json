@@ -1,0 +1,171 @@
+{
+  "status": "PASS",
+  "scene": "01-button-cube-box",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
+  "interaction_sequence": [
+    "press_start_button",
+    "grasp_red_cube",
+    "place_cube_in_box",
+    "inspect_rgbd"
+  ],
+  "frame_count": 5,
+  "frames": [
+    {
+      "index": 0,
+      "label": "initial",
+      "rgb": "output/screenshots/sequence/00_initial/rgb.png",
+      "depth": "output/screenshots/sequence/00_initial/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 65.48309808982803,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [],
+        "button_state": "ready",
+        "cube_state": "free",
+        "button_joint_qpos": -0.0012333349411505126,
+        "cube_position": [
+          -0.12,
+          -0.03,
+          0.8249714970506437
+        ],
+        "cube_speed_mps": 4.383795478977281e-06,
+        "cube_contacts_box_bottom": false
+      }
+    },
+    {
+      "index": 1,
+      "label": "press_start_button",
+      "rgb": "output/screenshots/sequence/01_press_start_button/rgb.png",
+      "depth": "output/screenshots/sequence/01_press_start_button/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 65.577815720031,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "press_start_button"
+        ],
+        "button_state": "pressed",
+        "cube_state": "free",
+        "button_joint_qpos": -0.01922625004410612,
+        "cube_position": [
+          -0.12,
+          -0.03,
+          0.8249713261561805
+        ],
+        "cube_speed_mps": 2.3212708399928007e-14,
+        "cube_contacts_box_bottom": false
+      }
+    },
+    {
+      "index": 2,
+      "label": "grasp_red_cube",
+      "rgb": "output/screenshots/sequence/02_grasp_red_cube/rgb.png",
+      "depth": "output/screenshots/sequence/02_grasp_red_cube/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 65.49995955111304,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "press_start_button",
+          "grasp_red_cube"
+        ],
+        "button_state": "pressed",
+        "cube_state": "grasped",
+        "button_joint_qpos": -0.01922625004410612,
+        "cube_position": [
+          -0.12,
+          -0.03,
+          0.9
+        ],
+        "cube_speed_mps": 0.0,
+        "cube_contacts_box_bottom": false
+      }
+    },
+    {
+      "index": 3,
+      "label": "place_cube_in_box",
+      "rgb": "output/screenshots/sequence/03_place_cube_in_box/rgb.png",
+      "depth": "output/screenshots/sequence/03_place_cube_in_box/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 65.91660070518121,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "press_start_button",
+          "grasp_red_cube",
+          "place_cube_in_box"
+        ],
+        "button_state": "pressed",
+        "cube_state": "inside_box",
+        "button_joint_qpos": -0.019226249999999997,
+        "cube_position": [
+          0.3000000000001864,
+          0.1799999999963238,
+          0.8449713261561786
+        ],
+        "cube_speed_mps": 2.1833944732177327e-14,
+        "cube_contacts_box_bottom": true
+      }
+    },
+    {
+      "index": 4,
+      "label": "inspect_rgbd",
+      "rgb": "output/screenshots/sequence/04_inspect_rgbd/rgb.png",
+      "depth": "output/screenshots/sequence/04_inspect_rgbd/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 65.91660070518121,
+      "rgb_dynamic_range": 255,
+      "finite_depth_pixels": 307200,
+      "observation": {
+        "history": [
+          "press_start_button",
+          "grasp_red_cube",
+          "place_cube_in_box",
+          "inspect_rgbd"
+        ],
+        "button_state": "pressed",
+        "cube_state": "inside_box",
+        "button_joint_qpos": -0.019226249999999997,
+        "cube_position": [
+          0.3000000000001864,
+          0.1799999999963238,
+          0.8449713261561786
+        ],
+        "cube_speed_mps": 2.1833944732177327e-14,
+        "cube_contacts_box_bottom": true
+      }
+    }
+  ],
+  "contact_sheet": "output/screenshots/sequence.png",
+  "tiff": "output/screenshots/sequence.tif",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "task_success": true
+}

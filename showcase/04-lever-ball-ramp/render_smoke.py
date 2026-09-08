@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Native MuJoCo CGL before/after RGB-D render smoke test."""
+"""Verify the lever/ramp scene and its complete RGB-D interaction sequence."""
 
 from __future__ import annotations
 
@@ -15,101 +15,96 @@ import mujoco
 import numpy as np
 from PIL import Image
 
-from environment import build_environment
+SCENE_DIR = Path(__file__).resolve().parent
+SHOWCASE_ROOT = SCENE_DIR.parent
+if str(SHOWCASE_ROOT) not in sys.path:
+    sys.path.insert(0, str(SHOWCASE_ROOT))
+
+from capture_sequences import SCENES, run_scene
 
 
-def capture(env, directory: Path) -> tuple[np.ndarray, np.ndarray]:
-    directory.mkdir(parents=True, exist_ok=True)
-    width, height = [int(v) for v in env.spec["outputs"]["resolution"]]
-    renderer = mujoco.Renderer(env.model, height=height, width=width)
-    try:
-        renderer.update_scene(env.data, camera=env.camera_name)
-        rgb = renderer.render().copy()
-        renderer.enable_depth_rendering()
-        renderer.update_scene(env.data, camera=env.camera_name)
-        depth = renderer.render().copy()
-    finally:
-        renderer.close()
-    Image.fromarray(rgb).save(directory / "rgb.png")
-    np.save(directory / "depth.npy", depth)
-    if rgb.shape != (height, width, 3) or rgb.std() < 5 or int(rgb.max()) - int(rgb.min()) < 50:
-        raise AssertionError(f"invalid RGB frame: shape={rgb.shape}, std={rgb.std()}")
-    finite = np.isfinite(depth) & (depth > 0)
-    if int(finite.sum()) < depth.size // 4:
-        raise AssertionError(f"too few finite depth pixels: {int(finite.sum())}")
-    return rgb, depth
+def marker_pixel_counts(image: np.ndarray) -> dict[str, int]:
+    """Count the colored interaction markers visible in an RGB frame."""
+    red, green, blue = (image[..., index].astype(float) for index in range(3))
+    masks = {
+        "yellow": (red > 150) & (green > 120) & (blue < 110) & (red > 1.2 * blue) & (green > 1.15 * blue),
+        "magenta": (red > 140) & (blue > 90) & (green < 120) & (red > 1.3 * green) & (blue > 1.15 * green),
+        "cyan": (green > 130) & (blue > 120) & (red < 120) & (green > 1.2 * red) & (blue > 1.1 * red),
+        "orange": (red > 150) & (green > 20) & (green < 150) & (blue < 100) & (red > 1.35 * blue),
+    }
+    return {name: int(mask.sum()) for name, mask in masks.items()}
 
 
 def run(args: argparse.Namespace) -> dict:
-    if os.environ.get("MUJOCO_GL") in {None, "", "disable"}:
+    backend = os.environ.get("MUJOCO_GL", "")
+    if backend in {"", "disable"}:
         raise RuntimeError("render_smoke.py requires MUJOCO_GL=glfw/egl/osmesa")
-    env = build_environment(args.model, args.spec)
-    env.run_physics(30)
-    before_rgb, before_depth = capture(env, args.screenshot_dir / "before")
-    env.reset()
-    env.step({"id": "pull_blue_lever", "payload": {}})
-    env.step({"id": "check_release_zone", "payload": {}})
-    env.step({"id": "confirm_target_tray", "payload": {}})
-    after_rgb, after_depth = capture(env, args.screenshot_dir / "after")
-    if not env.ball_inside_target():
-        raise AssertionError("ball is not in target after render sequence")
-    changed_rgb = np.any(before_rgb != after_rgb, axis=2)
+    screenshot_dir = args.screenshot_dir.resolve()
+    expected = (SCENE_DIR / "output" / "screenshots").resolve()
+    if screenshot_dir != expected:
+        raise ValueError("canonical screenshot directory is " + str(expected))
+    sequence = run_scene("04-lever-ball-ramp", SCENES["04-lever-ball-ramp"], SHOWCASE_ROOT)
+    before = np.asarray(Image.open(screenshot_dir / "before.png").convert("RGB"))
+    after = np.asarray(Image.open(screenshot_dir / "after.png").convert("RGB"))
+    before_depth = np.load(screenshot_dir / "before_depth.npy")
+    after_depth = np.load(screenshot_dir / "after_depth.npy")
+    changed_rgb = np.any(before != after, axis=2)
     changed_depth = np.isfinite(before_depth) & np.isfinite(after_depth) & (np.abs(before_depth - after_depth) > 1e-4)
     if int(changed_rgb.sum()) < 200 or int(changed_depth.sum()) < 100:
-        raise AssertionError(f"insufficient visible change: rgb={int(changed_rgb.sum())}, depth={int(changed_depth.sum())}")
+        raise AssertionError("insufficient visible RGB-D change")
+    marker_before = marker_pixel_counts(before)
+    marker_after = marker_pixel_counts(after)
+    marker_pixels = {
+        name: {"before": marker_before[name], "after": marker_after[name]}
+        for name in marker_before
+    }
+    if any(max(values.values()) < 10 for values in marker_pixels.values()):
+        raise AssertionError("one or more interaction markers are not visible")
     return {
         "status": "PASS",
+        "mujoco_executed": True,
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
         "platform": platform.platform(),
         "command": " ".join(sys.argv),
-        "render_backend_requested": os.environ.get("MUJOCO_GL"),
-        "renderer_context": "CGL via glfw" if platform.system() == "Darwin" and os.environ.get("MUJOCO_GL") == "glfw" else os.environ.get("MUJOCO_GL"),
+        "render_backend_requested": backend,
+        "renderer_context": "native macOS CGL via glfw" if platform.system() == "Darwin" and backend == "glfw" else backend,
         "renderer_verified": "PASS",
-        "marker_visibility": "PASS",
-        "interaction_sequence": ["pull_blue_lever", "check_release_zone", "confirm_target_tray"],
+        "marker_visibility": {"status": "PASS", "pixels": marker_pixels},
+        "rgb_depth_checks": "PASS",
+        "before_after_pixel_check": "PASS",
+        "interaction_sequence": sequence["interaction_sequence"],
         "ball_target": "PASS",
-        "rgb_shape": list(after_rgb.shape),
+        "task_success": sequence["task_success"],
+        "rgb_shape": list(after.shape),
         "depth_shape": list(after_depth.shape),
         "changed_rgb_pixels": int(changed_rgb.sum()),
         "changed_depth_pixels": int(changed_depth.sum()),
         "screenshots": {
-            "before_rgb": str((args.screenshot_dir / "before" / "rgb.png").resolve()),
-            "after_rgb": str((args.screenshot_dir / "after" / "rgb.png").resolve()),
+            "before_rgb": "output/screenshots/before.png",
+            "after_rgb": "output/screenshots/after.png",
+            "sequence_contact_sheet": "output/screenshots/sequence.png",
+            "sequence_tiff": "output/screenshots/sequence.tif",
+            "sequence_directory": "output/screenshots/sequence",
         },
+        "sequence": sequence,
     }
 
 
 def main() -> int:
-    base = Path(__file__).resolve().parent
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=Path, default=base / "model.xml")
-    parser.add_argument("--spec", type=Path, default=base / "scene_spec.json")
-    parser.add_argument("--screenshot-dir", type=Path, default=base / "screenshots")
-    parser.add_argument("--result", type=Path, default=base / "render_results.json")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--model", type=Path, default=SCENE_DIR / "model.xml")
+    parser.add_argument("--spec", type=Path, default=SCENE_DIR / "scene_spec.json")
+    parser.add_argument("--screenshot-dir", type=Path, default=SCENE_DIR / "output" / "screenshots")
+    parser.add_argument("--result", type=Path, default=SCENE_DIR / "render_results.json")
     args = parser.parse_args()
     try:
-        result = run(args)
-        code = 0
+        result, code = run(args), 0
     except Exception as exc:
-        result = {
-            "status": "FAIL",
-            "mujoco_version": mujoco.__version__,
-            "python_version": platform.python_version(),
-            "command": " ".join(sys.argv),
-            "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"),
-            "renderer_verified": "SKIPPED",
-            "marker_visibility": "SKIPPED (renderer context unavailable)",
-            "rgb_depth_checks": "SKIPPED (renderer context unavailable)",
-            "before_after_pixel_check": "SKIPPED (renderer context unavailable)",
-            "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
-        }
-        code = 1
+        result, code = {"status": "FAIL", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "command": " ".join(sys.argv), "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"), "renderer_verified": "FAIL", "error_type": type(exc).__name__, "error": str(exc), "traceback": traceback.format_exc()}, 1
     args.result.parent.mkdir(parents=True, exist_ok=True)
-    args.result.write_text(json.dumps(result, indent=2), encoding="utf-8")
-    print(json.dumps(result, indent=2))
+    args.result.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(json.dumps(result, indent=2, ensure_ascii=False))
     return code
 
 

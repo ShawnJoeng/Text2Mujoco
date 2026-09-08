@@ -297,7 +297,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mjcf_reload": "PASS" if environment.spec["outputs"].get("save_mjcf", False) else "SKIPPED",
         "mjb_reload": "PASS" if environment.spec["outputs"].get("save_mjb", False) else "SKIPPED",
         "output_flags": "PASS",
-        "artifacts": artifacts,
+        "artifacts": {
+            key: str(
+                Path(value).resolve().relative_to(Path(__file__).resolve().parent)
+            )
+            for key, value in artifacts.items()
+        },
     }
 
 

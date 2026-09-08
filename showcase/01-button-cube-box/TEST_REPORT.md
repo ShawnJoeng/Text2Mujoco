@@ -10,7 +10,7 @@ The generated MuJoCo package passed the complete static, physics, interaction, p
 
 | Layer | Host/backend | Result | Evidence |
 | --- | --- | --- | --- |
-| Skill structure | local | PASS | `quick_validate.py` accepted `text2mujoco` |
+| Skill structure | local | PASS | `quick_validate.py` accepted `text2mujoco_codex` |
 | Scene specification | local | PASS | no errors or warnings |
 | Validator negative cases | local | PASS | 17 invalid fixtures rejected; 4 legal variants accepted |
 | MJCF/manifest contract | local | PASS | XML parse, typed targets, sizes, Python compile |
