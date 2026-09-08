@@ -21,6 +21,7 @@ The environment exposes `list_interaction_points()`, `get_action_schema()`, `res
 - `physics_smoke.py`: MJCF compilation, dynamics, invalid actions, route safety, collision, reset, and XML/MJB reload validation.
 - `render_smoke.py`: real top-view RGB-D, marker visibility, robot pixel movement, task success, and render-reset validation.
 - `output/sequence_results.json`: full storyboard capture report.
+- `output/dense_sequence_results.json`: dense simulation-time capture report with GIF/TIFF frame mapping.
 
 ## Run
 
@@ -42,6 +43,14 @@ MUJOCO_GL=glfw mjpython ../../showcase/capture_sequences.py --scene 03-warehouse
 
 The GIF keeps each keyframe visible for `1.6 s` and the final state for `2.6 s`. It is a readable animation of discrete interaction keyframes, not a frame-by-frame physics recording. The TIFF stores the same keyframes at full resolution but does not define a universal viewer playback speed.
 
+For a denser RGB animation sampled from simulation time, run:
+
+```bash
+MUJOCO_GL=glfw mjpython ../../showcase/capture_sequences.py --dense --scene 03-warehouse-navigation
+```
+
+The dense pass samples the first post-step state at each `0.20 s` boundary by default; pass `--dense-interval <seconds>` to change it. It adds action-boundary event frames. `output/screenshots/dense_sequence.gif` uses a `200 ms` delay for ordinary frames (`800 ms` for the final frame), while `output/screenshots/dense_sequence.tif` keeps the full-resolution RGB pages. The report records timestamps and stable `archive_frame` indices; depth remains in the verified keyframe capture.
+
 ## Evidence
 
-Static, physics, and render reports are saved as `output/scene_spec_validation.json`, `output/physics_results.json`, and `output/render_results.json`. Only a render report with `status: PASS` counts as evidence that the screenshots came from MuJoCo, all three markers were visible, the robot moved safely, the task completed, and reset restored the initial state.
+Static, physics, and render reports are saved as `output/scene_spec_validation.json`, `output/physics_results.json`, and `output/render_results.json`. Only a render report with `status: PASS` counts as evidence that the screenshots came from MuJoCo, all three markers were visible, the robot moved safely, the task completed, and reset restored the initial state. The dense report additionally verifies archive frame counts, timing, and non-blank RGB frames.

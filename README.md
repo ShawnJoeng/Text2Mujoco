@@ -35,12 +35,14 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 **Verified result** - **PASS**. The cube settles inside the open box, contacts the bottom, and moves `130.52 px` in the camera image.
 
 <p align="center">
-  <a href="showcase/01-button-cube-box/output/screenshots/sequence.gif">
-    <img src="showcase/01-button-cube-box/output/screenshots/sequence.gif" alt="Button, cube, and box paced interaction sequence" width="676">
+  <a href="showcase/01-button-cube-box/output/screenshots/dense_sequence.gif">
+    <img src="showcase/01-button-cube-box/output/screenshots/dense_sequence.gif" alt="Button, cube, and box dense RGB interaction sequence" width="640">
   </a>
 </p>
 
-[Environment](showcase/01-button-cube-box) | [Test report](showcase/01-button-cube-box/TEST_REPORT.md) | [Render report](showcase/01-button-cube-box/output/render_results.json) | [Sequence JSON](showcase/01-button-cube-box/output/sequence_results.json) | [GIF (1.6s/frame)](showcase/01-button-cube-box/output/screenshots/sequence.gif) | [TIFF keyframes](showcase/01-button-cube-box/output/screenshots/sequence.tif)
+**Dense capture** - RGB frames are sampled every `0.20 s` of MuJoCo simulation time. The GIF uses a `200 ms` delay per frame (final frame `800 ms`); depth remains available for the verified keyframes.
+
+[Environment](showcase/01-button-cube-box) | [Test report](showcase/01-button-cube-box/TEST_REPORT.md) | [Render report](showcase/01-button-cube-box/output/render_results.json) | [Dense report](showcase/01-button-cube-box/output/dense_sequence_results.json) | [Dense GIF](showcase/01-button-cube-box/output/screenshots/dense_sequence.gif) | [Dense TIFF](showcase/01-button-cube-box/output/screenshots/dense_sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -48,6 +50,7 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 - **Scene:** table, actuated button, free rigid cube, five-sided open box, and fixed RGB-D camera.
 - **Validation:** scene spec, MJCF compilation, typed targets, dependency rejection, physics, reset, RGB-D, and task success.
 - **Contract:** [interaction_manifest.json](showcase/01-button-cube-box/interaction_manifest.json)
+- **Keyframe archive:** [Sequence JSON](showcase/01-button-cube-box/output/sequence_results.json) | [GIF](showcase/01-button-cube-box/output/screenshots/sequence.gif) | [TIFF](showcase/01-button-cube-box/output/screenshots/sequence.tif)
 
 </details>
 
@@ -64,12 +67,14 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 **Verified result** - **PASS**. The drawer reaches `0.218023 m` against a `0.22 m` target, the handle moves `54.21 px`, and depth changes across `13,700` pixels.
 
 <p align="center">
-  <a href="showcase/02-smart-drawer/output/screenshots/sequence.gif">
-    <img src="showcase/02-smart-drawer/output/screenshots/sequence.gif" alt="Smart tool cabinet paced interaction sequence" width="676">
+  <a href="showcase/02-smart-drawer/output/screenshots/dense_sequence.gif">
+    <img src="showcase/02-smart-drawer/output/screenshots/dense_sequence.gif" alt="Smart tool cabinet dense RGB interaction sequence" width="640">
   </a>
 </p>
 
-[Environment](showcase/02-smart-drawer) | [Render report](showcase/02-smart-drawer/output/render_results.json) | [Sequence JSON](showcase/02-smart-drawer/output/sequence_results.json) | [GIF (1.6s/frame)](showcase/02-smart-drawer/output/screenshots/sequence.gif) | [TIFF keyframes](showcase/02-smart-drawer/output/screenshots/sequence.tif)
+**Dense capture** - RGB frames are sampled every `0.20 s` of MuJoCo simulation time. The GIF uses a `200 ms` delay per frame (final frame `800 ms`); depth remains available for the verified keyframes.
+
+[Environment](showcase/02-smart-drawer) | [Render report](showcase/02-smart-drawer/output/render_results.json) | [Dense report](showcase/02-smart-drawer/output/dense_sequence_results.json) | [Dense GIF](showcase/02-smart-drawer/output/screenshots/dense_sequence.gif) | [Dense TIFF](showcase/02-smart-drawer/output/screenshots/dense_sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -77,6 +82,7 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 - **Scene:** desktop cabinet, unlock button, slide-joint drawer, three visible markers, and fixed RGB-D camera.
 - **Validation:** actuators, marker visibility, action dependencies, reset, RGB-D, drawer travel, and task success.
 - **Contract:** [interaction_manifest.json](showcase/02-smart-drawer/interaction_manifest.json)
+- **Keyframe archive:** [Sequence JSON](showcase/02-smart-drawer/output/sequence_results.json) | [GIF](showcase/02-smart-drawer/output/screenshots/sequence.gif) | [TIFF](showcase/02-smart-drawer/output/screenshots/sequence.tif)
 
 </details>
 
@@ -93,12 +99,14 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 **Verified result** - **PASS**. The robot follows the south-side bypass with zero shelf contacts, keeps `0.270 m` minimum clearance, and moves `331.26 px` in the image.
 
 <p align="center">
-  <a href="showcase/03-warehouse-navigation/output/screenshots/sequence.gif">
-    <img src="showcase/03-warehouse-navigation/output/screenshots/sequence.gif" alt="Warehouse navigation paced interaction sequence" width="676">
+  <a href="showcase/03-warehouse-navigation/output/screenshots/dense_sequence.gif">
+    <img src="showcase/03-warehouse-navigation/output/screenshots/dense_sequence.gif" alt="Warehouse navigation dense RGB interaction sequence" width="640">
   </a>
 </p>
 
-[Environment](showcase/03-warehouse-navigation) | [Render report](showcase/03-warehouse-navigation/output/render_results.json) | [Sequence JSON](showcase/03-warehouse-navigation/output/sequence_results.json) | [GIF (1.6s/frame)](showcase/03-warehouse-navigation/output/screenshots/sequence.gif) | [TIFF keyframes](showcase/03-warehouse-navigation/output/screenshots/sequence.tif)
+**Dense capture** - RGB frames are sampled every `0.20 s` of MuJoCo simulation time. The GIF uses a `200 ms` delay per frame (final frame `800 ms`); depth remains available for the verified keyframes.
+
+[Environment](showcase/03-warehouse-navigation) | [Render report](showcase/03-warehouse-navigation/output/render_results.json) | [Dense report](showcase/03-warehouse-navigation/output/dense_sequence_results.json) | [Dense GIF](showcase/03-warehouse-navigation/output/screenshots/dense_sequence.gif) | [Dense TIFF](showcase/03-warehouse-navigation/output/screenshots/dense_sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -106,6 +114,7 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 - **Scene:** warehouse floor, collidable shelves, planar mobile robot, two checkpoints, and top-view RGB-D camera.
 - **Validation:** route dependencies, clearance, zero shelf contact, marker visibility, RGB-D, reset, and task success.
 - **Contract:** [interaction_manifest.json](showcase/03-warehouse-navigation/interaction_manifest.json)
+- **Keyframe archive:** [Sequence JSON](showcase/03-warehouse-navigation/output/sequence_results.json) | [GIF](showcase/03-warehouse-navigation/output/screenshots/sequence.gif) | [TIFF](showcase/03-warehouse-navigation/output/screenshots/sequence.tif)
 
 </details>
 
@@ -122,12 +131,14 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 **Verified result** - **PASS**. The gate lifts `0.11656 m`; the ball enters the target tray and settles at `0.000277 m/s`; all four marker color families remain visible.
 
 <p align="center">
-  <a href="showcase/04-lever-ball-ramp/output/screenshots/sequence.gif">
-    <img src="showcase/04-lever-ball-ramp/output/screenshots/sequence.gif" alt="Lever and ramp ball paced interaction sequence" width="676">
+  <a href="showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.gif">
+    <img src="showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.gif" alt="Lever and ramp ball dense RGB interaction sequence" width="640">
   </a>
 </p>
 
-[Environment](showcase/04-lever-ball-ramp) | [Render report](showcase/04-lever-ball-ramp/render_results.json) | [Sequence JSON](showcase/04-lever-ball-ramp/output/sequence_results.json) | [Physics report](showcase/04-lever-ball-ramp/physics_results.json) | [GIF (1.6s/frame)](showcase/04-lever-ball-ramp/output/screenshots/sequence.gif) | [TIFF keyframes](showcase/04-lever-ball-ramp/output/screenshots/sequence.tif)
+**Dense capture** - RGB frames are sampled every `0.20 s` of MuJoCo simulation time. The GIF uses a `200 ms` delay per frame (final frame `800 ms`); depth remains available for the verified keyframes.
+
+[Environment](showcase/04-lever-ball-ramp) | [Render report](showcase/04-lever-ball-ramp/render_results.json) | [Dense report](showcase/04-lever-ball-ramp/output/dense_sequence_results.json) | [Physics report](showcase/04-lever-ball-ramp/physics_results.json) | [Dense GIF](showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.gif) | [Dense TIFF](showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -135,6 +146,7 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 - **Scene:** workbench, actuated lever and gate, guarded ramp, free ball, open target tray, and fixed RGB-D camera.
 - **Validation:** typed targets, four marker sites, dependency rejection, physical release and settling, RGB-D, reset, and task success.
 - **Contract:** [interaction_manifest.json](showcase/04-lever-ball-ramp/interaction_manifest.json)
+- **Keyframe archive:** [Sequence JSON](showcase/04-lever-ball-ramp/output/sequence_results.json) | [GIF](showcase/04-lever-ball-ramp/output/screenshots/sequence.gif) | [TIFF](showcase/04-lever-ball-ramp/output/screenshots/sequence.tif)
 
 </details>
 
@@ -175,13 +187,19 @@ MUJOCO_GL=glfw mjpython render_smoke.py
 
 On macOS, `mjpython` gives the renderer access to the native CGL session. On headless Linux, try `MUJOCO_GL=egl` and then `MUJOCO_GL=osmesa` in separate processes.
 
-Regenerate every paced interaction GIF, storyboard, and multi-page TIFF from the repository root:
+Regenerate the original paced keyframe storyboards from the repository root:
 
 ```bash
 MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --scene all
 ```
 
-The GIFs are paced animations of discrete, physically verified interaction keyframes: each frame stays visible for `1.6 s`, and the final state stays for `2.6 s`. The TIFFs contain the same full-resolution keyframes as an archive; TIFF playback speed is viewer-dependent and is not used as the animation preview.
+Generate dense RGB captures sampled every `0.20 s` of simulation time:
+
+```bash
+MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --dense --scene all
+```
+
+The default GIFs are readable animations of discrete, physically verified interaction keyframes: each frame stays visible for `1.6 s`, and the final state stays for `2.6 s`. Dense GIFs preserve the first post-step state at each `0.20 s` simulation boundary and add action-boundary event frames; ordinary frames play at `200 ms` and the final frame at `800 ms`. Pass `--dense-interval <seconds>` to change the sampling interval. Dense GIFs contain RGB only, while the verified keyframe sequence retains RGB-D arrays. Both TIFF formats are full-resolution archives; TIFF playback timing is viewer-dependent.
 
 <details>
 <summary>Generated package structure and interaction API</summary>
@@ -193,7 +211,7 @@ environment.py              # Interaction, observation, reset, and success logic
 interaction_manifest.json   # Targets, dependencies, and action schemas
 physics_smoke.py            # Physics and state-machine validation
 render_smoke.py             # RGB-D and visual-change validation
-output/                     # Reports, screenshots, depth arrays, GIF, and TIFF sequence
+output/                     # Reports, screenshots, depth arrays, keyframe and dense GIF/TIFF sequences
 ```
 
 ```python

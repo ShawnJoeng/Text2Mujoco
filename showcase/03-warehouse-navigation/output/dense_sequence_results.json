@@ -1,0 +1,2134 @@
+{
+  "status": "PASS",
+  "scene": "03-warehouse-navigation",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
+  "sequence_kind": "dense simulation frames",
+  "simulation_interval_s": 0.2,
+  "sampling_clock": "MuJoCo data.time elapsed since reset",
+  "sampling_policy": "first post-step state at or beyond each target; action-boundary event frames are extra",
+  "gif_frame_duration_ms": 200,
+  "gif_final_frame_duration_ms": 800,
+  "depth_capture": "keyframes_only; dense pass stores RGB frames",
+  "frame_count": 71,
+  "regular_frame_count": 68,
+  "event_frame_count": 3,
+  "simulation_time_span_s": 13.5,
+  "gif": "output/screenshots/dense_sequence.gif",
+  "tiff": "output/screenshots/dense_sequence.tif",
+  "frame_storage": "GIF and TIFF only; dense source PNGs are temporary and deleted after encoding",
+  "frames": [
+    {
+      "archive_frame": 1,
+      "index": 0,
+      "target_time_s": 0.0,
+      "actual_time_s": 0.0,
+      "absolute_sim_time_s": 0.0,
+      "physics_step": 0,
+      "phase": "initial",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -2.35,
+          -1.35,
+          0.14
+        ],
+        "distance_to_a_m": 2.247220505424423,
+        "distance_to_b_m": 4.453369510831097,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 2,
+      "index": 1,
+      "target_time_s": 0.2,
+      "actual_time_s": 0.2,
+      "absolute_sim_time_s": 0.2,
+      "physics_step": 50,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -2.3343454390367024,
+          -1.3089067774713434,
+          0.14
+        ],
+        "distance_to_a_m": 2.2032464424242493,
+        "distance_to_b_m": 4.419912588030424,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 3,
+      "index": 2,
+      "target_time_s": 0.4,
+      "actual_time_s": 0.4,
+      "absolute_sim_time_s": 0.4,
+      "physics_step": 100,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -2.2828773394707773,
+          -1.1738030161107904,
+          0.14
+        ],
+        "distance_to_a_m": 2.0586712315245337,
+        "distance_to_b_m": 4.3112465767845665,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 4,
+      "index": 3,
+      "target_time_s": 0.6,
+      "actual_time_s": 0.6,
+      "absolute_sim_time_s": 0.6,
+      "physics_step": 150,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -2.212164978624282,
+          -0.9881830688887401,
+          0.14
+        ],
+        "distance_to_a_m": 1.860038397423014,
+        "distance_to_b_m": 4.1655112548458435,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 5,
+      "index": 4,
+      "target_time_s": 0.8,
+      "actual_time_s": 0.8,
+      "absolute_sim_time_s": 0.8,
+      "physics_step": 200,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -2.144847436320535,
+          -0.8114745203414041,
+          0.14
+        ],
+        "distance_to_a_m": 1.6709416956233187,
+        "distance_to_b_m": 4.030973543375594,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 6,
+      "index": 5,
+      "target_time_s": 1.0,
+      "actual_time_s": 1.0,
+      "absolute_sim_time_s": 1.0,
+      "physics_step": 250,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -2.088595042192432,
+          -0.6638119857551337,
+          0.14
+        ],
+        "distance_to_a_m": 1.5129272786684567,
+        "distance_to_b_m": 3.9220045143660576,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 7,
+      "index": 6,
+      "target_time_s": 1.2,
+      "actual_time_s": 1.2,
+      "absolute_sim_time_s": 1.2,
+      "physics_step": 300,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -2.038237903716765,
+          -0.5316244972565075,
+          0.14
+        ],
+        "distance_to_a_m": 1.3714727859471862,
+        "distance_to_b_m": 3.827358757075606,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 8,
+      "index": 7,
+      "target_time_s": 1.4,
+      "actual_time_s": 1.4,
+      "absolute_sim_time_s": 1.4,
+      "physics_step": 350,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.9867978698551256,
+          -0.3965944083697053,
+          0.14
+        ],
+        "distance_to_a_m": 1.226976412330184,
+        "distance_to_b_m": 3.7337350401914433,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 9,
+      "index": 8,
+      "target_time_s": 1.6,
+      "actual_time_s": 1.6,
+      "absolute_sim_time_s": 1.6,
+      "physics_step": 400,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.9319392729459715,
+          -0.25259059148317586,
+          0.14
+        ],
+        "distance_to_a_m": 1.0728772074888542,
+        "distance_to_b_m": 3.6375607285325726,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 10,
+      "index": 9,
+      "target_time_s": 1.8,
+      "actual_time_s": 1.8,
+      "absolute_sim_time_s": 1.8,
+      "physics_step": 450,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.8752748910456611,
+          -0.10384658899486032,
+          0.14
+        ],
+        "distance_to_a_m": 0.9137055063218809,
+        "distance_to_b_m": 3.5425198285493775,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 11,
+      "index": 10,
+      "target_time_s": 2.0,
+      "actual_time_s": 2.0,
+      "absolute_sim_time_s": 2.0,
+      "physics_step": 500,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.818955527524333,
+          0.04399174024862629,
+          0.14
+        ],
+        "distance_to_a_m": 0.7555029706249046,
+        "distance_to_b_m": 3.452739468197544,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 12,
+      "index": 11,
+      "target_time_s": 2.2,
+      "actual_time_s": 2.2,
+      "absolute_sim_time_s": 2.2,
+      "physics_step": 550,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.76369226735983,
+          0.189057798180446,
+          0.14
+        ],
+        "distance_to_a_m": 0.6002670563270605,
+        "distance_to_b_m": 3.3695410394776992,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 13,
+      "index": 12,
+      "target_time_s": 2.4,
+      "actual_time_s": 2.4,
+      "absolute_sim_time_s": 2.4,
+      "physics_step": 600,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.7089820910148852,
+          0.33267201108592714,
+          0.14
+        ],
+        "distance_to_a_m": 0.4465847686548767,
+        "distance_to_b_m": 3.2923182894091854,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 14,
+      "index": 13,
+      "target_time_s": 2.6,
+      "actual_time_s": 2.6,
+      "absolute_sim_time_s": 2.6,
+      "physics_step": 650,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.6541621110379081,
+          0.4765744585254914,
+          0.14
+        ],
+        "distance_to_a_m": 0.29259403976585324,
+        "distance_to_b_m": 3.220443900254898,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 15,
+      "index": 14,
+      "target_time_s": 2.8,
+      "actual_time_s": 2.8,
+      "absolute_sim_time_s": 2.8,
+      "physics_step": 700,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.5990158845860338,
+          0.621333302961661,
+          0.14
+        ],
+        "distance_to_a_m": 0.13768687616656533,
+        "distance_to_b_m": 3.1540803461557148,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 16,
+      "index": 15,
+      "target_time_s": 3.0,
+      "actual_time_s": 3.0,
+      "absolute_sim_time_s": 3.0,
+      "physics_step": 750,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.5472823041406063,
+          0.7571339516309079,
+          0.14
+        ],
+        "distance_to_a_m": 0.007634077328420213,
+        "distance_to_b_m": 3.0975789206484032,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 17,
+      "index": 16,
+      "target_time_s": 3.2,
+      "actual_time_s": 3.2,
+      "absolute_sim_time_s": 3.2,
+      "physics_step": 800,
+      "phase": "reach_checkpoint_a",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "robot_state": "at_start",
+        "robot_position": [
+          -1.5258055268629582,
+          0.8135104919847338,
+          0.14
+        ],
+        "distance_to_a_m": 0.06796289518937502,
+        "distance_to_b_m": 3.0758351991734525,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 18,
+      "index": 17,
+      "target_time_s": null,
+      "actual_time_s": 3.38,
+      "absolute_sim_time_s": 3.38,
+      "physics_step": 845,
+      "phase": "reach_checkpoint_a",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.533334604796508,
+          0.7937466624091662,
+          0.14
+        ],
+        "distance_to_a_m": 0.046813522290361106,
+        "distance_to_b_m": 3.0833409460140246,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 19,
+      "index": 18,
+      "target_time_s": 3.4,
+      "actual_time_s": 3.4,
+      "absolute_sim_time_s": 3.4,
+      "physics_step": 850,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.5348314438345851,
+          0.7893119830810158,
+          0.14
+        ],
+        "distance_to_a_m": 0.042136885384487295,
+        "distance_to_b_m": 3.084849959167582,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 20,
+      "index": 19,
+      "target_time_s": 3.6,
+      "actual_time_s": 3.6,
+      "absolute_sim_time_s": 3.6,
+      "physics_step": 900,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.535423279737272,
+          0.7166084786914575,
+          0.14
+        ],
+        "distance_to_a_m": 0.03643452303676658,
+        "distance_to_b_m": 3.086550009471879,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 21,
+      "index": 20,
+      "target_time_s": 3.8,
+      "actual_time_s": 3.8,
+      "absolute_sim_time_s": 3.8,
+      "physics_step": 950,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.511735720781493,
+          0.5749896522619309,
+          0.14
+        ],
+        "distance_to_a_m": 0.17914456977400053,
+        "distance_to_b_m": 3.0699927166849394,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 22,
+      "index": 21,
+      "target_time_s": 4.0,
+      "actual_time_s": 4.0,
+      "absolute_sim_time_s": 4.0,
+      "physics_step": 1000,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.4796720969265236,
+          0.3929093183669916,
+          0.14
+        ],
+        "distance_to_a_m": 0.36395022854758435,
+        "distance_to_b_m": 3.0568997101585755,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 23,
+      "index": 22,
+      "target_time_s": 4.2,
+      "actual_time_s": 4.2,
+      "absolute_sim_time_s": 4.2,
+      "physics_step": 1050,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.4530520470281518,
+          0.2150538713741348,
+          0.14
+        ],
+        "distance_to_a_m": 0.5436600648541627,
+        "distance_to_b_m": 3.059490737125112,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 24,
+      "index": 23,
+      "target_time_s": 4.4,
+      "actual_time_s": 4.4,
+      "absolute_sim_time_s": 4.4,
+      "physics_step": 1100,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.4339163023000627,
+          0.058503507352469786,
+          0.14
+        ],
+        "distance_to_a_m": 0.7011724639598493,
+        "distance_to_b_m": 3.074666412432521,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 25,
+      "index": 24,
+      "target_time_s": 4.6,
+      "actual_time_s": 4.6,
+      "absolute_sim_time_s": 4.6,
+      "physics_step": 1150,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.4173318699145647,
+          -0.08564122313286604,
+          0.14
+        ],
+        "distance_to_a_m": 0.8461070183725924,
+        "distance_to_b_m": 3.0966786727594044,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 26,
+      "index": 25,
+      "target_time_s": 4.8,
+      "actual_time_s": 4.8,
+      "absolute_sim_time_s": 4.8,
+      "physics_step": 1200,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.3990487796235707,
+          -0.23116136029048984,
+          0.14
+        ],
+        "distance_to_a_m": 0.9927053368750557,
+        "distance_to_b_m": 3.12412907152624,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 27,
+      "index": 26,
+      "target_time_s": 5.0,
+      "actual_time_s": 5.0,
+      "absolute_sim_time_s": 5.0,
+      "physics_step": 1250,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.3784587091487719,
+          -0.3832675573077917,
+          0.14
+        ],
+        "distance_to_a_m": 1.1461770242476834,
+        "distance_to_b_m": 3.158479463819013,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 28,
+      "index": 27,
+      "target_time_s": 5.2,
+      "actual_time_s": 5.2,
+      "absolute_sim_time_s": 5.2,
+      "physics_step": 1300,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.3570916695374424,
+          -0.539177068450801,
+          0.14
+        ],
+        "distance_to_a_m": 1.3035302596339113,
+        "distance_to_b_m": 3.200715106934461,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 29,
+      "index": 28,
+      "target_time_s": 5.4,
+      "actual_time_s": 5.4,
+      "absolute_sim_time_s": 5.4,
+      "physics_step": 1350,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.3362545883649857,
+          -0.6946401051249591,
+          0.14
+        ],
+        "distance_to_a_m": 1.4603671231339312,
+        "distance_to_b_m": 3.250294539377298,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 30,
+      "index": 29,
+      "target_time_s": 5.6,
+      "actual_time_s": 5.6,
+      "absolute_sim_time_s": 5.6,
+      "physics_step": 1400,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.3161285815039665,
+          -0.848067303566034,
+          0.14
+        ],
+        "distance_to_a_m": 1.6150897644143998,
+        "distance_to_b_m": 3.306178894554461,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 31,
+      "index": 30,
+      "target_time_s": 5.8,
+      "actual_time_s": 5.8,
+      "absolute_sim_time_s": 5.8,
+      "physics_step": 1450,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.2962391439556655,
+          -1.000328574789335,
+          0.14
+        ],
+        "distance_to_a_m": 1.7686279121919393,
+        "distance_to_b_m": 3.367827228613202,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 32,
+      "index": 31,
+      "target_time_s": 6.0,
+      "actual_time_s": 6.0,
+      "absolute_sim_time_s": 6.0,
+      "physics_step": 1500,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.2761843984175743,
+          -1.152734401562565,
+          0.14
+        ],
+        "distance_to_a_m": 1.9223353470608602,
+        "distance_to_b_m": 3.4351841139747976,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 33,
+      "index": 32,
+      "target_time_s": 6.2,
+      "actual_time_s": 6.2,
+      "absolute_sim_time_s": 6.2,
+      "physics_step": 1550,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.255960090760443,
+          -1.305394219376919,
+          0.14
+        ],
+        "distance_to_a_m": 2.076320029589288,
+        "distance_to_b_m": 3.5080046821414164,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 34,
+      "index": 33,
+      "target_time_s": 6.4,
+      "actual_time_s": 6.4,
+      "absolute_sim_time_s": 6.4,
+      "physics_step": 1600,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.2425957225592594,
+          -1.4059633536372576,
+          0.14
+        ],
+        "distance_to_a_m": 2.17776843856634,
+        "distance_to_b_m": 3.5587729890015196,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 35,
+      "index": 34,
+      "target_time_s": 6.6,
+      "actual_time_s": 6.6,
+      "absolute_sim_time_s": 6.6,
+      "physics_step": 1650,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.2422990043074311,
+          -1.4080043127668633,
+          0.14
+        ],
+        "distance_to_a_m": 2.1798308458847395,
+        "distance_to_b_m": 3.5598057214760104,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 36,
+      "index": 35,
+      "target_time_s": 6.8,
+      "actual_time_s": 6.8,
+      "absolute_sim_time_s": 6.8,
+      "physics_step": 1700,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.2259050907058178,
+          -1.374075569906613,
+          0.14
+        ],
+        "distance_to_a_m": 2.1486587762845235,
+        "distance_to_b_m": 3.525940109569537,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 37,
+      "index": 36,
+      "target_time_s": 7.0,
+      "actual_time_s": 7.0,
+      "absolute_sim_time_s": 7.0,
+      "physics_step": 1750,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -1.106667801010641,
+          -1.3716419475287622,
+          0.14
+        ],
+        "distance_to_a_m": 2.1674657995397255,
+        "distance_to_b_m": 3.4313135317532892,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 38,
+      "index": 37,
+      "target_time_s": 7.2,
+      "actual_time_s": 7.2,
+      "absolute_sim_time_s": 7.2,
+      "physics_step": 1800,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -0.9087672561180047,
+          -1.3839565376391292,
+          0.14
+        ],
+        "distance_to_a_m": 2.228216761529096,
+        "distance_to_b_m": 3.288647530224964,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 39,
+      "index": 38,
+      "target_time_s": 7.4,
+      "actual_time_s": 7.4,
+      "absolute_sim_time_s": 7.4,
+      "physics_step": 1850,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -0.705053507880788,
+          -1.3904561078971094,
+          0.14
+        ],
+        "distance_to_a_m": 2.3011925005045977,
+        "distance_to_b_m": 3.143781844217121,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 40,
+      "index": 39,
+      "target_time_s": 7.6,
+      "actual_time_s": 7.6,
+      "absolute_sim_time_s": 7.6,
+      "physics_step": 1900,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -0.5333230607540909,
+          -1.3863138460515236,
+          0.14
+        ],
+        "distance_to_a_m": 2.3658970492449334,
+        "distance_to_b_m": 3.0199674185173584,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 41,
+      "index": 40,
+      "target_time_s": 7.8,
+      "actual_time_s": 7.8,
+      "absolute_sim_time_s": 7.8,
+      "physics_step": 1950,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -0.3857626606024904,
+          -1.3776654682638032,
+          0.14
+        ],
+        "distance_to_a_m": 2.4253677921687715,
+        "distance_to_b_m": 2.913658176562831,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 42,
+      "index": 41,
+      "target_time_s": 8.0,
+      "actual_time_s": 8.0,
+      "absolute_sim_time_s": 8.0,
+      "physics_step": 2000,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -0.23986912006490924,
+          -1.3708413997274354,
+          0.14
+        ],
+        "distance_to_a_m": 2.492872071598806,
+        "distance_to_b_m": 2.8135713692267528,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 43,
+      "index": 42,
+      "target_time_s": 8.2,
+      "actual_time_s": 8.2,
+      "absolute_sim_time_s": 8.2,
+      "physics_step": 2050,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          -0.08406813653551115,
+          -1.3673008283596135,
+          0.14
+        ],
+        "distance_to_a_m": 2.575251254944413,
+        "distance_to_b_m": 2.714290248932289,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 44,
+      "index": 43,
+      "target_time_s": 8.4,
+      "actual_time_s": 8.4,
+      "absolute_sim_time_s": 8.4,
+      "physics_step": 2100,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.07915888887750411,
+          -1.3651368642573136,
+          0.14
+        ],
+        "distance_to_a_m": 2.669824458601884,
+        "distance_to_b_m": 2.6174780257213337,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 45,
+      "index": 44,
+      "target_time_s": 8.6,
+      "actual_time_s": 8.6,
+      "absolute_sim_time_s": 8.6,
+      "physics_step": 2150,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.2428611529415048,
+          -1.362400773996998,
+          0.14
+        ],
+        "distance_to_a_m": 2.770665649931413,
+        "distance_to_b_m": 2.5267744404422467,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 46,
+      "index": 45,
+      "target_time_s": 8.8,
+      "actual_time_s": 8.8,
+      "absolute_sim_time_s": 8.8,
+      "physics_step": 2200,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.40349462076003695,
+          -1.3586516236316852,
+          0.14
+        ],
+        "distance_to_a_m": 2.8744656726395155,
+        "distance_to_b_m": 2.4442281842810587,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 47,
+      "index": 46,
+      "target_time_s": 9.0,
+      "actual_time_s": 9.0,
+      "absolute_sim_time_s": 9.0,
+      "physics_step": 2250,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.5618466359913583,
+          -1.354481977644908,
+          0.14
+        ],
+        "distance_to_a_m": 2.98139910246519,
+        "distance_to_b_m": 2.3702826124321774,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 48,
+      "index": 47,
+      "target_time_s": 9.2,
+      "actual_time_s": 9.2,
+      "absolute_sim_time_s": 9.2,
+      "physics_step": 2300,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.7183544538552855,
+          -1.350531307849606,
+          0.14
+        ],
+        "distance_to_a_m": 3.091547137531868,
+        "distance_to_b_m": 2.305736155865124,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 49,
+      "index": 48,
+      "target_time_s": 9.4,
+      "actual_time_s": 9.4,
+      "absolute_sim_time_s": 9.4,
+      "physics_step": 2350,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.8122066461187742,
+          -1.348366945878834,
+          0.14
+        ],
+        "distance_to_a_m": 3.159614545878116,
+        "distance_to_b_m": 2.271523622412071,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 50,
+      "index": 49,
+      "target_time_s": 9.6,
+      "actual_time_s": 9.6,
+      "absolute_sim_time_s": 9.6,
+      "physics_step": 2400,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.8062908336566248,
+          -1.3486588898370204,
+          0.14
+        ],
+        "distance_to_a_m": 3.1553883483124845,
+        "distance_to_b_m": 2.2737278528836327,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 51,
+      "index": 50,
+      "target_time_s": 9.8,
+      "actual_time_s": 9.8,
+      "absolute_sim_time_s": 9.8,
+      "physics_step": 2450,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.7915860539698136,
+          -1.3295140152877691,
+          0.14
+        ],
+        "distance_to_a_m": 3.1316774718869413,
+        "distance_to_b_m": 2.260535700855024,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 52,
+      "index": 51,
+      "target_time_s": 10.0,
+      "actual_time_s": 10.0,
+      "absolute_sim_time_s": 10.0,
+      "physics_step": 2500,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          0.8765857945290199,
+          -1.2368964116540693,
+          0.14
+        ],
+        "distance_to_a_m": 3.136251898182582,
+        "distance_to_b_m": 2.1453283394248386,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 53,
+      "index": 52,
+      "target_time_s": 10.2,
+      "actual_time_s": 10.2,
+      "absolute_sim_time_s": 10.2,
+      "physics_step": 2550,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.0199620685883866,
+          -1.0940103970481263,
+          0.14
+        ],
+        "distance_to_a_m": 3.1630806784533156,
+        "distance_to_b_m": 1.9667779724365186,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 54,
+      "index": 53,
+      "target_time_s": 10.4,
+      "actual_time_s": 10.4,
+      "absolute_sim_time_s": 10.4,
+      "physics_step": 2600,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.1540415423981525,
+          -0.9536109621869115,
+          0.14
+        ],
+        "distance_to_a_m": 3.1959554085591355,
+        "distance_to_b_m": 1.7977581892035814,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 55,
+      "index": 54,
+      "target_time_s": 10.6,
+      "actual_time_s": 10.6,
+      "absolute_sim_time_s": 10.6,
+      "physics_step": 2650,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.2113883780219492,
+          -0.8874727764016912,
+          0.14
+        ],
+        "distance_to_a_m": 3.2103867162277124,
+        "distance_to_b_m": 1.7211107464760769,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 56,
+      "index": 55,
+      "target_time_s": 10.8,
+      "actual_time_s": 10.8,
+      "absolute_sim_time_s": 10.8,
+      "physics_step": 2700,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.189456208648712,
+          -0.9062857490387493,
+          0.14
+        ],
+        "distance_to_a_m": 3.2012345745935002,
+        "distance_to_b_m": 1.7439618352632282,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 57,
+      "index": 56,
+      "target_time_s": 11.0,
+      "actual_time_s": 11.0,
+      "absolute_sim_time_s": 11.0,
+      "physics_step": 2750,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.1690319152309367,
+          -0.8993099894248735,
+          0.14
+        ],
+        "distance_to_a_m": 3.1801506249328964,
+        "distance_to_b_m": 1.7414910627883715,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 58,
+      "index": 57,
+      "target_time_s": 11.2,
+      "actual_time_s": 11.2,
+      "absolute_sim_time_s": 11.2,
+      "physics_step": 2800,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.2036984941183624,
+          -0.7576415664302125,
+          0.14
+        ],
+        "distance_to_a_m": 3.139400976195599,
+        "distance_to_b_m": 1.5956728933108617,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 59,
+      "index": 58,
+      "target_time_s": 11.4,
+      "actual_time_s": 11.4,
+      "absolute_sim_time_s": 11.4,
+      "physics_step": 2850,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.2624503130965952,
+          -0.5435302908560836,
+          0.14
+        ],
+        "distance_to_a_m": 3.0956578262138987,
+        "distance_to_b_m": 1.373957228186554,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 60,
+      "index": 59,
+      "target_time_s": 11.6,
+      "actual_time_s": 11.6,
+      "absolute_sim_time_s": 11.6,
+      "physics_step": 2900,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.3121435150171004,
+          -0.34228145025904455,
+          0.14
+        ],
+        "distance_to_a_m": 3.0634856401058004,
+        "distance_to_b_m": 1.1667830214115762,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 61,
+      "index": 60,
+      "target_time_s": 11.8,
+      "actual_time_s": 11.8,
+      "absolute_sim_time_s": 11.8,
+      "physics_step": 2950,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.344752172259303,
+          -0.18274196849851632,
+          0.14
+        ],
+        "distance_to_a_m": 3.041315129775019,
+        "distance_to_b_m": 1.0039464365396262,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 62,
+      "index": 61,
+      "target_time_s": 12.0,
+      "actual_time_s": 12.0,
+      "absolute_sim_time_s": 12.0,
+      "physics_step": 3000,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.3700002999670988,
+          -0.04539420660347493,
+          0.14
+        ],
+        "distance_to_a_m": 3.0263928521767167,
+        "distance_to_b_m": 0.8643444085378544,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 63,
+      "index": 62,
+      "target_time_s": 12.2,
+      "actual_time_s": 12.2,
+      "absolute_sim_time_s": 12.2,
+      "physics_step": 3050,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.398092195245754,
+          0.09605568560942523,
+          0.14
+        ],
+        "distance_to_a_m": 3.0197501151573265,
+        "distance_to_b_m": 0.7201483034126169,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 64,
+      "index": 63,
+      "target_time_s": 12.4,
+      "actual_time_s": 12.4,
+      "absolute_sim_time_s": 12.4,
+      "physics_step": 3100,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.4314559274205858,
+          0.25039151898987067,
+          0.14
+        ],
+        "distance_to_a_m": 3.0230263117360714,
+        "distance_to_b_m": 0.5622474362253466,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 65,
+      "index": 64,
+      "target_time_s": 12.6,
+      "actual_time_s": 12.6,
+      "absolute_sim_time_s": 12.6,
+      "physics_step": 3150,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.46706878430287,
+          0.41152483806093376,
+          0.14
+        ],
+        "distance_to_a_m": 3.0359956331431825,
+        "distance_to_b_m": 0.3972285714555131,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 66,
+      "index": 65,
+      "target_time_s": 12.8,
+      "actual_time_s": 12.8,
+      "absolute_sim_time_s": 12.8,
+      "physics_step": 3200,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.5017892353247229,
+          0.5713514238824147,
+          0.14
+        ],
+        "distance_to_a_m": 3.057013714492085,
+        "distance_to_b_m": 0.2336759491072502,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 67,
+      "index": 66,
+      "target_time_s": 13.0,
+      "actual_time_s": 13.0,
+      "absolute_sim_time_s": 13.0,
+      "physics_step": 3250,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.5348830189356573,
+          0.7271971647695765,
+          0.14
+        ],
+        "distance_to_a_m": 3.0849672947718783,
+        "distance_to_b_m": 0.07435573907969643,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 68,
+      "index": 67,
+      "target_time_s": 13.2,
+      "actual_time_s": 13.2,
+      "absolute_sim_time_s": 13.2,
+      "physics_step": 3300,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.559766187480935,
+          0.845683409862418,
+          0.14
+        ],
+        "distance_to_a_m": 3.1112378655002595,
+        "distance_to_b_m": 0.046715654277452154,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 69,
+      "index": 68,
+      "target_time_s": 13.4,
+      "actual_time_s": 13.4,
+      "absolute_sim_time_s": 13.4,
+      "physics_step": 3350,
+      "phase": "reach_checkpoint_b",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a"
+        ],
+        "robot_state": "at_checkpoint_a",
+        "robot_position": [
+          1.5634683367716264,
+          0.8639546494990791,
+          0.14
+        ],
+        "distance_to_a_m": 3.1155530401875584,
+        "distance_to_b_m": 0.06535742718271577,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 70,
+      "index": 69,
+      "target_time_s": null,
+      "actual_time_s": 13.5,
+      "absolute_sim_time_s": 13.5,
+      "physics_step": 3375,
+      "phase": "reach_checkpoint_b",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a",
+          "reach_checkpoint_b"
+        ],
+        "robot_state": "at_checkpoint_b",
+        "robot_position": [
+          1.5596321650165361,
+          0.8459603219645082,
+          0.14
+        ],
+        "distance_to_a_m": 3.1111124353029997,
+        "distance_to_b_m": 0.046958809588692016,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": false
+      }
+    },
+    {
+      "archive_frame": 71,
+      "index": 70,
+      "target_time_s": null,
+      "actual_time_s": 13.5,
+      "absolute_sim_time_s": 13.5,
+      "physics_step": 3375,
+      "phase": "inspect_top_camera",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "reach_checkpoint_a",
+          "reach_checkpoint_b",
+          "inspect_top_camera"
+        ],
+        "robot_state": "at_checkpoint_b",
+        "robot_position": [
+          1.5596321650165361,
+          0.8459603219645082,
+          0.14
+        ],
+        "distance_to_a_m": 3.1111124353029997,
+        "distance_to_b_m": 0.046958809588692016,
+        "shelf_collision_count": 0,
+        "camera_inspection_complete": true
+      }
+    }
+  ],
+  "archive_verification": {
+    "status": "PASS",
+    "gif_frame_count": 71,
+    "tiff_page_count": 71,
+    "gif_frame_durations_ms": [
+      200,
+      800
+    ],
+    "all_gif_frames_nonblank": true
+  },
+  "task_success": true
+}

@@ -177,6 +177,7 @@ def write_gif(
     output_path: Path,
     frame_duration_ms: int = 1600,
     final_duration_ms: int = 2600,
+    max_size: tuple[int, int] | None = None,
 ) -> None:
     """Write a deliberately paced animation of the interaction keyframes."""
     if not frames:
@@ -189,6 +190,8 @@ def write_gif(
     images = []
     for index, (frame, label) in enumerate(zip(frames, labels), start=1):
         source = Image.open(frame).convert("RGB")
+        if max_size is not None:
+            source.thumbnail(max_size, Image.Resampling.LANCZOS)
         label_height = 48
         canvas = Image.new("RGB", (source.width, source.height + label_height), "#f4f6f8")
         canvas.paste(source, (0, 0))
@@ -220,6 +223,249 @@ def write_gif(
     )
     for image in images:
         image.close()
+
+
+def verify_dense_archives(
+    gif_path: Path,
+    tiff_path: Path,
+    expected_frame_count: int,
+    frame_duration_ms: int,
+    final_duration_ms: int,
+    expected_size: Tuple[int, int],
+) -> Dict[str, Any]:
+    """Reopen dense archives and verify their frame counts and timing."""
+    if expected_frame_count < 1:
+        raise AssertionError("dense archive must contain at least one frame")
+    expected_durations = [frame_duration_ms] * expected_frame_count
+    expected_durations[-1] = final_duration_ms
+
+    gif_durations: List[int] = []
+    with Image.open(gif_path) as gif:
+        gif_frame_count = int(getattr(gif, "n_frames", 1))
+        for index in range(gif_frame_count):
+            gif.seek(index)
+            gif_durations.append(int(gif.info.get("duration", 0)))
+            if float(np.asarray(gif.convert("RGB")).std()) < 5.0:
+                raise AssertionError(f"dense GIF frame {index} is blank or nearly uniform")
+    if gif_frame_count != expected_frame_count:
+        raise AssertionError(f"dense GIF has {gif_frame_count} frames; expected {expected_frame_count}")
+    if gif_durations != expected_durations:
+        raise AssertionError(f"dense GIF timing mismatch: {gif_durations}")
+
+    with Image.open(tiff_path) as tiff:
+        tiff_page_count = int(getattr(tiff, "n_frames", 1))
+        for index in range(tiff_page_count):
+            tiff.seek(index)
+            if tiff.size != expected_size:
+                raise AssertionError(f"dense TIFF page {index} has unexpected size {tiff.size}")
+    if tiff_page_count != expected_frame_count:
+        raise AssertionError(f"dense TIFF has {tiff_page_count} pages; expected {expected_frame_count}")
+
+    return {
+        "status": "PASS",
+        "gif_frame_count": gif_frame_count,
+        "tiff_page_count": tiff_page_count,
+        "gif_frame_durations_ms": sorted(set(gif_durations)),
+        "all_gif_frames_nonblank": True,
+    }
+
+
+class DenseSampler:
+    """Capture real RGB states on simulation-time boundaries.
+
+    MuJoCo scenes use different timesteps, so wall-clock sleeps are incorrect.
+    The sampler wraps the module-level ``mujoco.mj_step`` used by the generated
+    environments and records the first post-step state at or beyond each
+    0.20-second simulation target. It never interpolates a physics frame.
+    """
+
+    def __init__(self, env: Any, scene_name: str, camera: str, output_dir: Path, interval_s: float = 0.2):
+        self.env = env
+        self.scene_name = scene_name
+        self.camera = camera
+        self.output_dir = Path(output_dir)
+        self.interval_s = float(interval_s)
+        if not np.isfinite(self.interval_s) or self.interval_s <= 0.0:
+            raise ValueError("dense sampling interval must be a positive finite number")
+        self.origin_time_s = 0.0
+        self.next_target_s = 0.0
+        self.physics_steps = 0
+        self.phase = "initial"
+        self.frames: List[Path] = []
+        self.labels: List[str] = []
+        self.records: List[Dict[str, Any]] = []
+        self.renderer: Any | None = None
+        self._original_mj_step: Any | None = None
+        self.paused = False
+
+    def install(self) -> None:
+        if self._original_mj_step is not None:
+            raise RuntimeError("dense sampler is already installed")
+        original = mujoco.mj_step
+        self._original_mj_step = original
+        sampler = self
+
+        def wrapped(model: Any, data: Any, *args: Any, **kwargs: Any) -> None:
+            original(model, data, *args, **kwargs)
+            if data is sampler.env.data:
+                sampler.physics_steps += 1
+                if not sampler.paused:
+                    sampler._sample_due()
+
+        mujoco.mj_step = wrapped
+
+    def uninstall(self) -> None:
+        if self._original_mj_step is not None:
+            mujoco.mj_step = self._original_mj_step
+            self._original_mj_step = None
+        self.close_renderer()
+
+    def close_renderer(self) -> None:
+        if self.renderer is not None:
+            self.renderer.close()
+            self.renderer = None
+
+    def _sample_due(self) -> None:
+        elapsed = float(self.env.data.time) - self.origin_time_s
+        # Each environment step is much shorter than 0.20 s. Capture the
+        # actual post-step state once when a target boundary is crossed; never
+        # duplicate one state to fill a missed interval.
+        if elapsed + 1e-9 >= self.next_target_s:
+            target = self.next_target_s
+            self.capture(target_time_s=target, event=False)
+            self.next_target_s += self.interval_s
+
+    def _ensure_renderer(self) -> Any:
+        if self.renderer is None:
+            resolution = self.env.spec.get("outputs", {}).get("resolution", [640, 480])
+            self.renderer = mujoco.Renderer(self.env.model, height=int(resolution[1]), width=int(resolution[0]))
+        return self.renderer
+
+    def capture(self, target_time_s: float | None, event: bool, label: str | None = None) -> None:
+        renderer = self._ensure_renderer()
+        renderer.update_scene(self.env.data, camera=self.camera)
+        rgb = renderer.render().copy()
+        if rgb.dtype != np.uint8 or rgb.std() < 5:
+            raise AssertionError("dense RGB frame is blank or invalid")
+        absolute_sim_time = float(self.env.data.time)
+        sim_time = absolute_sim_time - self.origin_time_s
+        rounded_absolute_time = round(absolute_sim_time, 6)
+        rounded_sim_time = round(sim_time, 6)
+        rounded_target_time = None if target_time_s is None else round(float(target_time_s), 6)
+        index = len(self.frames)
+        clean_label = label or self.phase
+        safe_label = re.sub(r"[^a-zA-Z0-9]+", "_", clean_label).strip("_") or "state"
+        frame_dir = self.output_dir / "frames"
+        frame_dir.mkdir(parents=True, exist_ok=True)
+        frame_path = frame_dir / f"frame_{index:04d}_{sim_time:08.3f}_{safe_label}.png"
+        Image.fromarray(rgb).save(frame_path)
+        self.frames.append(frame_path)
+        self.labels.append(f"t={rounded_sim_time:.2f}s  {clean_label}")
+        observation = compact_observation(self.scene_name, self.env.observe())
+        self.records.append(
+            {
+                "index": index,
+                "target_time_s": rounded_target_time,
+                "actual_time_s": rounded_sim_time,
+                "absolute_sim_time_s": rounded_absolute_time,
+                "physics_step": self.physics_steps,
+                "phase": clean_label,
+                "event_frame": bool(event),
+                "rgb": str(frame_path),
+                "rgb_shape": list(rgb.shape),
+                "observation": observation,
+            }
+        )
+
+    def start(self) -> None:
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.origin_time_s = float(self.env.data.time)
+        self.capture(target_time_s=0.0, event=False, label="initial")
+        self.next_target_s = self.interval_s
+
+    def set_phase(self, phase: str) -> None:
+        self.phase = phase
+
+    def pause(self) -> None:
+        self.paused = True
+        self.close_renderer()
+
+    def resume(self) -> None:
+        self.paused = False
+
+    def finish(self) -> None:
+        self.close_renderer()
+
+    def write_outputs(self, archive_scene_dir: Path) -> Dict[str, Any]:
+        gif_path = self.output_dir.parent / "dense_sequence.gif"
+        tiff_path = self.output_dir.parent / "dense_sequence.tif"
+        frame_duration_ms = 200
+        final_duration_ms = 800
+        write_gif(
+            self.frames,
+            self.labels,
+            gif_path,
+            frame_duration_ms=frame_duration_ms,
+            final_duration_ms=final_duration_ms,
+            max_size=(640, 480),
+        )
+        write_tiff(self.frames, tiff_path)
+        with Image.open(self.frames[0]) as first_frame:
+            expected_size = first_frame.size
+        archive_verification = verify_dense_archives(
+            gif_path,
+            tiff_path,
+            len(self.frames),
+            frame_duration_ms,
+            final_duration_ms,
+            expected_size,
+        )
+        # The dense source PNGs are intentionally temporary. ``archive_frame``
+        # is the stable one-based page number shared by the GIF and TIFF.
+        regular_frame_count = sum(not bool(record["event_frame"]) for record in self.records)
+        event_frame_count = len(self.records) - regular_frame_count
+        report = {
+            "status": "PASS",
+            "scene": self.scene_name,
+            "mujoco_version": mujoco.__version__,
+            "python_version": platform.python_version(),
+            "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"),
+            "renderer_context": "native macOS CGL via glfw" if platform.system() == "Darwin" and os.environ.get("MUJOCO_GL") == "glfw" else os.environ.get("MUJOCO_GL", "unset"),
+            "sequence_kind": "dense simulation frames",
+            "simulation_interval_s": self.interval_s,
+            "sampling_clock": "MuJoCo data.time elapsed since reset",
+            "sampling_policy": "first post-step state at or beyond each target; action-boundary event frames are extra",
+            "gif_frame_duration_ms": frame_duration_ms,
+            "gif_final_frame_duration_ms": final_duration_ms,
+            "depth_capture": "keyframes_only; dense pass stores RGB frames",
+            "frame_count": len(self.frames),
+            "regular_frame_count": regular_frame_count,
+            "event_frame_count": event_frame_count,
+            "simulation_time_span_s": self.records[-1]["actual_time_s"] if self.records else 0.0,
+            "gif": str(gif_path.relative_to(archive_scene_dir)),
+            "tiff": str(tiff_path.relative_to(archive_scene_dir)),
+            "frame_storage": "GIF and TIFF only; dense source PNGs are temporary and deleted after encoding",
+            "frames": [
+                {
+                    # ``index`` remains zero-based for programmatic consumers;
+                    # ``archive_frame`` is the stable one-based frame/page
+                    # number shared by the GIF and TIFF archives.
+                    "archive_frame": int(record["index"]) + 1,
+                    **{
+                        key: value
+                        for key, value in record.items()
+                        if key != "rgb"
+                    },
+                }
+                for record in self.records
+            ],
+            "archive_verification": archive_verification,
+            "task_success": bool(self.env.is_success()),
+        }
+        report_path = archive_scene_dir / "output" / "dense_sequence_results.json"
+        report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        shutil.rmtree(self.output_dir)
+        return report
 
 
 def compact_observation(scene_name: str, observation: Dict[str, Any]) -> Dict[str, Any]:
@@ -283,6 +529,68 @@ def clear_generated_sequence_frames(sequence_dir: Path) -> None:
                 shutil.rmtree(child)
             else:
                 child.unlink()
+
+
+def run_dense_scene(
+    scene_name: str,
+    scene_cfg: Dict[str, Any],
+    output_root: Path,
+    interval_s: float = 0.2,
+) -> Dict[str, Any]:
+    """Capture RGB at 0.20-second simulation-time intervals.
+
+    The dense pass is intentionally separate from the keyframe pass: it keeps
+    the full-resolution TIFF/contact sheet compact while giving the README a
+    readable, timed animation of the actual intermediate simulator states.
+    """
+    scene_dir = ROOT / scene_name
+    screenshot_dir = output_root / scene_name / "output" / "screenshots"
+    dense_dir = screenshot_dir / "dense"
+    if dense_dir.exists():
+        shutil.rmtree(dense_dir)
+    dense_gif = screenshot_dir / "dense_sequence.gif"
+    dense_tiff = screenshot_dir / "dense_sequence.tif"
+    dense_report_path = output_root / scene_name / "output" / "dense_sequence_results.json"
+    for path in (dense_gif, dense_tiff, dense_report_path):
+        if path.exists():
+            path.unlink()
+
+    env = load_environment(scene_dir)
+    sampler = DenseSampler(env, scene_name, scene_cfg["camera"], dense_dir, interval_s=interval_s)
+    sampler.install()
+    try:
+        env.reset()
+        sampler.start()
+        sampler.set_phase("warmup")
+        if scene_cfg["warmup_steps"]:
+            env.run_physics(int(scene_cfg["warmup_steps"]))
+
+        for action_id, payload in scene_cfg["actions"]:
+            action_payload = dict(payload)
+            if "output_dir" in action_payload:
+                action_payload["output_dir"] = str(dense_dir / "sensor")
+            sampler.set_phase(action_id)
+            if action_id.startswith("inspect_") or action_id == "inspect_rgbd":
+                sampler.pause()
+                env.step({"id": action_id, "payload": action_payload})
+                sampler.resume()
+                sampler.capture(target_time_s=None, event=True, label=action_id)
+            else:
+                env.step({"id": action_id, "payload": action_payload})
+                sampler.capture(target_time_s=None, event=True, label=action_id)
+
+            settle_steps = int(scene_cfg.get("settle_after", {}).get(action_id, 0))
+            if settle_steps:
+                sampler.set_phase("settled_after_" + action_id)
+                env.run_physics(settle_steps)
+
+        if not env.is_success():
+            raise AssertionError(scene_name + " dense interaction sequence did not succeed")
+        sampler.finish()
+        report = sampler.write_outputs(output_root / scene_name)
+    finally:
+        sampler.uninstall()
+    return report
 
 
 def run_scene(scene_name: str, scene_cfg: Dict[str, Any], output_root: Path) -> Dict[str, Any]:
@@ -395,6 +703,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scene", choices=["all"] + sorted(SCENES), default="all")
     parser.add_argument("--output-root", type=Path, default=ROOT)
+    parser.add_argument(
+        "--dense",
+        action="store_true",
+        help="capture real RGB states every 0.20 seconds of MuJoCo simulation time",
+    )
+    parser.add_argument(
+        "--dense-interval",
+        type=float,
+        default=0.2,
+        help="simulation-time interval in seconds for --dense (default: 0.2)",
+    )
     args = parser.parse_args()
     backend = os.environ.get("MUJOCO_GL", "")
     if backend in {"", "disable"}:
@@ -403,7 +722,17 @@ def main() -> int:
     reports: List[Dict[str, Any]] = []
     try:
         for scene_name in selected:
-            reports.append(run_scene(scene_name, SCENES[scene_name], args.output_root))
+            if args.dense:
+                reports.append(
+                    run_dense_scene(
+                        scene_name,
+                        SCENES[scene_name],
+                        args.output_root,
+                        interval_s=args.dense_interval,
+                    )
+                )
+            else:
+                reports.append(run_scene(scene_name, SCENES[scene_name], args.output_root))
     except Exception as exc:
         report = {
             "status": "FAIL",

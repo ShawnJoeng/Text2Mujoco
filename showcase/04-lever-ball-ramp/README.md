@@ -17,6 +17,7 @@ The lever and gate use real hinge/slide joints with position actuators. The ball
 - `physics_smoke.py`: actuator, release, settling, contact, reset, and reload checks.
 - `render_smoke.py`: native CGL RGB-D, marker visibility, before/after change, and storyboard checks.
 - `output/sequence_results.json`: complete keyframe capture report.
+- `output/dense_sequence_results.json`: dense simulation-time capture report with GIF/TIFF frame mapping.
 
 ## Run
 
@@ -36,6 +37,14 @@ MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --scene 04-lever-ball-ramp
 
 The collector writes a paced `sequence.gif`, a contact-sheet PNG, and a multi-page TIFF. The GIF keeps each keyframe visible for `1.6 s` and the final state for `2.6 s`; it is a readable animation of discrete interaction keyframes, not a frame-by-frame physics recording. The TIFF is a full-resolution keyframe archive and does not define a universal viewer playback speed.
 
+For a denser RGB animation sampled from simulation time, run:
+
+```bash
+MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --dense --scene 04-lever-ball-ramp
+```
+
+The dense pass samples the first post-step state at each `0.20 s` boundary by default; pass `--dense-interval <seconds>` to change it. It adds action-boundary event frames. `output/screenshots/dense_sequence.gif` uses a `200 ms` delay for ordinary frames (`800 ms` for the final frame), while `output/screenshots/dense_sequence.tif` keeps the full-resolution RGB pages. The report records timestamps and stable `archive_frame` indices; depth remains in the verified keyframe capture.
+
 ## Output
 
-The scene writes `physics_results.json`, `render_results.json`, and `output/sequence_results.json`, plus `output/screenshots/before.png`, `after.png`, `sequence.gif`, `sequence.png`, and `sequence.tif`. Per-stage RGB-D arrays are stored under `output/screenshots/sequence/`. `scene_spec.json` is the canonical input and `model.xml` is the editable MJCF source.
+The scene writes `physics_results.json`, `render_results.json`, `output/sequence_results.json`, and `output/dense_sequence_results.json`, plus the keyframe and dense GIF/TIFF archives under `output/screenshots/`. Per-stage RGB-D arrays are stored under `output/screenshots/sequence/`. `scene_spec.json` is the canonical input and `model.xml` is the editable MJCF source.

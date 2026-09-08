@@ -42,7 +42,15 @@ The suite verifies:
 - dependency/payload failure branches and the valid interaction sequence;
 - real MuJoCo before/after RGB, depth arrays, image variation, red-cube visibility, and pixel movement.
 
-Expected simulator images are `output/screenshots/initial/rgb.png` and `output/screenshots/final/rgb.png`. The project-wide collector additionally writes a paced `output/screenshots/sequence.gif`, a contact sheet, and the multi-page `output/screenshots/sequence.tif`. The GIF is an animation of discrete verified keyframes, not a render of every physics timestep; the TIFF is the full-resolution keyframe archive. A report screenshot or synthetic image is not accepted as simulator evidence.
+Expected simulator images are `output/screenshots/initial/rgb.png` and `output/screenshots/final/rgb.png`. The project-wide collector writes a paced keyframe storyboard (`sequence.gif`, contact sheet, and `sequence.tif`) plus an optional dense RGB pass. The keyframe GIF is an animation of discrete verified states, not a render of every physics timestep; the TIFF is the full-resolution keyframe archive. A report screenshot or synthetic image is not accepted as simulator evidence.
+
+To capture the dense pass from the repository root:
+
+```bash
+MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --dense --scene 01-button-cube-box
+```
+
+Dense RGB frames are sampled every `0.20 s` of MuJoCo simulation time by default. Use `--dense-interval <seconds>` to change that interval. `output/screenshots/dense_sequence.gif` plays ordinary frames with a `200 ms` delay (the final frame is `800 ms`), and `output/screenshots/dense_sequence.tif` stores the same full-resolution RGB pages. `output/dense_sequence_results.json` records the simulation timestamps and the one-based GIF/TIFF `archive_frame` mapping. Depth remains available in the verified keyframe capture under `output/screenshots/sequence/`.
 
 ## Verified runs (2026-09-07)
 

@@ -1,0 +1,238 @@
+{
+  "status": "PASS",
+  "scene": "02-smart-drawer",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
+  "sequence_kind": "dense simulation frames",
+  "simulation_interval_s": 0.2,
+  "sampling_clock": "MuJoCo data.time elapsed since reset",
+  "sampling_policy": "first post-step state at or beyond each target; action-boundary event frames are extra",
+  "gif_frame_duration_ms": 200,
+  "gif_final_frame_duration_ms": 800,
+  "depth_capture": "keyframes_only; dense pass stores RGB frames",
+  "frame_count": 7,
+  "regular_frame_count": 4,
+  "event_frame_count": 3,
+  "simulation_time_span_s": 0.682,
+  "gif": "output/screenshots/dense_sequence.gif",
+  "tiff": "output/screenshots/dense_sequence.tif",
+  "frame_storage": "GIF and TIFF only; dense source PNGs are temporary and deleted after encoding",
+  "frames": [
+    {
+      "archive_frame": 1,
+      "index": 0,
+      "target_time_s": 0.0,
+      "actual_time_s": 0.0,
+      "absolute_sim_time_s": 0.0,
+      "physics_step": 0,
+      "phase": "initial",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "lock_state": "locked",
+        "drawer_state": "closed",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.0,
+        "drawer_body_position": [
+          0.0,
+          -0.005,
+          0.86
+        ]
+      }
+    },
+    {
+      "archive_frame": 2,
+      "index": 1,
+      "target_time_s": 0.2,
+      "actual_time_s": 0.2,
+      "absolute_sim_time_s": 0.2,
+      "physics_step": 100,
+      "phase": "warmup",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "lock_state": "locked",
+        "drawer_state": "closed",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.0,
+        "drawer_body_position": [
+          0.0,
+          -0.005,
+          0.86
+        ]
+      }
+    },
+    {
+      "archive_frame": 3,
+      "index": 2,
+      "target_time_s": null,
+      "actual_time_s": 0.218,
+      "absolute_sim_time_s": 0.218,
+      "physics_step": 109,
+      "phase": "press_unlock_button",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "press_unlock_button"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "closed",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.0,
+        "drawer_body_position": [
+          0.0,
+          -0.005,
+          0.86
+        ]
+      }
+    },
+    {
+      "archive_frame": 4,
+      "index": 3,
+      "target_time_s": 0.4,
+      "actual_time_s": 0.4,
+      "absolute_sim_time_s": 0.4,
+      "physics_step": 200,
+      "phase": "pull_drawer_22cm",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "press_unlock_button"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "closed",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.20423841806321966,
+        "drawer_body_position": [
+          0.0,
+          -0.2082561030087609,
+          0.86
+        ]
+      }
+    },
+    {
+      "archive_frame": 5,
+      "index": 4,
+      "target_time_s": null,
+      "actual_time_s": 0.442,
+      "absolute_sim_time_s": 0.442,
+      "physics_step": 221,
+      "phase": "pull_drawer_22cm",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "press_unlock_button",
+          "pull_drawer_22cm"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "open_22cm",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.2180230231609386,
+        "drawer_body_position": [
+          0.0,
+          -0.22261543613148543,
+          0.86
+        ]
+      }
+    },
+    {
+      "archive_frame": 6,
+      "index": 5,
+      "target_time_s": 0.6,
+      "actual_time_s": 0.6,
+      "absolute_sim_time_s": 0.6,
+      "physics_step": 300,
+      "phase": "settled_after_pull_drawer_22cm",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "press_unlock_button",
+          "pull_drawer_22cm"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "open_22cm",
+        "inspection_state": "pending",
+        "drawer_joint_qpos": 0.22003308005716807,
+        "drawer_body_position": [
+          0.0,
+          -0.22503445691447058,
+          0.86
+        ]
+      }
+    },
+    {
+      "archive_frame": 7,
+      "index": 6,
+      "target_time_s": null,
+      "actual_time_s": 0.682,
+      "absolute_sim_time_s": 0.682,
+      "physics_step": 341,
+      "phase": "inspect_open_drawer",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "press_unlock_button",
+          "pull_drawer_22cm",
+          "inspect_open_drawer"
+        ],
+        "lock_state": "unlocked",
+        "drawer_state": "open_22cm",
+        "inspection_state": "verified_open",
+        "drawer_joint_qpos": 0.22000991422553703,
+        "drawer_body_position": [
+          0.0,
+          -0.22501018710503645,
+          0.86
+        ]
+      }
+    }
+  ],
+  "archive_verification": {
+    "status": "PASS",
+    "gif_frame_count": 7,
+    "tiff_page_count": 7,
+    "gif_frame_durations_ms": [
+      200,
+      800
+    ],
+    "all_gif_frames_nonblank": true
+  },
+  "task_success": true
+}

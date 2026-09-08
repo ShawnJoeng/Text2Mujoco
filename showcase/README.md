@@ -7,4 +7,4 @@ The canonical showcase lives in the [project README](../README.md#showcase), whe
 - [03 - Warehouse Navigation](03-warehouse-navigation)
 - [04 - Lever and Ramp Ball](04-lever-ball-ramp)
 
-The mock prompts are recorded in [`mock_queries.json`](mock_queries.json). Each example directory contains its MJCF, environment API, validation scripts, reports, and generated visual evidence.
+The mock prompts are recorded in [`mock_queries.json`](mock_queries.json). Each example directory contains its MJCF, environment API, validation scripts, reports, and generated visual evidence. The root README uses the dense RGB animations, sampled every `0.20 s` of MuJoCo simulation time; the original short keyframe storyboards remain available in each example directory.
