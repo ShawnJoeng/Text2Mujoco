@@ -10,14 +10,14 @@ This generated package implements an ordered warehouse-navigation task. An orang
 
 Yellow, green, and magenta collision-free sites mark A, B, and the camera checkpoint. The robot uses two orthogonal slide joints and position actuators for deterministic planar navigation. This is a task-level motion controller, not a differential-drive or tire-slip model. Shelf geoms are collidable box primitives, and the controller checks actual MuJoCo contacts during motion and settling.
 
-The environment exposes `list_interaction_points()`, `get_action_schema()`, `reset(seed=None)`, `step(action)`, `observe()`, and `is_success()`.
+The environment exposes `list_interaction_points()`, `get_action_schema()`, `reset(seed=None)` (returns the initial observation), `step({"id": "<interaction_id>", "payload": {}})`, `observe()`, and `is_success()`.
 
 ## Files
 
 - `scene_spec.json`: normalized scene, assumptions, sensors, action dependencies, and task conditions.
 - `model.xml`: directly loadable MJCF scene.
 - `environment.py`: environment API, action validation, dependency checks, waypoint control, collision checks, and RGB-D capture.
-- `interaction_manifest.json`: machine-readable interaction points, visible markers, and action schemas.
+- `interaction_manifest.json`: canonical machine-readable interaction points, visible markers, and action schemas.
 - `physics_smoke.py`: MJCF compilation, dynamics, invalid actions, route safety, collision, reset, and XML/MJB reload validation.
 - `render_smoke.py`: real top-view RGB-D, marker visibility, robot pixel movement, task success, and render-reset validation.
 - `output/sequence_results.json`: full storyboard capture report.

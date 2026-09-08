@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Capture reproducible RGB-D frames for every showcase interaction sequence.
 
-The script deliberately renders each state in a fresh, short-lived MuJoCo
-renderer. This keeps the capture independent from viewer timing and produces
-both a paced GIF for README playback, a multi-page TIFF (full-size keyframes),
-and a small PNG contact sheet for README pages.
+The keyframe path renders each state in a short-lived MuJoCo renderer, while the
+dense path reuses one renderer per scene. Both paths are independent from
+viewer timing and produce a paced GIF, a multi-page TIFF, and inspectable
+machine-readable capture metadata.
 """
 
 from __future__ import annotations
@@ -17,7 +17,6 @@ import platform
 import re
 import shutil
 import sys
-import traceback
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -27,6 +26,17 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
 ROOT = Path(__file__).resolve().parent
+
+
+def require_repository_output_root(output_root: Path) -> Path:
+    """Keep generated reports and sensor paths in the self-contained showcase tree."""
+    try:
+        resolved = Path(output_root).resolve()
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise ValueError("output root is invalid") from exc
+    if resolved != ROOT:
+        raise ValueError("output root must be the repository showcase directory")
+    return resolved
 
 
 SCENES: Dict[str, Dict[str, Any]] = {
@@ -73,7 +83,12 @@ SCENES: Dict[str, Dict[str, Any]] = {
 }
 
 
-def load_environment(scene_dir: Path):
+def load_environment(
+    scene_dir: Path,
+    *,
+    model_path: Path | None = None,
+    spec_path: Path | None = None,
+):
     module_path = scene_dir / "environment.py"
     module_name = "showcase_environment_" + scene_dir.name.replace("-", "_")
     module_spec = importlib.util.spec_from_file_location(module_name, module_path)
@@ -81,7 +96,10 @@ def load_environment(scene_dir: Path):
         raise RuntimeError("could not load " + str(module_path))
     module = importlib.util.module_from_spec(module_spec)
     module_spec.loader.exec_module(module)
-    return module.build_environment(scene_dir / "model.xml", scene_dir / "scene_spec.json")
+    return module.build_environment(
+        model_path or (scene_dir / "model.xml"),
+        spec_path or (scene_dir / "scene_spec.json"),
+    )
 
 
 def capture_frame(env: Any, camera: str, frame_dir: Path) -> Tuple[np.ndarray, np.ndarray]:
@@ -179,7 +197,7 @@ def write_gif(
     final_duration_ms: int = 2600,
     max_size: tuple[int, int] | None = None,
 ) -> None:
-    """Write a deliberately paced animation of the interaction keyframes."""
+    """Write a paced animation of the interaction keyframes."""
     if not frames:
         raise AssertionError("no frames to write")
     if len(frames) != len(labels):
@@ -258,6 +276,8 @@ def verify_dense_archives(
             tiff.seek(index)
             if tiff.size != expected_size:
                 raise AssertionError(f"dense TIFF page {index} has unexpected size {tiff.size}")
+            if float(np.asarray(tiff.convert("RGB")).std()) < 5.0:
+                raise AssertionError(f"dense TIFF page {index} is blank or nearly uniform")
     if tiff_page_count != expected_frame_count:
         raise AssertionError(f"dense TIFF has {tiff_page_count} pages; expected {expected_frame_count}")
 
@@ -287,6 +307,12 @@ class DenseSampler:
         self.interval_s = float(interval_s)
         if not np.isfinite(self.interval_s) or self.interval_s <= 0.0:
             raise ValueError("dense sampling interval must be a positive finite number")
+        timestep = float(env.model.opt.timestep)
+        if self.interval_s < timestep - 1e-12:
+            raise ValueError(
+                f"dense sampling interval ({self.interval_s:g}s) must be at least "
+                f"the MuJoCo timestep ({timestep:g}s)"
+            )
         self.origin_time_s = 0.0
         self.next_target_s = 0.0
         self.physics_steps = 0
@@ -306,8 +332,24 @@ class DenseSampler:
         sampler = self
 
         def wrapped(model: Any, data: Any, *args: Any, **kwargs: Any) -> None:
-            original(model, data, *args, **kwargs)
-            if data is sampler.env.data:
+            if data is not sampler.env.data:
+                original(model, data, *args, **kwargs)
+                return
+
+            # MuJoCo also accepts an optional nstep argument. Expand it so
+            # each physical state is available to the simulation-time sampler
+            # Preserve each physical step instead of duplicating the endpoint.
+            nstep = kwargs.pop("nstep", None)
+            remaining_args = args
+            if nstep is None and len(args) == 1 and isinstance(args[0], int):
+                nstep = args[0]
+                remaining_args = ()
+            if nstep is None:
+                nstep = 1
+            if not isinstance(nstep, int) or nstep < 1:
+                raise ValueError("mj_step nstep must be a positive integer")
+            for _ in range(nstep):
+                original(model, data, *remaining_args, **kwargs)
                 sampler.physics_steps += 1
                 if not sampler.paused:
                     sampler._sample_due()
@@ -327,13 +369,18 @@ class DenseSampler:
 
     def _sample_due(self) -> None:
         elapsed = float(self.env.data.time) - self.origin_time_s
-        # Each environment step is much shorter than 0.20 s. Capture the
-        # actual post-step state once when a target boundary is crossed; never
-        # duplicate one state to fill a missed interval.
-        if elapsed + 1e-9 >= self.next_target_s:
+        # Drain every simulation-time boundary crossed by this physics call.
+        # If the interval is smaller than the model timestep, multiple targets
+        # can legitimately map to the same post-step state; the report keeps
+        # both the target and actual timestamps so this is explicit.
+        catch_up = 0
+        while elapsed + 1e-9 >= self.next_target_s:
             target = self.next_target_s
             self.capture(target_time_s=target, event=False)
             self.next_target_s += self.interval_s
+            catch_up += 1
+            if catch_up > 10000:
+                raise RuntimeError("dense sampler could not drain simulation-time boundaries")
 
     def _ensure_renderer(self) -> Any:
         if self.renderer is None:
@@ -420,13 +467,14 @@ class DenseSampler:
             final_duration_ms,
             expected_size,
         )
-        # The dense source PNGs are intentionally temporary. ``archive_frame``
+        # The dense source PNGs are temporary. ``archive_frame``
         # is the stable one-based page number shared by the GIF and TIFF.
         regular_frame_count = sum(not bool(record["event_frame"]) for record in self.records)
         event_frame_count = len(self.records) - regular_frame_count
         report = {
             "status": "PASS",
             "scene": self.scene_name,
+            "path_base": "package_root",
             "mujoco_version": mujoco.__version__,
             "python_version": platform.python_version(),
             "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"),
@@ -444,7 +492,7 @@ class DenseSampler:
             "simulation_time_span_s": self.records[-1]["actual_time_s"] if self.records else 0.0,
             "gif": str(gif_path.relative_to(archive_scene_dir)),
             "tiff": str(tiff_path.relative_to(archive_scene_dir)),
-            "frame_storage": "GIF and TIFF only; dense source PNGs are temporary and deleted after encoding",
+            "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
             "frames": [
                 {
                     # ``index`` remains zero-based for programmatic consumers;
@@ -464,7 +512,12 @@ class DenseSampler:
         }
         report_path = archive_scene_dir / "output" / "dense_sequence_results.json"
         report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
-        shutil.rmtree(self.output_dir)
+        clear_generated_dense_capture(self.output_dir)
+        try:
+            self.output_dir.rmdir()
+        except OSError:
+            # Keep unrelated user files beside the generated capture.
+            pass
         return report
 
 
@@ -525,10 +578,53 @@ def clear_generated_sequence_frames(sequence_dir: Path) -> None:
     generated = re.compile(r"^(?:\d{2}_|frame_\d{2}_)")
     for child in sequence_dir.iterdir():
         if child.name == "runtime_inspect" or child.name == "sequence_results.json" or generated.match(child.name):
-            if child.is_dir():
-                shutil.rmtree(child)
-            else:
+            # Never follow a user-created symlink during cleanup.
+            if child.is_symlink():
                 child.unlink()
+            elif child.is_dir():
+                entries = {entry.name for entry in child.iterdir()}
+                if entries and entries <= {"rgb.png", "depth.npy", "depth_preview.png"}:
+                    shutil.rmtree(child)
+            else:
+                if child.suffix in {".png", ".npy"}:
+                    child.unlink()
+
+
+def clear_generated_dense_capture(dense_dir: Path) -> None:
+    """Remove only collector-owned dense capture subdirectories."""
+    if not dense_dir.exists():
+        return
+    if dense_dir.is_symlink() or not dense_dir.is_dir():
+        raise RuntimeError("dense capture path must be a real directory: " + str(dense_dir))
+    generated_frame = re.compile(r"^frame_\d+_[0-9.]+_.+\.png$")
+    for name in ("frames", "sensor"):
+        child = dense_dir / name
+        if not child.exists() and not child.is_symlink():
+            continue
+        if child.is_symlink():
+            child.unlink()
+        elif child.is_dir():
+            for entry in child.iterdir():
+                if name == "frames" and generated_frame.fullmatch(entry.name):
+                    if entry.is_file():
+                        entry.unlink()
+                elif name == "sensor" and entry.name in {
+                    "rgb.png",
+                    "depth.npy",
+                    "depth_preview.png",
+                    "before.png",
+                    "after.png",
+                    "before_depth.npy",
+                    "after_depth.npy",
+                }:
+                    if entry.is_file():
+                        entry.unlink()
+            try:
+                child.rmdir()
+            except OSError:
+                pass
+        else:
+            child.unlink()
 
 
 def run_dense_scene(
@@ -539,15 +635,15 @@ def run_dense_scene(
 ) -> Dict[str, Any]:
     """Capture RGB at 0.20-second simulation-time intervals.
 
-    The dense pass is intentionally separate from the keyframe pass: it keeps
+    The dense pass is separate from the keyframe pass: it keeps
     the full-resolution TIFF/contact sheet compact while giving the README a
     readable, timed animation of the actual intermediate simulator states.
     """
+    output_root = require_repository_output_root(output_root)
     scene_dir = ROOT / scene_name
     screenshot_dir = output_root / scene_name / "output" / "screenshots"
     dense_dir = screenshot_dir / "dense"
-    if dense_dir.exists():
-        shutil.rmtree(dense_dir)
+    clear_generated_dense_capture(dense_dir)
     dense_gif = screenshot_dir / "dense_sequence.gif"
     dense_tiff = screenshot_dir / "dense_sequence.tif"
     dense_report_path = output_root / scene_name / "output" / "dense_sequence_results.json"
@@ -593,14 +689,22 @@ def run_dense_scene(
     return report
 
 
-def run_scene(scene_name: str, scene_cfg: Dict[str, Any], output_root: Path) -> Dict[str, Any]:
+def run_scene(
+    scene_name: str,
+    scene_cfg: Dict[str, Any],
+    output_root: Path,
+    *,
+    model_path: Path | None = None,
+    spec_path: Path | None = None,
+) -> Dict[str, Any]:
+    output_root = require_repository_output_root(output_root)
     scene_dir = ROOT / scene_name
     scene_output_dir = output_root / scene_name / "output"
     screenshot_dir = scene_output_dir / "screenshots"
     sequence_dir = screenshot_dir / "sequence"
     sequence_dir.mkdir(parents=True, exist_ok=True)
     clear_generated_sequence_frames(sequence_dir)
-    env = load_environment(scene_dir)
+    env = load_environment(scene_dir, model_path=model_path, spec_path=spec_path)
 
     # Establish the same settled initial state used by the scene's render test.
     env.reset()
@@ -675,6 +779,7 @@ def run_scene(scene_name: str, scene_cfg: Dict[str, Any], output_root: Path) -> 
     result = {
         "status": "PASS",
         "scene": scene_name,
+        "path_base": "package_root",
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
         "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"),
@@ -715,6 +820,7 @@ def main() -> int:
         help="simulation-time interval in seconds for --dense (default: 0.2)",
     )
     args = parser.parse_args()
+    args.output_root = require_repository_output_root(args.output_root)
     backend = os.environ.get("MUJOCO_GL", "")
     if backend in {"", "disable"}:
         raise SystemExit("capture_sequences.py requires MUJOCO_GL=glfw/egl/osmesa")
@@ -740,8 +846,7 @@ def main() -> int:
             "mujoco_version": getattr(mujoco, "__version__", "unknown"),
             "render_backend_requested": backend,
             "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
+            "error": type(exc).__name__,
         }
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 1

@@ -1,37 +1,70 @@
 {
   "schema_version": "1.0",
+  "backend": "mujoco",
+  "source": "scene_spec.json",
   "scene": "smart_desktop_tool_drawer",
-  "sequence": ["press_unlock_button", "pull_drawer_22cm", "inspect_open_drawer"],
+  "action_envelope": {
+    "type": "object",
+    "properties": {"id": {"type": "string"}, "payload": {"type": "object"}},
+    "required": ["id", "payload"],
+    "additionalProperties": false
+  },
+  "dependency_order": [
+    "press_unlock_button",
+    "pull_drawer_22cm",
+    "inspect_open_drawer"
+  ],
   "interaction_points": [
     {
       "id": "press_unlock_button",
-      "label_zh": "绿色解锁按钮",
       "target": {"type": "joint", "name": "unlock_button_slide"},
       "marker_site": "unlock_point_marker",
-      "marker_color": "yellow",
-      "action": {"id": "press_unlock_button", "payload": {"press_depth_m": 0.012}},
+      "pose": {"position": [-0.20, -0.24, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "press",
+      "action": {
+        "mode": "direct",
+        "command": "press_unlock_button",
+        "schema": {"type": "object", "properties": {"press_depth_m": {"type": "number", "minimum": 0.01, "maximum": 0.012}}, "required": []}
+      },
+      "preconditions": ["lock_state == 'locked'"],
+      "success_conditions": ["unlock_button_joint_qpos >= 0.01", "lock_state == 'unlocked'"],
       "depends_on": [],
-      "observable_result": "unlock_button_joint_qpos >= 0.01 and lock_state == unlocked"
+      "effects": ["lock_state = 'unlocked'"],
+      "reset": {"lock_state": "locked", "unlock_button_joint_qpos": 0}
     },
     {
       "id": "pull_drawer_22cm",
-      "label_zh": "抽屉把手",
       "target": {"type": "joint", "name": "drawer_slide"},
       "marker_site": "drawer_handle_marker",
-      "marker_color": "cyan",
-      "action": {"id": "pull_drawer_22cm", "payload": {"distance_m": 0.22}},
+      "pose": {"position": [0, -0.255, 0.89], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "open",
+      "action": {
+        "mode": "direct",
+        "command": "pull_drawer_22cm",
+        "schema": {"type": "object", "properties": {"distance_m": {"type": "number", "minimum": 0.22, "maximum": 0.22}}, "required": ["distance_m"]}
+      },
+      "preconditions": ["lock_state == 'unlocked'", "drawer_state == 'closed'"],
+      "success_conditions": ["abs(drawer_joint_qpos - 0.22) <= 0.002"],
       "depends_on": ["press_unlock_button"],
-      "observable_result": "abs(drawer_joint_qpos - 0.22) <= 0.002"
+      "effects": ["drawer_state = 'open_22cm'"],
+      "reset": {"drawer_state": "closed", "drawer_joint_qpos": 0}
     },
     {
       "id": "inspect_open_drawer",
-      "label_zh": "固定相机检查点",
       "target": {"type": "camera", "name": "fixed_inspection_camera"},
       "marker_site": "camera_check_marker",
-      "marker_color": "magenta",
-      "action": {"id": "inspect_open_drawer", "payload": {"output_dir": "./output/screenshots/after_capture"}},
+      "pose": {"position": [0.24, -0.235, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "inspect",
+      "action": {
+        "mode": "direct",
+        "command": "inspect_open_drawer",
+        "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"]}
+      },
+      "preconditions": ["drawer_state == 'open_22cm'"],
+      "success_conditions": ["fixed camera RGB-D capture is valid", "drawer_joint_qpos >= 0.218"],
       "depends_on": ["pull_drawer_22cm"],
-      "observable_result": "640x480 RGB-D exists and inspection_state == verified_open"
+      "effects": ["inspection_state = 'verified_open'"],
+      "reset": {"inspection_state": "pending"}
     }
   ]
 }

@@ -33,11 +33,11 @@ def main() -> int:
     report = validate(valid)
     if report.errors or report.warnings:
         raise AssertionError(
-            f"valid fixture failed: errors={report.errors!r}, warnings={report.warnings!r}"
+            f"valid sample failed: errors={report.errors!r}, warnings={report.warnings!r}"
         )
 
     wrong_backend = copy.deepcopy(valid)
-    wrong_backend["backend"] = "isaac"
+    wrong_backend["backend"] = "other_simulator"
     expect_error(wrong_backend, "backend must be 'mujoco'")
 
     duplicate_id = copy.deepcopy(valid)
@@ -139,7 +139,7 @@ def main() -> int:
 
     result = {
         "status": "PASS",
-        "valid_fixture": "PASS",
+        "valid_sample": "PASS",
         "negative_cases": 17,
         "positive_variants": 4,
     }

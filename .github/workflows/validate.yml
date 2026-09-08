@@ -1,0 +1,50 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  static-and-physics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MUJOCO_GL: disable
+      PYTHONPYCACHEPREFIX: /tmp/text2mujoco-pycache
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install runtime dependencies
+        run: python -m pip install "mujoco==3.2.7" "numpy>=1.24,<3" "pillow>=10,<13"
+
+      - name: Validate both skill adapters
+        run: |
+          python text2mujoco_codex/scripts/test_validate_scene_spec.py
+          python text2mujoco_claude/scripts/test_validate_scene_spec.py
+          cmp text2mujoco_codex/scripts/validate_scene_spec.py text2mujoco_claude/scripts/validate_scene_spec.py
+
+      - name: Validate scene specifications
+        run: |
+          for scene in showcase/0*; do
+            python text2mujoco_codex/scripts/validate_scene_spec.py "$scene/scene_spec.json" --json
+          done
+          python showcase/validate_manifests.py
+
+      - name: Run physics smoke tests
+        run: |
+          for scene in showcase/0*; do
+            (cd "$scene" && python physics_smoke.py)
+          done
+
+      - name: Run static contract checks
+        run: |
+          python showcase/01-button-cube-box/contract_test.py
+          python showcase/01-button-cube-box/validator_unit_test.py

@@ -3,9 +3,9 @@
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
-  "command": "render_smoke.py",
+  "path_base": "package_root",
   "render_backend_requested": "glfw",
-  "renderer_context": "glfw",
+  "renderer_context": "mujoco.cgl.GLContext",
   "resolution": [
     640,
     480

@@ -8,8 +8,6 @@ import json
 import math
 import os
 import platform
-import sys
-import traceback
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -65,6 +63,16 @@ def run(args: argparse.Namespace) -> dict:
     )
     expect_error(lambda: environment.run_physics(True), "boolean step count")
 
+    # The documented lower boundary must be executable, not rejected by the
+    # actuator convergence tolerance.
+    environment.reset()
+    boundary = environment.step(
+        {"id": "press_unlock_button", "payload": {"press_depth_m": 0.01}}
+    )
+    if boundary["unlock_button_joint_qpos"] < 0.01 - 1e-5:
+        raise AssertionError("minimum legal button depth did not unlock")
+    environment.reset()
+
     environment.step({"id": "press_unlock_button", "payload": {"press_depth_m": 0.012}})
     pressed = environment.observe()
     if pressed["unlock_button_joint_qpos"] < 0.01 or pressed["state"]["lock_state"] != "unlocked":
@@ -79,8 +87,12 @@ def run(args: argparse.Namespace) -> dict:
         raise AssertionError("physics-only sequence must still require camera inspection")
 
     artifacts = environment.save_artifacts(args.output_dir)
-    xml_reload = mujoco.MjModel.from_xml_path(artifacts["mjcf"])
-    binary_reload = mujoco.MjModel.from_binary_path(artifacts["mjb"])
+    xml_reload = mujoco.MjModel.from_xml_path(
+        str(environment.package_root / artifacts["mjcf"])
+    )
+    binary_reload = mujoco.MjModel.from_binary_path(
+        str(environment.package_root / artifacts["mjb"])
+    )
     if xml_reload.nq != environment.model.nq or binary_reload.nq != environment.model.nq:
         raise AssertionError("serialized model dimensions changed")
 
@@ -101,7 +113,7 @@ def run(args: argparse.Namespace) -> dict:
         "mujoco_executed": True,
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
-        "command": " ".join(sys.argv),
+        "path_base": "package_root",
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "mjcf_compile": "PASS",
         "finite_state": "PASS",
@@ -115,9 +127,7 @@ def run(args: argparse.Namespace) -> dict:
         "mjcf_reload": "PASS",
         "mjb_reload": "PASS",
         "artifacts": {
-            key: str(
-                Path(value).resolve().relative_to(Path(__file__).resolve().parent)
-            )
+            key: value
             for key, value in artifacts.items()
         },
     }
@@ -131,6 +141,10 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, default=base / "output")
     parser.add_argument("--result", type=Path, default=base / "output" / "physics_results.json")
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.output_dir = args.output_dir.resolve()
+    args.result = args.result.resolve()
     try:
         result, exit_code = run(args), 0
     except Exception as exc:
@@ -139,11 +153,10 @@ def main() -> int:
             "mujoco_executed": True,
             "mujoco_version": mujoco.__version__,
             "python_version": platform.python_version(),
-            "command": " ".join(sys.argv),
+            "path_base": "package_root",
             "mujoco_gl": os.environ.get("MUJOCO_GL"),
             "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
+            "error": type(exc).__name__,
         }, 1
     args.result.parent.mkdir(parents=True, exist_ok=True)
     args.result.write_text(json.dumps(result, indent=2), encoding="utf-8")

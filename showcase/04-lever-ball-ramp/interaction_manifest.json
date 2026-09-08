@@ -1,73 +1,88 @@
 {
-  "manifest_version": "1.0",
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source": "scene_spec.json",
   "scene": "lever_ball_ramp_workbench",
-  "envelope_schema": {
+  "action_envelope": {
     "type": "object",
-    "properties": {
-      "id": {"type": "string"},
-      "payload": {"type": "object"}
-    },
-    "required": ["id", "payload"]
+    "properties": {"id": {"type": "string"}, "payload": {"type": "object"}},
+    "required": ["id", "payload"],
+    "additionalProperties": false
   },
-  "interaction_points": [
-    {
-      "id": "pull_blue_lever",
-      "target": {"type": "actuator", "name": "lever_position"},
-      "marker_site": "lever_interaction_marker",
-      "depends_on": [],
-      "action_schema": {
-        "type": "object",
-        "properties": {"pull_angle_rad": {"type": "number", "minimum": 0.8, "maximum": 1.05}},
-        "required": []
-      },
-      "observable_success": ["lever_angle_rad <= -0.75", "gate_lift_m >= 0.1"],
-      "runtime_effect": "Position-control the lever and linked gate; ball dynamics remain physical."
-    },
-    {
-      "id": "check_release_zone",
-      "target": {"type": "site", "name": "release_zone_marker"},
-      "marker_site": "release_zone_marker",
-      "depends_on": ["pull_blue_lever"],
-      "action_schema": {
-        "type": "object",
-        "properties": {"max_steps": {"type": "integer", "minimum": 1, "maximum": 1200}},
-        "required": []
-      },
-      "observable_success": ["ball_position_x > -0.25"],
-      "runtime_effect": "Step physics until the ball has visibly cleared the marked release zone."
-    },
-    {
-      "id": "confirm_target_tray",
-      "target": {"type": "body", "name": "target_tray"},
-      "marker_site": "target_zone_marker",
-      "depends_on": ["check_release_zone"],
-      "action_schema": {
-        "type": "object",
-        "properties": {"max_steps": {"type": "integer", "minimum": 1, "maximum": 3000}},
-        "required": []
-      },
-      "observable_success": ["ball center inside tray local bounds", "ball_speed_mps < 0.15"],
-      "runtime_effect": "Step physics until the released ball enters and settles in the tray."
-    },
-    {
-      "id": "inspect_with_camera",
-      "target": {"type": "camera", "name": "inspection_camera"},
-      "marker_site": "camera_checkpoint_marker",
-      "depends_on": ["confirm_target_tray"],
-      "action_schema": {
-        "type": "object",
-        "properties": {"output_dir": {"type": "string"}},
-        "required": ["output_dir"]
-      },
-      "observable_success": ["RGB shape is 480 x 640 x 3", "depth contains finite geometry"],
-      "runtime_effect": "Capture and persist an RGB-D observation from inspection_camera."
-    }
-  ],
   "dependency_order": [
     "pull_blue_lever",
     "check_release_zone",
     "confirm_target_tray",
     "inspect_with_camera"
   ],
-  "reset": "mj_resetData, actuator controls, deterministic RNG, and all task state/history"
+  "interaction_points": [
+    {
+      "id": "pull_blue_lever",
+      "target": {"type": "actuator", "name": "lever_position"},
+      "marker_site": "lever_interaction_marker",
+      "pose": {"position": [-0.48, -0.29, 1.05], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "pull",
+      "action": {
+        "mode": "direct",
+        "command": "pull_blue_lever",
+        "schema": {"type": "object", "properties": {"pull_angle_rad": {"type": "number", "minimum": 0.8, "maximum": 1.05}}, "required": []}
+      },
+      "preconditions": ["lever_state == 'ready'"],
+      "success_conditions": ["lever_angle_rad <= -0.75", "gate_lift_m >= 0.1"],
+      "depends_on": [],
+      "effects": ["lever_state = 'pulled'", "gate_state = 'open'"],
+      "reset": {"lever_state": "ready", "gate_state": "closed"}
+    },
+    {
+      "id": "check_release_zone",
+      "target": {"type": "site", "name": "release_zone_marker"},
+      "marker_site": "release_zone_marker",
+      "pose": {"position": [-0.41, 0, 1.06], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "observe_release",
+      "action": {
+        "mode": "direct",
+        "command": "check_release_zone",
+        "schema": {"type": "object", "properties": {"max_steps": {"type": "integer", "minimum": 1, "maximum": 1200}}, "required": []}
+      },
+      "preconditions": ["gate_state == 'open'"],
+      "success_conditions": ["ball_position_x > -0.25"],
+      "depends_on": ["pull_blue_lever"],
+      "effects": ["release_zone_state = 'cleared'"],
+      "reset": {"release_zone_state": "occupied"}
+    },
+    {
+      "id": "confirm_target_tray",
+      "target": {"type": "body", "name": "target_tray"},
+      "marker_site": "target_zone_marker",
+      "pose": {"position": [0.41, 0, 0.86], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "confirm_arrival",
+      "action": {
+        "mode": "direct",
+        "command": "confirm_target_tray",
+        "schema": {"type": "object", "properties": {"max_steps": {"type": "integer", "minimum": 1, "maximum": 3000}}, "required": []}
+      },
+      "preconditions": ["release_zone_state == 'cleared'"],
+      "success_conditions": ["ball center inside target_tray.interior_bounds", "ball_speed_mps < 0.15"],
+      "depends_on": ["check_release_zone"],
+      "effects": ["target_state = 'occupied'"],
+      "reset": {"target_state": "empty"}
+    },
+    {
+      "id": "inspect_with_camera",
+      "target": {"type": "camera", "name": "inspection_camera"},
+      "marker_site": "camera_checkpoint_marker",
+      "pose": {"position": [1.2, -1.2, 1.42], "orientation_xyzw": [0.5235515583, 0.216862156, 0.3153052722, 0.7612142645]},
+      "affordance": "inspect",
+      "action": {
+        "mode": "direct",
+        "command": "inspect_with_camera",
+        "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"]}
+      },
+      "preconditions": ["target_state == 'occupied'"],
+      "success_conditions": ["observation contains 640x480 RGB and finite depth"],
+      "depends_on": ["confirm_target_tray"],
+      "effects": ["inspection_state = 'captured'"],
+      "reset": {"inspection_state": "pending"}
+    }
+  ]
 }

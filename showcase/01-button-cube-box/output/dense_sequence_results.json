@@ -1,6 +1,7 @@
 {
   "status": "PASS",
   "scene": "01-button-cube-box",
+  "path_base": "package_root",
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
   "render_backend_requested": "glfw",
@@ -18,7 +19,7 @@
   "simulation_time_span_s": 3.0,
   "gif": "output/screenshots/dense_sequence.gif",
   "tiff": "output/screenshots/dense_sequence.tif",
-  "frame_storage": "GIF and TIFF only; dense source PNGs are temporary and deleted after encoding",
+  "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
   "frames": [
     {
       "archive_frame": 1,

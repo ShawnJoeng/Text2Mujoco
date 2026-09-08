@@ -1,6 +1,7 @@
 {
   "status": "PASS",
   "scene": "01-button-cube-box",
+  "path_base": "package_root",
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
   "render_backend_requested": "glfw",
@@ -25,7 +26,13 @@
       ],
       "rgb_std": 65.48309808982803,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 161229,
+      "finite_depth_min_m": 1.1489711999893188,
+      "finite_depth_max_m": 3.6283583641052246,
       "observation": {
         "history": [],
         "button_state": "ready",
@@ -36,7 +43,7 @@
           -0.03,
           0.8249714970506437
         ],
-        "cube_speed_mps": 0.000004383795478977281,
+        "cube_speed_mps": 4.383795478977281e-06,
         "cube_contacts_box_bottom": false
       }
     },
@@ -52,7 +59,13 @@
       ],
       "rgb_std": 65.577815720031,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 161229,
+      "finite_depth_min_m": 1.1489711999893188,
+      "finite_depth_max_m": 3.6283583641052246,
       "observation": {
         "history": [
           "press_start_button"
@@ -65,7 +78,7 @@
           -0.03,
           0.8249713261561805
         ],
-        "cube_speed_mps": 2.3212708399928007E-14,
+        "cube_speed_mps": 2.3212708399928007e-14,
         "cube_contacts_box_bottom": false
       }
     },
@@ -81,7 +94,13 @@
       ],
       "rgb_std": 65.49995955111304,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 161568,
+      "finite_depth_min_m": 1.1489711999893188,
+      "finite_depth_max_m": 3.6283583641052246,
       "observation": {
         "history": [
           "press_start_button",
@@ -111,7 +130,13 @@
       ],
       "rgb_std": 65.91660070518121,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 161229,
+      "finite_depth_min_m": 1.1489711999893188,
+      "finite_depth_max_m": 3.6283583641052246,
       "observation": {
         "history": [
           "press_start_button",
@@ -126,7 +151,7 @@
           0.1799999999963238,
           0.8449713261561786
         ],
-        "cube_speed_mps": 2.1833944732177327E-14,
+        "cube_speed_mps": 2.1833944732177327e-14,
         "cube_contacts_box_bottom": true
       }
     },
@@ -142,7 +167,13 @@
       ],
       "rgb_std": 65.91660070518121,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 161229,
+      "finite_depth_min_m": 1.1489711999893188,
+      "finite_depth_max_m": 3.6283583641052246,
       "observation": {
         "history": [
           "press_start_button",
@@ -158,19 +189,21 @@
           0.1799999999963238,
           0.8449713261561786
         ],
-        "cube_speed_mps": 2.1833944732177327E-14,
+        "cube_speed_mps": 2.1833944732177327e-14,
         "cube_contacts_box_bottom": true
       }
     }
   ],
   "contact_sheet": "output/screenshots/sequence.png",
   "tiff": "output/screenshots/sequence.tif",
-  "before": "output/screenshots/before.png",
-  "after": "output/screenshots/after.png",
-  "task_success": true,
   "gif": "output/screenshots/sequence.gif",
+  "sequence_kind": "discrete interaction keyframes",
   "gif_frame_duration_ms": 1600,
   "gif_final_frame_duration_ms": 2600,
-  "sequence_kind": "discrete interaction keyframes",
-  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation"
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "before_depth": "output/screenshots/before_depth.npy",
+  "after_depth": "output/screenshots/after_depth.npy",
+  "task_success": true
 }

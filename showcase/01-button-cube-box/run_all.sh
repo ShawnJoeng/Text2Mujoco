@@ -30,28 +30,30 @@ if [[ "$RENDER_BACKEND" == "auto" && "$(uname -s)" == "Darwin" ]]; then
   if command -v mjpython >/dev/null 2>&1; then
     MUJOCO_GL=glfw mjpython render_smoke.py \
       --screenshot-dir output/screenshots \
-      --result output/render_glfw_results.json | tee output/render_glfw.log
+      --result output/render_glfw_results.json
   else
-    run_render glfw | tee output/render_glfw.log
+    run_render glfw
   fi
   cp output/render_glfw_results.json output/render_results.json
   printf 'Render backend: glfw (macOS native CGL context)\n'
 elif [[ "$RENDER_BACKEND" == "auto" ]]; then
   set +e
-  run_render egl >output/render_egl.log 2>&1
+  render_log="$(mktemp /tmp/text2mujoco-render-XXXXXX.log)"
+  run_render egl >"$render_log" 2>&1
   egl_status=$?
+  rm -f "$render_log"
   set -e
   if [[ $egl_status -eq 0 ]]; then
     cp output/render_egl_results.json output/render_results.json
     printf 'Render backend: egl\n'
   else
     printf 'EGL failed with exit %s; retrying in a fresh OSMesa process.\n' "$egl_status"
-    run_render osmesa | tee output/render_osmesa.log
+    run_render osmesa
     cp output/render_osmesa_results.json output/render_results.json
     printf 'Render backend: osmesa\n'
   fi
 else
-  run_render "$RENDER_BACKEND" | tee "output/render_${RENDER_BACKEND}.log"
+  run_render "$RENDER_BACKEND"
   cp "output/render_${RENDER_BACKEND}_results.json" output/render_results.json
   printf 'Render backend: %s\n' "$RENDER_BACKEND"
 fi

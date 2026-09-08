@@ -3,8 +3,7 @@
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
-  "platform": "macOS-26.6.2-arm64-arm-64bit",
-  "command": "render_smoke.py",
+  "path_base": "package_root",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via glfw",
   "renderer_verified": "PASS",
@@ -55,12 +54,12 @@
     "after_rgb": "output/screenshots/after.png",
     "sequence_contact_sheet": "output/screenshots/sequence.png",
     "sequence_tiff": "output/screenshots/sequence.tif",
-    "sequence_directory": "output/screenshots/sequence",
-    "sequence_gif": "output/screenshots/sequence.gif"
+    "sequence_directory": "output/screenshots/sequence"
   },
   "sequence": {
     "status": "PASS",
     "scene": "04-lever-ball-ramp",
+    "path_base": "package_root",
     "mujoco_version": "3.2.7",
     "python_version": "3.9.6",
     "render_backend_requested": "glfw",
@@ -310,14 +309,15 @@
     ],
     "contact_sheet": "output/screenshots/sequence.png",
     "tiff": "output/screenshots/sequence.tif",
+    "gif": "output/screenshots/sequence.gif",
+    "sequence_kind": "discrete interaction keyframes",
+    "gif_frame_duration_ms": 1600,
+    "gif_final_frame_duration_ms": 2600,
+    "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
     "before": "output/screenshots/before.png",
     "after": "output/screenshots/after.png",
     "before_depth": "output/screenshots/before_depth.npy",
     "after_depth": "output/screenshots/after_depth.npy",
-    "task_success": true,
-    "gif": "output/screenshots/sequence.gif",
-    "gif_frame_duration_ms": 1600,
-    "gif_final_frame_duration_ms": 2600,
-    "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation"
+    "task_success": true
   }
 }

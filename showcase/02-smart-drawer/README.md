@@ -8,16 +8,16 @@ This generated package implements a three-step task: press the green button to u
 - `pull_drawer_22cm` is available only after unlocking. A position actuator drives `drawer_slide` toward `0.22 m`; a cyan emissive site marks the handle.
 - `inspect_open_drawer` requires the drawer position to be at least `0.218 m`. It captures `640 x 480` RGB-D from `fixed_inspection_camera`; a magenta site marks the inspection point.
 
-The drawer uses a real slide joint, position actuators, and multiple collision geoms. Pulling is a task-level control command, not a robot gripper contact simulation. The scene uses only MJCF primitives and has no external mesh or download dependency.
+The drawer uses a real slide joint, position actuators, and multiple collision geoms. Pulling is a task-level control command, not a robot gripper contact simulation. The scene uses only MJCF primitives and requires no downloaded mesh assets.
 
-The environment exposes `list_interaction_points()`, `get_action_schema()`, `reset(seed=None)`, `step(action)`, `observe()`, and `is_success()`.
+The environment exposes `list_interaction_points()`, `get_action_schema()`, `reset(seed=None)` (returns the initial observation), `step({"id": "<interaction_id>", "payload": {}})`, `observe()`, and `is_success()`.
 
 ## Files
 
 - `scene_spec.json`: normalized scene, assumptions, sensors, and action contract.
 - `model.xml`: directly loadable MJCF.
 - `environment.py`: environment API without global simulator state.
-- `interaction_manifest.json`: machine-readable interaction order and marker mapping.
+- `interaction_manifest.json`: canonical machine-readable interaction contract and marker mapping.
 - `physics_smoke.py`: compilation, dynamics, rejection branches, drawer travel, reset, and XML/MJB reload checks.
 - `render_smoke.py`: fixed-camera RGB-D, marker visibility, and handle-pixel movement checks.
 - `output/sequence_results.json`: full storyboard capture report.

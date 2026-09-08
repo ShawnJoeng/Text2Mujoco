@@ -7,8 +7,6 @@ import argparse
 import json
 import os
 import platform
-import sys
-import traceback
 from pathlib import Path
 
 import mujoco
@@ -68,12 +66,16 @@ def run(args: argparse.Namespace) -> dict:
     model = mujoco.MjModel.from_xml_path(str(args.model))
     if model.nq != env.model.nq:
         raise AssertionError("reloaded XML dimensions differ")
+    artifacts = env.save_artifacts(args.output_dir)
+    if env.spec["outputs"].get("save_mjcf") and "mjcf" not in artifacts:
+        raise AssertionError("save_mjcf=true did not produce an MJCF artifact")
+    if env.spec["outputs"].get("save_mjb") and "mjb" not in artifacts:
+        raise AssertionError("save_mjb=true did not produce an MJB artifact")
     result = {
         "status": "PASS",
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
-        "platform": platform.platform(),
-        "command": " ".join(sys.argv),
+        "path_base": "package_root",
         "mujoco_gl": os.environ.get("MUJOCO_GL", "unset"),
         "model_compile": "PASS",
         "typed_targets": "PASS",
@@ -93,6 +95,10 @@ def run(args: argparse.Namespace) -> dict:
         "interaction_sequence": history,
         "deterministic_reset": "PASS",
         "mjcf_reload": "PASS",
+        "artifacts": {
+            key: value
+            for key, value in artifacts.items()
+        },
     }
     return result
 
@@ -102,8 +108,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=Path, default=base / "model.xml")
     parser.add_argument("--spec", type=Path, default=base / "scene_spec.json")
-    parser.add_argument("--result", type=Path, default=base / "physics_results.json")
+    parser.add_argument("--output-dir", type=Path, default=base / "output")
+    parser.add_argument("--result", type=Path, default=base / "output" / "physics_results.json")
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.output_dir = args.output_dir.resolve()
+    args.result = args.result.resolve()
     try:
         result = run(args)
         code = 0
@@ -112,11 +123,10 @@ def main() -> int:
             "status": "FAIL",
             "mujoco_version": mujoco.__version__,
             "python_version": platform.python_version(),
-            "command": " ".join(sys.argv),
+            "path_base": "package_root",
             "mujoco_gl": os.environ.get("MUJOCO_GL", "unset"),
             "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
+            "error": type(exc).__name__,
         }
         code = 1
     args.result.parent.mkdir(parents=True, exist_ok=True)

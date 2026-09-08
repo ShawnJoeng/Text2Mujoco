@@ -1,6 +1,6 @@
 ---
 name: text2mujoco
-description: "Convert a natural-language request into a runnable MuJoCo 3 environment with MJCF, physics, sensors, and executable interaction points. Use for creating or modifying MuJoCo scenes from text; do not use for Isaac Sim, generic 3D modeling, or rendering-only work."
+description: "Convert a natural-language request into a runnable MuJoCo 3 environment with MJCF, physics, sensors, and executable interaction points. Use for creating or modifying MuJoCo scenes from text; do not use for other simulators, generic 3D modeling, or rendering-only work."
 ---
 
 # Text2MuJoCo
@@ -13,9 +13,9 @@ Turn a natural-language scene or task request into an inspectable MuJoCo package
 2. Ask only for blocking details. Otherwise default to SI meters, Z-up, gravity `[0, 0, -9.81]`, a ground plane, deterministic seed, primitive stand-ins, a fixed camera, and headless-capable execution.
 3. Write `scene_spec.json` using [references/scene_spec.md](references/scene_spec.md), then run `scripts/validate_scene_spec.py` before producing MJCF or Python. Keep asset IDs and MuJoCo object names stable across edits.
 4. Generate `model.xml` using structured XML APIs where practical. Read [references/mujoco_patterns.md](references/mujoco_patterns.md) for geometry conversion, quaternion order, dynamic bodies, rendering backends, and persistence rules. Do not use the deprecated `mujoco-py` package.
-5. Implement every interaction point as an executable contract. Expose `list_interaction_points()`, `get_action_schema()`, `reset(seed=None)`, `step(action)`, `observe()`, and `is_success()` or an equivalent environment interface. Read [references/interaction_patterns.md](references/interaction_patterns.md) when implementing actions or markers.
+5. Implement every interaction point as an executable contract and mirror it in the canonical `interaction_manifest.json`. Expose `list_interaction_points()`, `get_action_schema()` (a map from interaction ID to schema), `reset(seed=None)` (returning the initial observation), `step({"id": string, "payload": object})`, `observe()`, and `is_success()` or an equivalent environment interface. Read [references/interaction_patterns.md](references/interaction_patterns.md) when implementing actions or markers.
 6. Prefer locally available meshes and included MJCF assets. Do not fabricate unresolved paths or download assets without authorization. Use a tagged primitive fallback when it keeps the task executable.
-7. Validate progressively using [references/validation_checklist.md](references/validation_checklist.md). Compile MJCF and run physics with `MUJOCO_GL=disable` before testing rendering. On macOS use the native CGL path (`MUJOCO_GL=glfw`); on Linux run EGL and OSMesa attempts in separate processes because the backend is selected when MuJoCo/OpenGL is first imported.
+7. Validate progressively using [references/validation_checklist.md](references/validation_checklist.md). Compile MJCF and run physics with `MUJOCO_GL=disable` before testing rendering. On macOS use MuJoCo's `mjpython` with an active graphics session and the native CGL path (`MUJOCO_GL=glfw`); on Linux run EGL and OSMesa attempts in separate processes because the backend is selected when MuJoCo/OpenGL is first imported.
 
 See [references/prompt_examples.md](references/prompt_examples.md) for compact manipulation, articulation, and navigation requests.
 
@@ -33,7 +33,9 @@ render_smoke.py
 README.md
 ```
 
-`environment.py` must load a caller-supplied model/spec path, avoid global mutable simulator state, and keep task logic independent of viewer keyboard timing. `model.xml` must compile with `mujoco.MjModel.from_xml_path`. Save `.mjb` only after a real model compile succeeds.
+`environment.py` must load a caller-supplied model/spec path, validate manifest/spec parity, avoid global mutable simulator state, and keep task logic independent of viewer keyboard timing. `model.xml` must compile with `mujoco.MjModel.from_xml_path`. Save `.mjb` only after a real model compile succeeds. Keep persisted reports package-relative and free of hostnames, credentials, user paths, and raw tracebacks. Resolve capture output directories under the package root and reject escapes.
+
+Before writing `source_prompt`, assumptions, or reports, remove credential-like values and machine-local paths from user text. Never persist API keys, access tokens, cookies, private keys, or full command lines; keep failure reports limited to an error type and a redacted diagnostic.
 
 ## Runtime Boundaries
 

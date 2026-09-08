@@ -24,7 +24,7 @@ Start a new Claude Code session after installation. The skill can be selected au
 /text2mujoco Generate a desktop tool cabinet, unlock it, pull the drawer open by 22 cm, and inspect it with a camera.
 ```
 
-The GitHub package directory intentionally uses the user-requested name `text2mujoco_claude`. The installed directory uses the skill name `text2mujoco`, matching the `name` field in `SKILL.md` and the `/text2mujoco` command.
+The repository directory is named `text2mujoco_claude` to identify the Claude Code adapter. The installed directory uses the skill name `text2mujoco`, matching the `name` field in `SKILL.md` and the `/text2mujoco` command.
 
 ## Validate
 
@@ -34,4 +34,6 @@ Run the bundled scene-spec validator independently of Claude Code:
 python3 scripts/validate_scene_spec.py /path/to/scene_spec.json --json
 ```
 
-`SKILL.md` is the actual skill entrypoint; the outer GitHub folder name is only a distribution label.
+Run the validator regression suite with `python3 scripts/test_validate_scene_spec.py`.
+
+`SKILL.md` is the actual skill entrypoint; the outer GitHub folder name is only a distribution label. Generated reports use package-relative paths and do not include local hostnames, credentials, user paths, or raw tracebacks.

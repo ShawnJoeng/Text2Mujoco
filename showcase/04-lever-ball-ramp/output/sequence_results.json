@@ -1,6 +1,7 @@
 {
   "status": "PASS",
   "scene": "04-lever-ball-ramp",
+  "path_base": "package_root",
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
   "render_backend_requested": "glfw",
@@ -250,14 +251,14 @@
   ],
   "contact_sheet": "output/screenshots/sequence.png",
   "tiff": "output/screenshots/sequence.tif",
+  "gif": "output/screenshots/sequence.gif",
+  "sequence_kind": "discrete interaction keyframes",
+  "gif_frame_duration_ms": 1600,
+  "gif_final_frame_duration_ms": 2600,
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
   "before": "output/screenshots/before.png",
   "after": "output/screenshots/after.png",
   "before_depth": "output/screenshots/before_depth.npy",
   "after_depth": "output/screenshots/after_depth.npy",
-  "task_success": true,
-  "gif": "output/screenshots/sequence.gif",
-  "gif_frame_duration_ms": 1600,
-  "gif_final_frame_duration_ms": 2600,
-  "sequence_kind": "discrete interaction keyframes",
-  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation"
+  "task_success": true
 }

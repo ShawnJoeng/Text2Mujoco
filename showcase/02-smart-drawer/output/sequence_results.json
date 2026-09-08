@@ -1,6 +1,7 @@
 {
   "status": "PASS",
   "scene": "02-smart-drawer",
+  "path_base": "package_root",
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
   "render_backend_requested": "glfw",
@@ -24,7 +25,13 @@
       ],
       "rgb_std": 62.18275950322052,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 191482,
+      "finite_depth_min_m": 1.206748604774475,
+      "finite_depth_max_m": 3.8670196533203125,
       "observation": {
         "history": [],
         "lock_state": "locked",
@@ -48,9 +55,15 @@
         640,
         3
       ],
-      "rgb_std": 62.17745702326536,
+      "rgb_std": 62.17544853230109,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 191447,
+      "finite_depth_min_m": 1.206748604774475,
+      "finite_depth_max_m": 3.8670196533203125,
       "observation": {
         "history": [
           "press_unlock_button"
@@ -76,9 +89,15 @@
         640,
         3
       ],
-      "rgb_std": 60.88695486645594,
+      "rgb_std": 60.88748878963715,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 192649,
+      "finite_depth_min_m": 1.206748604774475,
+      "finite_depth_max_m": 3.8670196533203125,
       "observation": {
         "history": [
           "press_unlock_button",
@@ -107,7 +126,13 @@
       ],
       "rgb_std": 60.87071061160615,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 192664,
+      "finite_depth_min_m": 1.206748604774475,
+      "finite_depth_max_m": 3.8670196533203125,
       "observation": {
         "history": [
           "press_unlock_button",
@@ -116,10 +141,10 @@
         "lock_state": "unlocked",
         "drawer_state": "open_22cm",
         "inspection_state": "pending",
-        "drawer_joint_qpos": 0.22000991422553703,
+        "drawer_joint_qpos": 0.22000991422553712,
         "drawer_body_position": [
           0.0,
-          -0.22501018710503645,
+          -0.22501018710503654,
           0.86
         ]
       }
@@ -136,7 +161,13 @@
       ],
       "rgb_std": 60.87071061160615,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 192664,
+      "finite_depth_min_m": 1.206748604774475,
+      "finite_depth_max_m": 3.8670196533203125,
       "observation": {
         "history": [
           "press_unlock_button",
@@ -146,10 +177,10 @@
         "lock_state": "unlocked",
         "drawer_state": "open_22cm",
         "inspection_state": "verified_open",
-        "drawer_joint_qpos": 0.22000991422553703,
+        "drawer_joint_qpos": 0.22000991422553712,
         "drawer_body_position": [
           0.0,
-          -0.22501018710503645,
+          -0.22501018710503654,
           0.86
         ]
       }
@@ -157,12 +188,14 @@
   ],
   "contact_sheet": "output/screenshots/sequence.png",
   "tiff": "output/screenshots/sequence.tif",
-  "before": "output/screenshots/before.png",
-  "after": "output/screenshots/after.png",
-  "task_success": true,
   "gif": "output/screenshots/sequence.gif",
+  "sequence_kind": "discrete interaction keyframes",
   "gif_frame_duration_ms": 1600,
   "gif_final_frame_duration_ms": 2600,
-  "sequence_kind": "discrete interaction keyframes",
-  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation"
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "before_depth": "output/screenshots/before_depth.npy",
+  "after_depth": "output/screenshots/after_depth.npy",
+  "task_success": true
 }

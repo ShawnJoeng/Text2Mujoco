@@ -7,8 +7,6 @@ import argparse
 import json
 import os
 import platform
-import sys
-import traceback
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +36,30 @@ def check_rgb(
         "std": standard_deviation,
         "dynamic_range": dynamic_range,
     }
+
+
+def package_relative(path: str, package_root: Path) -> str:
+    """Return a stable package-relative report path without host details."""
+    resolved = Path(path).resolve()
+    try:
+        return str(resolved.relative_to(package_root.resolve()))
+    except ValueError as exc:
+        raise AssertionError("renderer returned a path outside the package") from exc
+
+
+def resolve_package_path(path: str, package_root: Path) -> Path:
+    value = Path(path)
+    return value if value.is_absolute() else package_root / value
+
+
+def portable_metrics(metrics: dict[str, Any], package_root: Path) -> dict[str, Any]:
+    """Normalize a report metric path without exposing the local filesystem."""
+    result = dict(metrics)
+    if isinstance(result.get("path"), str):
+        result["path"] = package_relative(result["path"], package_root)
+    if isinstance(result.get("preview_path"), str):
+        result["preview_path"] = package_relative(result["preview_path"], package_root)
+    return result
 
 
 def red_centroid(image: np.ndarray) -> tuple[np.ndarray, int]:
@@ -75,6 +97,7 @@ def check_depth(
 
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
+    package_root = Path(__file__).resolve().parent
     backend = os.environ.get("MUJOCO_GL", "unset")
     if backend in {"unset", "disable"}:
         raise AssertionError("render_smoke.py requires an enabled MUJOCO_GL backend")
@@ -88,10 +111,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     initial = environment.capture_rgbd(args.screenshot_dir / "initial")
     initial_image, initial_metrics = check_rgb(
-        Path(initial["rgb"]["path"]), width=width, height=height
+        resolve_package_path(initial["rgb"]["path"], package_root), width=width, height=height
     )
     initial_depth_frame, initial_depth = check_depth(
-        Path(initial["depth"]["path"]), far_m, width=width, height=height
+        resolve_package_path(initial["depth"]["path"], package_root), far_m, width=width, height=height
     )
 
     environment.reset()
@@ -113,10 +136,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise AssertionError("full press -> grasp -> place -> inspect sequence did not succeed")
     final = final_observation["sensor"]
     final_image, final_metrics = check_rgb(
-        Path(final["rgb"]["path"]), width=width, height=height
+        resolve_package_path(final["rgb"]["path"], package_root), width=width, height=height
     )
     final_depth_frame, final_depth = check_depth(
-        Path(final["depth"]["path"]), far_m, width=width, height=height
+        resolve_package_path(final["depth"]["path"], package_root), far_m, width=width, height=height
     )
 
     initial_center, initial_red_pixels = red_centroid(initial_image)
@@ -141,9 +164,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mujoco_executed": True,
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
-        "host": platform.node(),
-        "platform": platform.platform(),
-        "command": " ".join(sys.argv),
+        "path_base": "package_root",
         "render_backend_requested": backend,
         "renderer_context": final["renderer_context"],
         "renderer_verified": "PASS",
@@ -159,12 +180,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "final_red_pixels": final_red_pixels,
         },
         "screenshots": {
-            "initial": initial_metrics,
-            "final": final_metrics,
+            "initial": portable_metrics(initial_metrics, package_root),
+            "final": portable_metrics(final_metrics, package_root),
         },
         "depth": {
-            "initial": initial_depth,
-            "final": final_depth,
+            "initial": portable_metrics(initial_depth, package_root),
+            "final": portable_metrics(final_depth, package_root),
             "changed_geometry_pixels": changed_depth_pixels,
         },
     }
@@ -182,6 +203,10 @@ def main() -> int:
         "--result", type=Path, default=base / "output" / "render_results.json"
     )
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.screenshot_dir = args.screenshot_dir.resolve()
+    args.result = args.result.resolve()
     exit_code = 0
     try:
         result = run(args)
@@ -192,13 +217,10 @@ def main() -> int:
             "mujoco_executed": True,
             "mujoco_version": mujoco.__version__,
             "python_version": platform.python_version(),
-            "host": platform.node(),
-            "platform": platform.platform(),
-            "command": " ".join(sys.argv),
+            "path_base": "package_root",
             "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"),
             "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
+            "error": type(exc).__name__,
         }
     args.result.parent.mkdir(parents=True, exist_ok=True)
     args.result.write_text(json.dumps(result, indent=2), encoding="utf-8")

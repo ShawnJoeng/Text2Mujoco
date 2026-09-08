@@ -4,17 +4,27 @@ This directory is the Codex adapter for the Text2MuJoCo environment-generation w
 
 ## Install
 
-Expose this directory as a Codex skill in the skills directory used by your Codex installation. Keep the following files together:
+Install the adapter under the skill name `text2mujoco` and keep the following files together:
 
 ```text
 text2mujoco_codex/
 ├── SKILL.md
 ├── agents/openai.yaml
 ├── references/
-└── scripts/validate_scene_spec.py
+├── scripts/validate_scene_spec.py
+└── scripts/test_validate_scene_spec.py
 ```
 
-The repository folder uses the explicit distribution name `text2mujoco_codex`. The skill front matter intentionally keeps the invocation name `text2mujoco`, so the explicit Codex command is:
+The repository folder is named `text2mujoco_codex` to identify the Codex adapter. With the Codex skill installer, use `--name text2mujoco` so the installed skill and explicit invocation name match:
+
+```bash
+python3 /path/to/skill-installer/scripts/install-skill-from-github.py \
+  --repo ShawnJoeng/Text2Mujoco \
+  --path text2mujoco_codex \
+  --name text2mujoco
+```
+
+After installation, invoke the skill with:
 
 ```text
 $text2mujoco
@@ -33,12 +43,16 @@ The skill converts the request into:
 - `interaction_manifest.json`, typed targets, dependencies, and action schemas;
 - physics and render smoke tests with machine-readable reports.
 
+The manifest is the canonical package-root-relative interaction contract; the runtime checks it against `scene_spec.json` before executing actions. Capture and artifact output paths must stay inside the generated package so reports remain portable.
+
 Run the validator directly when checking a generated scene:
 
 ```bash
 python3 scripts/validate_scene_spec.py /path/to/scene_spec.json --json
 ```
 
-For physics-only checks use `MUJOCO_GL=disable`. On macOS use MuJoCo's `mjpython` with `MUJOCO_GL=glfw` for native CGL rendering; on Linux try EGL and OSMesa in separate processes.
+Run the validator regression suite with `python3 scripts/test_validate_scene_spec.py`.
 
-The repository showcase collector writes paced GIF previews from discrete verified keyframes, plus full-resolution TIFF keyframe archives and RGB-D arrays. GIF playback uses an explicit delay; TIFF playback timing is viewer-dependent.
+For physics-only checks use `MUJOCO_GL=disable`. On macOS use MuJoCo's `mjpython` with `MUJOCO_GL=glfw` for native CGL rendering and an active graphics session; on Linux try EGL and OSMesa in separate processes.
+
+The repository showcase collector writes paced GIF previews from discrete verified keyframes and dense RGB captures sampled in simulation time. It also writes full-resolution TIFF archives and RGB-D arrays. GIF playback uses an explicit delay; TIFF playback timing is viewer-dependent. See the [project showcase](../README.md#showcase) for the generated examples.

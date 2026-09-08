@@ -7,9 +7,6 @@ import argparse
 import json
 import os
 import platform
-import shutil
-import sys
-import traceback
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Callable
@@ -93,13 +90,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if env.is_success():
         raise AssertionError("task must remain incomplete until camera inspection")
 
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    mjcf_copy = args.output_dir / "model.xml"
-    mjb_path = args.output_dir / "model.mjb"
-    shutil.copy2(args.model, mjcf_copy)
-    mujoco.mj_saveModel(env.model, str(mjb_path), None)
-    xml_reload = mujoco.MjModel.from_xml_path(str(mjcf_copy))
-    binary_reload = mujoco.MjModel.from_binary_path(str(mjb_path))
+    artifacts = env.save_artifacts(args.output_dir)
+    if "mjcf" not in artifacts or "mjb" not in artifacts:
+        raise AssertionError("scene output flags did not produce both model artifacts")
+    xml_reload = mujoco.MjModel.from_xml_path(str(env.package_root / artifacts["mjcf"]))
+    binary_reload = mujoco.MjModel.from_binary_path(str(env.package_root / artifacts["mjb"]))
     if xml_reload.nq != env.model.nq or binary_reload.nq != env.model.nq:
         raise AssertionError("reloaded model dimensions differ")
 
@@ -121,8 +116,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mujoco_executed": True,
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
-        "platform": platform.platform(),
-        "command": " ".join(sys.argv),
+        "path_base": "package_root",
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "static_checks": checks,
         "physics": {"mj_step": "PASS", "finite_state": "PASS", "robot_shelf_contacts": 0},
@@ -140,8 +134,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mjb_reload": "PASS",
         "initial_position": initial["robot_position"],
         "artifacts": {
-            "mjcf": str(mjcf_copy.relative_to(Path(__file__).resolve().parent)),
-            "mjb": str(mjb_path.relative_to(Path(__file__).resolve().parent)),
+            "mjcf": artifacts["mjcf"],
+            "mjb": artifacts["mjb"],
         },
     }
 
@@ -154,6 +148,10 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, default=base / "output")
     parser.add_argument("--result", type=Path, default=base / "output" / "physics_results.json")
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.output_dir = args.output_dir.resolve()
+    args.result = args.result.resolve()
     try:
         result = run(args)
         exit_code = 0
@@ -163,12 +161,10 @@ def main() -> int:
             "mujoco_executed": True,
             "mujoco_version": mujoco.__version__,
             "python_version": platform.python_version(),
-            "platform": platform.platform(),
-            "command": " ".join(sys.argv),
+            "path_base": "package_root",
             "mujoco_gl": os.environ.get("MUJOCO_GL"),
             "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
+            "error": type(exc).__name__,
         }
         exit_code = 1
     args.result.parent.mkdir(parents=True, exist_ok=True)

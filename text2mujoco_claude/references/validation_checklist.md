@@ -15,10 +15,10 @@ Run with `MUJOCO_GL=disable`. Compile the actual MJCF, construct `MjData`, locat
 
 ## Render Process
 
-Run in a new process with `MUJOCO_GL=egl` on Linux. If it fails because EGL/graphics is unavailable, record that failure and retry `MUJOCO_GL=osmesa` in another process. On macOS use `MUJOCO_GL=glfw`, which selects MuJoCo's native CGL context. Capture before/after RGB and depth. Open the files/arrays and check dimensions, dynamic range, task-relevant pixels, finite geometry depth, and visible movement caused by the action sequence.
+Run in a new process with `MUJOCO_GL=egl` on Linux. If it fails because EGL/graphics is unavailable, record that failure and retry `MUJOCO_GL=osmesa` in another process. On macOS use MuJoCo's `mjpython` with `MUJOCO_GL=glfw` and an active graphics session; this selects the native CGL context. Capture before/after RGB and depth. Open the files/arrays and check dimensions, dynamic range, task-relevant pixels, finite geometry depth, and visible movement caused by the action sequence.
 
-Do not claim GPU rendering when OSMesa was used. Do not treat a report screenshot, mock image, or XML preview as a simulator screenshot.
+Do not claim GPU rendering when OSMesa was used. Do not treat a report screenshot or XML preview as a simulator screenshot; verify that image files came from the renderer.
 
 ## Failure Evidence
 
-Record Python and MuJoCo versions, `MUJOCO_GL`, command, exit code, and first actionable traceback. Distinguish package/import, MJCF compile, physics assertion, EGL/OSMesa setup, and image assertion failures.
+Record Python and MuJoCo versions, `MUJOCO_GL`, the exit code, and the first actionable failure category. Do not persist full command lines, local paths, hostnames, credentials, or traceback text; inspect local stderr for details. Distinguish package/import, MJCF compile, physics assertion, EGL/OSMesa setup, and image assertion failures.

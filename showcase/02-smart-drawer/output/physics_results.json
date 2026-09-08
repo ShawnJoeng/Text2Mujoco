@@ -3,7 +3,7 @@
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
-  "command": "physics_smoke.py",
+  "path_base": "package_root",
   "mujoco_gl": "disable",
   "mjcf_compile": "PASS",
   "finite_state": "PASS",

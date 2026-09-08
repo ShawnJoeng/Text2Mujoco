@@ -18,7 +18,7 @@
   <a href="text2mujoco_claude/README.md">Claude Code</a>
 </p>
 
-Text2MuJoCo turns a scene or task description into a loadable MuJoCo package. It resolves objects, physics, sensors, action order, success conditions, and visible interaction points, then validates the result with machine-readable reports.
+Text2MuJoCo is an agent skill package, not a standalone natural-language compiler. Used with Codex or Claude Code, it turns a scene or task description into a loadable MuJoCo package. It resolves objects, physics, sensors, action order, success conditions, and visible interaction points, then validates the result with machine-readable reports. A set of ready-to-run [sample queries](showcase/sample_queries.json) illustrates the input format.
 
 Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](text2mujoco_claude/README.md).
 
@@ -138,7 +138,7 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 
 **Dense capture** - RGB frames are sampled every `0.20 s` of MuJoCo simulation time. The GIF uses a `200 ms` delay per frame (final frame `800 ms`); depth remains available for the verified keyframes.
 
-[Environment](showcase/04-lever-ball-ramp) | [Render report](showcase/04-lever-ball-ramp/render_results.json) | [Dense report](showcase/04-lever-ball-ramp/output/dense_sequence_results.json) | [Physics report](showcase/04-lever-ball-ramp/physics_results.json) | [Dense GIF](showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.gif) | [Dense TIFF](showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.tif)
+[Environment](showcase/04-lever-ball-ramp) | [Render report](showcase/04-lever-ball-ramp/output/render_results.json) | [Dense report](showcase/04-lever-ball-ramp/output/dense_sequence_results.json) | [Physics report](showcase/04-lever-ball-ramp/output/physics_results.json) | [Dense GIF](showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.gif) | [Dense TIFF](showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.tif)
 
 <details>
 <summary>Scene and validation details</summary>
@@ -156,7 +156,16 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 
 ### Codex
 
-Install or expose [`text2mujoco_codex`](text2mujoco_codex) as a skill, then describe the environment directly or invoke it explicitly:
+Install the [`text2mujoco_codex`](text2mujoco_codex) adapter with the Codex skill installer. The `--name` value keeps the installed skill name consistent with the `SKILL.md` front matter:
+
+```bash
+python3 /path/to/skill-installer/scripts/install-skill-from-github.py \
+  --repo ShawnJoeng/Text2Mujoco \
+  --path text2mujoco_codex \
+  --name text2mujoco
+```
+
+Then describe the environment directly or invoke it explicitly:
 
 ```text
 $text2mujoco
@@ -199,6 +208,8 @@ Generate dense RGB captures sampled every `0.20 s` of simulation time:
 MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --dense --scene all
 ```
 
+The collector writes only under the repository `showcase/` tree so sensor and artifact paths remain portable; its `--output-root` option accepts that tree only.
+
 The default GIFs are readable animations of discrete, physically verified interaction keyframes: each frame stays visible for `1.6 s`, and the final state stays for `2.6 s`. Dense GIFs preserve the first post-step state at each `0.20 s` simulation boundary and add action-boundary event frames; ordinary frames play at `200 ms` and the final frame at `800 ms`. Pass `--dense-interval <seconds>` to change the sampling interval. Dense GIFs contain RGB only, while the verified keyframe sequence retains RGB-D arrays. Both TIFF formats are full-resolution archives; TIFF playback timing is viewer-dependent.
 
 <details>
@@ -211,13 +222,14 @@ environment.py              # Interaction, observation, reset, and success logic
 interaction_manifest.json   # Targets, dependencies, and action schemas
 physics_smoke.py            # Physics and state-machine validation
 render_smoke.py             # RGB-D and visual-change validation
+showcase/validate_manifests.py # Cross-scene manifest/spec parity validation
 output/                     # Reports, screenshots, depth arrays, keyframe and dense GIF/TIFF sequences
 ```
 
 ```python
 list_interaction_points()
 get_action_schema()
-reset(seed=None)
+reset(seed=None)  # returns the initial observation
 step({"id": "<interaction_id>", "payload": {}})
 observe()
 is_success()

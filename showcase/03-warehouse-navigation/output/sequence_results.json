@@ -1,6 +1,7 @@
 {
   "status": "PASS",
   "scene": "03-warehouse-navigation",
+  "path_base": "package_root",
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
   "render_backend_requested": "glfw",
@@ -24,7 +25,13 @@
       ],
       "rgb_std": 114.32863652077549,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 183965,
+      "finite_depth_min_m": 5.780043601989746,
+      "finite_depth_max_m": 7.199990272521973,
       "observation": {
         "history": [],
         "robot_state": "at_start",
@@ -51,7 +58,13 @@
       ],
       "rgb_std": 114.32057195903607,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 183965,
+      "finite_depth_min_m": 5.780043601989746,
+      "finite_depth_max_m": 7.199990272521973,
       "observation": {
         "history": [
           "reach_checkpoint_a"
@@ -80,7 +93,13 @@
       ],
       "rgb_std": 114.42052895344844,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 183965,
+      "finite_depth_min_m": 5.780043601989746,
+      "finite_depth_max_m": 7.199990272521973,
       "observation": {
         "history": [
           "reach_checkpoint_a",
@@ -110,7 +129,13 @@
       ],
       "rgb_std": 114.42052895344844,
       "rgb_dynamic_range": 255,
-      "finite_depth_pixels": 307200,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 183965,
+      "finite_depth_min_m": 5.780043601989746,
+      "finite_depth_max_m": 7.199990272521973,
       "observation": {
         "history": [
           "reach_checkpoint_a",
@@ -132,12 +157,14 @@
   ],
   "contact_sheet": "output/screenshots/sequence.png",
   "tiff": "output/screenshots/sequence.tif",
-  "before": "output/screenshots/before.png",
-  "after": "output/screenshots/after.png",
-  "task_success": true,
   "gif": "output/screenshots/sequence.gif",
+  "sequence_kind": "discrete interaction keyframes",
   "gif_frame_duration_ms": 1600,
   "gif_final_frame_duration_ms": 2600,
-  "sequence_kind": "discrete interaction keyframes",
-  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation"
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "before_depth": "output/screenshots/before_depth.npy",
+  "after_depth": "output/screenshots/after_depth.npy",
+  "task_success": true
 }

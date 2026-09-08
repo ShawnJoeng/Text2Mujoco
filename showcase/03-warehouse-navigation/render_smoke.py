@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CGL top-camera validation for visible markers, navigation, and reset."""
+"""Top-camera validation for visible markers, navigation, and reset."""
 
 from __future__ import annotations
 
@@ -7,8 +7,6 @@ import argparse
 import json
 import os
 import platform
-import sys
-import traceback
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +24,27 @@ def load_rgb(path: Path, width: int, height: int) -> np.ndarray:
     if float(image.std()) < 8 or int(image.max()) - int(image.min()) < 80:
         raise AssertionError("RGB frame is blank or nearly uniform")
     return image
+
+
+def portable_sensor(sensor: dict[str, Any], package_root: Path) -> dict[str, Any]:
+    """Normalize persisted sensor paths to package-root-relative references."""
+    result = dict(sensor)
+    for key in ("rgb", "depth"):
+        value = result.get(key)
+        if isinstance(value, dict) and isinstance(value.get("path"), str):
+            item = dict(value)
+            resolved = Path(item["path"]).resolve()
+            try:
+                item["path"] = str(resolved.relative_to(package_root.resolve()))
+            except ValueError as exc:
+                raise AssertionError("renderer returned a path outside the package") from exc
+            result[key] = item
+    return result
+
+
+def resolve_package_path(path: str | Path, package_root: Path) -> Path:
+    value = Path(path)
+    return value if value.is_absolute() else package_root / value
 
 
 def color_centroid(image: np.ndarray, color: str, minimum_pixels: int = 30) -> tuple[np.ndarray, int]:
@@ -59,16 +78,17 @@ def check_depth(path: Path, width: int, height: int, far_m: float) -> dict[str, 
 
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
+    package_root = Path(__file__).resolve().parent
     backend = os.environ.get("MUJOCO_GL", "unset")
-    if backend not in {"glfw", "cgl"}:
-        raise AssertionError("macOS render test requires MUJOCO_GL=glfw or cgl (native CGL context)")
+    if backend not in {"glfw", "cgl", "egl", "osmesa"}:
+        raise AssertionError("render test requires MUJOCO_GL=glfw/cgl/egl/osmesa")
     env = build_environment(args.model, args.spec)
     width, height = (int(value) for value in env.spec["outputs"]["resolution"])
     far_m = float(env.model.vis.map.zfar * env.model.stat.extent)
 
     before_info = env.capture_rgbd(args.screenshot_dir, "before")
-    before = load_rgb(Path(before_info["rgb"]["path"]), width, height)
-    before_depth = check_depth(Path(before_info["depth"]["path"]), width, height, far_m)
+    before = load_rgb(resolve_package_path(before_info["rgb"]["path"], package_root), width, height)
+    before_depth = check_depth(resolve_package_path(before_info["depth"]["path"], package_root), width, height, far_m)
     before_robot, before_robot_pixels = color_centroid(before, "orange", 45)
     marker_pixels: dict[str, int] = {}
     marker_centroids: dict[str, list[float]] = {}
@@ -83,8 +103,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if not env.is_success():
         raise AssertionError("A -> south bypass -> B -> camera sequence did not succeed")
     after_info = after_obs["sensor"]
-    after = load_rgb(Path(after_info["rgb"]["path"]), width, height)
-    after_depth = check_depth(Path(after_info["depth"]["path"]), width, height, far_m)
+    after = load_rgb(resolve_package_path(after_info["rgb"]["path"], package_root), width, height)
+    after_depth = check_depth(resolve_package_path(after_info["depth"]["path"], package_root), width, height, far_m)
     after_robot, after_robot_pixels = color_centroid(after, "orange", 45)
     movement_px = float(np.linalg.norm(after_robot - before_robot))
     if movement_px < 120:
@@ -94,7 +114,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     env.reset()
     reset_info = env.capture_rgbd(args.screenshot_dir, "reset")
-    reset = load_rgb(Path(reset_info["rgb"]["path"]), width, height)
+    reset = load_rgb(resolve_package_path(reset_info["rgb"]["path"], package_root), width, height)
     reset_robot, reset_robot_pixels = color_centroid(reset, "orange", 45)
     reset_error_px = float(np.linalg.norm(reset_robot - before_robot))
     if reset_error_px > 3.0:
@@ -107,10 +127,13 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mujoco_executed": True,
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
-        "platform": platform.platform(),
-        "command": " ".join(sys.argv),
         "render_backend_requested": backend,
-        "renderer_context": "native macOS CGL via MuJoCo glfw backend" if backend == "glfw" else "native macOS CGL",
+        "renderer_context": (
+            "native macOS CGL via MuJoCo glfw backend"
+            if platform.system() == "Darwin" and backend in {"glfw", "cgl"}
+            else f"MuJoCo Renderer with MUJOCO_GL={backend}"
+        ),
+        "path_base": "package_root",
         "resolution": [width, height],
         "task_success": True,
         "interaction_sequence": after_obs["state"]["history"],
@@ -124,8 +147,19 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "after_pixels": after_robot_pixels,
         },
         "reset_render": {"status": "PASS", "centroid_error_px": reset_error_px, "reset_pixels": reset_robot_pixels},
-        "screenshots": {"before": before_info["rgb"], "after": after_info["rgb"], "reset": reset_info["rgb"]},
-        "depth": {"before": before_depth, "after": after_depth},
+        "screenshots": {
+            "before": portable_sensor({"rgb": before_info["rgb"]}, package_root)["rgb"],
+            "after": portable_sensor({"rgb": after_info["rgb"]}, package_root)["rgb"],
+            "reset": portable_sensor({"rgb": reset_info["rgb"]}, package_root)["rgb"],
+        },
+        "depth": {
+            "before": portable_sensor({"depth": before_info["depth"]}, package_root)["depth"] | {
+                key: value for key, value in before_depth.items() if key != "path"
+            },
+            "after": portable_sensor({"depth": after_info["depth"]}, package_root)["depth"] | {
+                key: value for key, value in after_depth.items() if key != "path"
+            },
+        },
     }
 
 
@@ -137,6 +171,10 @@ def main() -> int:
     parser.add_argument("--screenshot-dir", type=Path, default=base / "output" / "screenshots")
     parser.add_argument("--result", type=Path, default=base / "output" / "render_results.json")
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.screenshot_dir = args.screenshot_dir.resolve()
+    args.result = args.result.resolve()
     try:
         result = run(args)
         exit_code = 0
@@ -146,12 +184,9 @@ def main() -> int:
             "mujoco_executed": True,
             "mujoco_version": mujoco.__version__,
             "python_version": platform.python_version(),
-            "platform": platform.platform(),
-            "command": " ".join(sys.argv),
             "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"),
             "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
+            "error": type(exc).__name__,
         }
         exit_code = 1
     args.result.parent.mkdir(parents=True, exist_ok=True)
@@ -162,4 +197,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

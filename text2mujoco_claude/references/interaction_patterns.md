@@ -9,13 +9,13 @@ Expose:
 ```python
 list_interaction_points() -> list[dict]
 get_action_schema() -> dict
-reset(seed=None) -> None
+reset(seed=None) -> dict
 step(action: dict) -> dict
 observe() -> dict
 is_success() -> bool
 ```
 
-`step` must reject unknown IDs, invalid payloads, and unmet dependencies. Core behavior must not depend on viewer timing. A viewer/keyboard or ROS 2 adapter may call the same API.
+`step` must accept exactly `{"id": string, "payload": object}` and reject unknown IDs, invalid payloads, repeated actions, and unmet dependencies. `reset()` returns the initial observation. Core behavior must not depend on viewer timing. A viewer/keyboard or ROS 2 adapter may call the same API.
 
 | Affordance | Typical MuJoCo implementation | Observable result |
 | --- | --- | --- |
@@ -27,6 +27,9 @@ is_success() -> bool
 | navigate | free/planar joint or robot controller | pose error is below tolerance |
 | inspect | named camera/sensor capture | requested arrays exist and pass validity checks |
 
-Represent optional markers as named `<site>` elements with no collision role. Store the complete contract in `interaction_manifest.json`; MJCF names alone cannot carry action schemas and dependency graphs.
+Represent optional markers as named `<site>` elements with no collision role. Store the complete contract in the canonical `interaction_manifest.json` shape (`schema_version`, `backend`, `source`, `action_envelope`, `interaction_points`, and `dependency_order`); MJCF names alone cannot carry action schemas and dependency graphs.
+
+Reports should use package-root-relative paths and must not include hostnames, home-directory paths, credentials, or other machine-local identifiers.
+For action payloads that contain `output_dir`, resolve the value relative to the package root and require the resolved directory to remain inside that package. Reject empty values, POSIX/Windows absolute paths outside the package, NUL characters, and `..` escapes. This keeps returned sensor paths portable and prevents an action from writing outside the generated environment.
 
 Reset must restore `MjData`, task state, controller state, deterministic seed, and any dynamically enabled constraints. If direct qpos assignment represents a grasp or teleport, label it as a task-level abstraction rather than physical contact validation.

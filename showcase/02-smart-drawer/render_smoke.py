@@ -8,8 +8,6 @@ import json
 import os
 import platform
 import shutil
-import sys
-import traceback
 from pathlib import Path
 
 import mujoco
@@ -19,13 +17,26 @@ from PIL import Image
 from environment import build_environment
 
 
-def load_rgb(path: Path) -> np.ndarray:
+def load_rgb(path: Path, width: int, height: int) -> np.ndarray:
     image = np.asarray(Image.open(path).convert("RGB"))
-    if image.shape != (480, 640, 3):
-        raise AssertionError(f"expected 640x480 RGB, got {image.shape}")
+    if image.shape != (height, width, 3):
+        raise AssertionError(f"expected {width}x{height} RGB, got {image.shape}")
     if float(image.std()) < 8 or int(image.max()) - int(image.min()) < 70:
         raise AssertionError("render is blank or nearly uniform")
     return image
+
+
+def package_relative(path: str | Path, package_root: Path) -> str:
+    resolved = Path(path).resolve()
+    try:
+        return str(resolved.relative_to(package_root.resolve()))
+    except ValueError as exc:
+        raise AssertionError("renderer returned a path outside the package") from exc
+
+
+def resolve_package_path(path: str | Path, package_root: Path) -> Path:
+    value = Path(path)
+    return value if value.is_absolute() else package_root / value
 
 
 def marker_centroid(image: np.ndarray, color: str) -> tuple[np.ndarray, int]:
@@ -47,15 +58,17 @@ def marker_centroid(image: np.ndarray, color: str) -> tuple[np.ndarray, int]:
 
 
 def run(args: argparse.Namespace) -> dict:
+    package_root = Path(__file__).resolve().parent
     backend = os.environ.get("MUJOCO_GL", "unset")
     if backend in {"unset", "disable"}:
         raise AssertionError("render smoke requires an enabled MUJOCO_GL backend")
     env = build_environment(args.model, args.spec)
+    width, height = (int(value) for value in env.spec["outputs"]["resolution"])
     args.screenshot_dir.mkdir(parents=True, exist_ok=True)
     env.run_physics(100)
     before_capture = env.capture_rgbd(args.screenshot_dir / "before_capture")
     before_path = args.screenshot_dir / "before.png"
-    shutil.copy2(before_capture["rgb"]["path"], before_path)
+    shutil.copy2(resolve_package_path(before_capture["rgb"]["path"], package_root), before_path)
 
     env.reset()
     env.step({"id": "press_unlock_button", "payload": {"press_depth_m": 0.012}})
@@ -68,10 +81,10 @@ def run(args: argparse.Namespace) -> dict:
         raise AssertionError("full unlock -> pull -> inspect task did not succeed")
     after_capture = inspected["sensor"]
     after_path = args.screenshot_dir / "after.png"
-    shutil.copy2(after_capture["rgb"]["path"], after_path)
+    shutil.copy2(resolve_package_path(after_capture["rgb"]["path"], package_root), after_path)
 
-    before = load_rgb(before_path)
-    after = load_rgb(after_path)
+    before = load_rgb(before_path, width, height)
+    after = load_rgb(after_path, width, height)
     marker_metrics = {}
     for color in ("yellow", "cyan", "magenta"):
         before_center, before_pixels = marker_centroid(before, color)
@@ -88,9 +101,9 @@ def run(args: argparse.Namespace) -> dict:
             f"handle marker did not visibly articulate: {marker_metrics['cyan']['movement_px']:.2f}px"
         )
 
-    before_depth = np.load(before_capture["depth"]["path"])
-    after_depth = np.load(after_capture["depth"]["path"])
-    if before_depth.shape != (480, 640) or after_depth.shape != (480, 640):
+    before_depth = np.load(resolve_package_path(before_capture["depth"]["path"], package_root))
+    after_depth = np.load(resolve_package_path(after_capture["depth"]["path"], package_root))
+    if before_depth.shape != (height, width) or after_depth.shape != (height, width):
         raise AssertionError("unexpected depth dimensions")
     finite = np.isfinite(before_depth) & np.isfinite(after_depth)
     changed_depth_pixels = int((finite & (np.abs(before_depth - after_depth) > 0.002)).sum())
@@ -102,11 +115,14 @@ def run(args: argparse.Namespace) -> dict:
         "mujoco_executed": True,
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
-        "command": " ".join(sys.argv),
+        "path_base": "package_root",
         "render_backend_requested": backend,
         "renderer_context": after_capture["renderer_context"],
-        "resolution": [640, 480],
-        "screenshots": {"before": str(before_path.resolve()), "after": str(after_path.resolve())},
+        "resolution": [width, height],
+        "screenshots": {
+            "before": package_relative(before_path, package_root),
+            "after": package_relative(after_path, package_root),
+        },
         "visible_markers": marker_metrics,
         "drawer_articulation_m": inspected["drawer_joint_qpos"],
         "changed_depth_pixels": changed_depth_pixels,
@@ -123,6 +139,10 @@ def main() -> int:
     parser.add_argument("--screenshot-dir", type=Path, default=base / "output" / "screenshots")
     parser.add_argument("--result", type=Path, default=base / "output" / "render_results.json")
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.screenshot_dir = args.screenshot_dir.resolve()
+    args.result = args.result.resolve()
     try:
         result, exit_code = run(args), 0
     except Exception as exc:
@@ -131,11 +151,9 @@ def main() -> int:
             "mujoco_executed": True,
             "mujoco_version": mujoco.__version__,
             "python_version": platform.python_version(),
-            "command": " ".join(sys.argv),
             "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"),
             "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
+            "error": type(exc).__name__,
         }, 1
     args.result.parent.mkdir(parents=True, exist_ok=True)
     args.result.write_text(json.dumps(result, indent=2), encoding="utf-8")

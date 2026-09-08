@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+showcase/**/output/*.log
+MUJOCO_LOG.TXT
+showcase/**/MUJOCO_LOG.TXT

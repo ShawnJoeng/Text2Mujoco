@@ -9,7 +9,7 @@ import json
 import math
 import os
 import shutil
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any, Mapping
 
 import mujoco
@@ -37,6 +37,40 @@ def load_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def package_relative_path(path: Path, package_root: Path) -> str:
+    try:
+        resolved = Path(path).resolve()
+        root = package_root.resolve()
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise EnvironmentError("artifact path is invalid") from exc
+    try:
+        return str(resolved.relative_to(root))
+    except ValueError as exc:
+        raise EnvironmentError("artifact path must stay inside the package") from exc
+
+
+def validate_output_dir(value: str | Path, package_root: Path) -> Path:
+    if not isinstance(value, (str, Path)) or not str(value).strip() or "\x00" in str(value):
+        raise EnvironmentError("output_dir must not be empty")
+    try:
+        raw = Path(value)
+        windows_path = PureWindowsPath(str(value))
+    except (TypeError, ValueError) as exc:
+        raise EnvironmentError("output_dir is invalid") from exc
+    if os.name != "nt" and (windows_path.drive or str(value).startswith("\\")):
+        raise EnvironmentError("output_dir must be package-relative or an in-package POSIX path")
+    candidate = raw if raw.is_absolute() else package_root / raw
+    try:
+        resolved = candidate.resolve()
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise EnvironmentError("output_dir is invalid") from exc
+    try:
+        resolved.relative_to(package_root.resolve())
+    except ValueError as exc:
+        raise EnvironmentError("output_dir must stay inside the package") from exc
+    return resolved
+
+
 def xyzw_to_wxyz(value: list[float]) -> list[float]:
     if len(value) != 4 or not all(math.isfinite(float(item)) for item in value):
         raise EnvironmentError("orientation_xyzw must contain four finite numbers")
@@ -52,6 +86,8 @@ def _validate_payload(payload: Any, schema: Mapping[str, Any]) -> dict[str, Any]
         raise EnvironmentError("action payload must be an object")
     properties = schema.get("properties", {})
     required = schema.get("required", [])
+    if not isinstance(properties, dict) or not isinstance(required, list):
+        raise EnvironmentError("action schema is malformed")
     for field in required:
         if field not in payload:
             raise EnvironmentError(f"action payload is missing required field: {field}")
@@ -61,52 +97,68 @@ def _validate_payload(payload: Any, schema: Mapping[str, Any]) -> dict[str, Any]
     for field, value in payload.items():
         field_schema = properties[field]
         expected = field_schema.get("type")
-        if expected == "boolean" and not isinstance(value, bool):
-            raise EnvironmentError(f"payload.{field} must be boolean")
-        if expected == "string" and not isinstance(value, str):
-            raise EnvironmentError(f"payload.{field} must be string")
-        if expected == "number" and (
-            not isinstance(value, (int, float))
-            or isinstance(value, bool)
-            or not math.isfinite(float(value))
-        ):
-            raise EnvironmentError(f"payload.{field} must be a finite number")
-        if expected == "number" and "minimum" in field_schema:
-            if float(value) < float(field_schema["minimum"]):
-                raise EnvironmentError(
-                    f"payload.{field} must be >= {field_schema['minimum']}"
+        if expected == "boolean":
+            if not isinstance(value, bool):
+                raise EnvironmentError(f"payload.{field} must be boolean")
+        elif expected == "string":
+            if not isinstance(value, str) or not value.strip():
+                raise EnvironmentError(f"payload.{field} must be a non-empty string")
+        elif expected in {"number", "integer"}:
+            if expected == "integer":
+                valid_number = isinstance(value, int) and not isinstance(value, bool)
+            else:
+                valid_number = (
+                    isinstance(value, (int, float))
+                    and not isinstance(value, bool)
                 )
-        if expected == "number" and "maximum" in field_schema:
-            if float(value) > float(field_schema["maximum"]):
-                raise EnvironmentError(
-                    f"payload.{field} must be <= {field_schema['maximum']}"
-                )
-        if expected == "array":
+            try:
+                finite = math.isfinite(float(value))
+            except (OverflowError, TypeError, ValueError):
+                finite = False
+            if not valid_number or not finite:
+                raise EnvironmentError(f"payload.{field} must be a finite {expected}")
+            if "minimum" in field_schema and value < field_schema["minimum"]:
+                raise EnvironmentError(f"payload.{field} is below minimum")
+            if "maximum" in field_schema and value > field_schema["maximum"]:
+                raise EnvironmentError(f"payload.{field} is above maximum")
+        elif expected == "array":
             if not isinstance(value, list):
                 raise EnvironmentError(f"payload.{field} must be an array")
-            minimum = int(field_schema.get("minItems", 0))
-            maximum = int(field_schema.get("maxItems", 1 << 30))
+            minimum = field_schema.get("minItems", 0)
+            maximum = field_schema.get("maxItems", 1 << 30)
             if not minimum <= len(value) <= maximum:
                 raise EnvironmentError(
                     f"payload.{field} length must be between {minimum} and {maximum}"
                 )
-            if field_schema.get("items", {}).get("type") == "number" and not all(
-                isinstance(item, (int, float))
-                and not isinstance(item, bool)
-                and math.isfinite(float(item))
-                for item in value
-            ):
-                raise EnvironmentError(f"payload.{field} must contain finite numbers")
-    return payload
+            item_schema = field_schema.get("items", {})
+            if not isinstance(item_schema, dict):
+                raise EnvironmentError(f"payload.{field} has a malformed item schema")
+            item_type = item_schema.get("type")
+            if item_type in {"number", "integer"}:
+                for item in value:
+                    if item_type == "integer":
+                        valid_item = isinstance(item, int) and not isinstance(item, bool)
+                    else:
+                        valid_item = isinstance(item, (int, float)) and not isinstance(item, bool)
+                    try:
+                        finite_item = math.isfinite(float(item))
+                    except (OverflowError, TypeError, ValueError):
+                        finite_item = False
+                    if not valid_item or not finite_item:
+                        raise EnvironmentError(f"payload.{field} must contain finite {item_type}s")
+    return dict(payload)
 
 
 class MujocoEnvironment:
     def __init__(self, model_path: Path, spec: Mapping[str, Any]):
         self.model_path = Path(model_path).resolve()
+        self.package_root = self.model_path.parent
         self.spec = copy.deepcopy(dict(spec))
         self.model = mujoco.MjModel.from_xml_path(str(self.model_path))
         self.data = mujoco.MjData(self.model)
         self.points = {point["id"]: point for point in self.spec["interaction_points"]}
+        self.manifest = load_json(self.model_path.with_name("interaction_manifest.json"))
+        self._validate_manifest_parity()
         self.default_seed = int(self.spec["scene"]["world"]["seed"])
         self.seed = self.default_seed
         self.rng = np.random.default_rng(self.seed)
@@ -145,6 +197,40 @@ class MujocoEnvironment:
         self.box_asset = box_asset
         self.reset()
 
+    def _validate_manifest_parity(self) -> None:
+        if self.manifest.get("schema_version") != self.spec.get("schema_version"):
+            raise EnvironmentError("manifest/spec schema versions differ")
+        if self.manifest.get("backend") != self.spec.get("backend"):
+            raise EnvironmentError("manifest/spec backends differ")
+        manifest_points = self.manifest.get("interaction_points")
+        if not isinstance(manifest_points, list):
+            raise EnvironmentError("interaction_manifest.json must define interaction_points")
+        spec_points = {point["id"]: point for point in self.spec["interaction_points"]}
+        manifest_by_id = {point.get("id"): point for point in manifest_points}
+        if set(spec_points) != set(manifest_by_id):
+            raise EnvironmentError("manifest/spec interaction IDs differ")
+        fields = (
+            "target",
+            "marker_site",
+            "pose",
+            "affordance",
+            "preconditions",
+            "success_conditions",
+            "depends_on",
+            "effects",
+            "reset",
+        )
+        for point_id, spec_point in spec_points.items():
+            manifest_point = manifest_by_id[point_id]
+            for field in fields:
+                if manifest_point.get(field) != spec_point.get(field):
+                    raise EnvironmentError(f"manifest/spec mismatch for {point_id}.{field}")
+            if manifest_point.get("action") != spec_point.get("action"):
+                raise EnvironmentError(f"manifest/spec mismatch for {point_id}.action")
+        order = self.manifest.get("dependency_order")
+        if order is not None and order != [point["id"] for point in self.spec["interaction_points"]]:
+            raise EnvironmentError("manifest dependency_order does not match scene spec")
+
     def require_id(self, object_type: str, name: str) -> int:
         if object_type not in OBJECT_TYPES:
             raise EnvironmentError(f"unsupported MuJoCo object type: {object_type}")
@@ -162,7 +248,7 @@ class MujocoEnvironment:
             for point_id, point in self.points.items()
         }
 
-    def reset(self, seed: int | None = None) -> None:
+    def reset(self, seed: int | None = None) -> dict[str, Any]:
         if seed is not None and (
             not isinstance(seed, int)
             or isinstance(seed, bool)
@@ -183,6 +269,7 @@ class MujocoEnvironment:
         }
         self.last_sensor_observation: dict[str, Any] | None = None
         self.held_cube_qpos: np.ndarray | None = None
+        return self.observe()
 
     def run_physics(self, steps: int) -> None:
         if not isinstance(steps, int) or isinstance(steps, bool) or steps < 0:
@@ -267,15 +354,17 @@ class MujocoEnvironment:
             raise EnvironmentError("inspect_rgbd requires cube_state='inside_box'")
 
     def step(self, action: Mapping[str, Any]) -> dict[str, Any]:
-        if not isinstance(action, Mapping):
-            raise EnvironmentError("action must be an object")
-        point_id = action.get("id")
+        if not isinstance(action, Mapping) or set(action) != {"id", "payload"}:
+            raise EnvironmentError("action must contain exactly id and payload")
+        point_id = action["id"]
         if not isinstance(point_id, str) or point_id not in self.points:
             raise EnvironmentError(f"unknown interaction id: {point_id}")
+        if point_id in self.completed:
+            raise EnvironmentError(f"interaction already completed: {point_id}")
         point = self.points[str(point_id)]
         self._require_dependencies(point)
         self._require_state_preconditions(str(point_id))
-        payload = _validate_payload(action.get("payload", {}), point["action"]["schema"])
+        payload = _validate_payload(action["payload"], point["action"]["schema"])
 
         if point_id == "press_start_button":
             press_depth = float(payload.get("press_depth_m", 0.018))
@@ -319,7 +408,7 @@ class MujocoEnvironment:
             self.state["cube_state"] = "inside_box"
             self.state["cube_released"] = True
         elif point_id == "inspect_rgbd":
-            output_dir = Path(payload["output_dir"])
+            output_dir = validate_output_dir(payload["output_dir"], self.package_root)
             self.last_sensor_observation = self.capture_rgbd(output_dir)
             self.state["last_observation_updated"] = True
         else:
@@ -344,7 +433,8 @@ class MujocoEnvironment:
 
     def is_success(self) -> bool:
         return bool(
-            self.state["button_state"] == "pressed"
+            self.completed == set(self.points)
+            and self.state["button_state"] == "pressed"
             and self.state["cube_state"] == "inside_box"
             and self.state["cube_released"]
             and self.state["last_observation_updated"]
@@ -356,6 +446,7 @@ class MujocoEnvironment:
 
         resolution = self.spec["outputs"].get("resolution", [640, 480])
         width, height = int(resolution[0]), int(resolution[1])
+        output_dir = validate_output_dir(output_dir, self.package_root)
         output_dir.mkdir(parents=True, exist_ok=True)
         renderer = mujoco.Renderer(self.model, height=height, width=width)
         context = getattr(renderer, "_gl_context", None)
@@ -375,13 +466,15 @@ class MujocoEnvironment:
 
         if rgb.shape != (height, width, 3) or rgb.dtype != np.uint8:
             raise EnvironmentError(f"unexpected RGB frame: shape={rgb.shape}, dtype={rgb.dtype}")
+        if float(rgb.std()) < 5.0 or int(rgb.max()) - int(rgb.min()) < 50:
+            raise EnvironmentError("RGB frame is blank or nearly uniform")
         far_m = float(self.model.vis.map.zfar * self.model.stat.extent)
         geometry_depth = (
             np.isfinite(depth) & (depth > 0) & (depth < far_m * 0.999)
         )
-        if depth.shape != (height, width) or not geometry_depth.any():
+        if depth.shape != (height, width) or int(geometry_depth.sum()) < depth.size // 4:
             raise EnvironmentError(
-                f"depth frame has no finite geometry values below far plane: {depth.shape}"
+                f"depth frame has too few finite geometry values below far plane: {depth.shape}"
             )
 
         rgb_path = output_dir / "rgb.png"
@@ -413,27 +506,36 @@ class MujocoEnvironment:
                 ],
             },
             "rgb": {
-                "path": str(rgb_path.resolve()),
+                "path": package_relative_path(rgb_path, self.package_root),
                 "shape": list(rgb.shape),
                 "mean": float(rgb.mean()),
                 "std": float(rgb.std()),
             },
             "depth": {
-                "path": str(depth_path.resolve()),
-                "preview_path": str(preview_path.resolve()),
+                "path": package_relative_path(depth_path, self.package_root),
+                "preview_path": package_relative_path(preview_path, self.package_root),
                 "shape": list(depth.shape),
                 "finite_geometry_pixels": int(geometry_depth.sum()),
                 "min_m": float(depth[geometry_depth].min()),
                 "max_m": float(depth[geometry_depth].max()),
                 "far_plane_m": far_m,
             },
+            "path_base": "package_root",
         }
 
     @staticmethod
     def _resolve_output_path(requested: str, output_dir: Path) -> Path:
-        path = Path(requested)
-        if path.is_absolute():
-            return path
+        if not isinstance(requested, str) or not requested.strip() or "\x00" in requested:
+            raise EnvironmentError("artifact path is invalid")
+        try:
+            path = Path(requested)
+            windows_path = PureWindowsPath(requested)
+        except (TypeError, ValueError) as exc:
+            raise EnvironmentError("artifact path is invalid") from exc
+        if path.is_absolute() or (os.name != "nt" and (windows_path.drive or requested.startswith("\\"))):
+            raise EnvironmentError("artifact paths must be relative to the package")
+        if ".." in path.parts or ".." in windows_path.parts:
+            raise EnvironmentError("artifact paths must not escape the package with '..'")
         # Specs commonly use ./output/foo; output_dir is the caller's output root.
         parts = path.parts
         if parts and parts[0] == "output":
@@ -444,23 +546,38 @@ class MujocoEnvironment:
         outputs = self.spec.get("outputs", {})
         save_mjcf = bool(outputs.get("save_mjcf", True))
         save_mjb = bool(outputs.get("save_mjb", False))
-        output_dir.mkdir(parents=True, exist_ok=True)
         artifacts: dict[str, str] = {}
+        if not save_mjcf and not save_mjb:
+            return artifacts
+        output_dir = validate_output_dir(output_dir, self.package_root)
+        output_dir.mkdir(parents=True, exist_ok=True)
         if save_mjcf:
             xml_path = self._resolve_output_path(
                 str(outputs.get("mjcf_path", "model.xml")), output_dir
             )
+            if xml_path.resolve() in {
+                self.model_path,
+                self.package_root / "scene_spec.json",
+                self.package_root / "interaction_manifest.json",
+            }:
+                raise EnvironmentError("artifact path would overwrite a package source file")
             xml_path.parent.mkdir(parents=True, exist_ok=True)
             if self.model_path != xml_path.resolve():
                 shutil.copy2(self.model_path, xml_path)
-            artifacts["mjcf"] = str(xml_path.resolve())
+            artifacts["mjcf"] = package_relative_path(xml_path, self.package_root)
         if save_mjb:
             mjb_path = self._resolve_output_path(
                 str(outputs.get("mjb_path", "model.mjb")), output_dir
             )
+            if mjb_path.resolve() in {
+                self.model_path,
+                self.package_root / "scene_spec.json",
+                self.package_root / "interaction_manifest.json",
+            }:
+                raise EnvironmentError("artifact path would overwrite a package source file")
             mjb_path.parent.mkdir(parents=True, exist_ok=True)
             mujoco.mj_saveModel(self.model, str(mjb_path), None)
-            artifacts["mjb"] = str(mjb_path.resolve())
+            artifacts["mjb"] = package_relative_path(mjb_path, self.package_root)
         return artifacts
 
 
@@ -477,6 +594,9 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, default=base / "output")
     parser.add_argument("--render", action="store_true")
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.output_dir = args.output_dir.resolve()
 
     environment = build_environment(args.model, args.spec)
     environment.run_physics(args.steps)

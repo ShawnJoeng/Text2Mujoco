@@ -1,0 +1,96 @@
+<mujoco model="lever_ball_ramp_workbench">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton" cone="elliptic"/>
+  <size nconmax="300" njmax="600"/>
+  <statistic center="0 0 0.72" extent="1.55"/>
+  <visual>
+    <global offwidth="640" offheight="480"/>
+    <quality shadowsize="2048"/>
+    <map znear="0.01" zfar="8"/>
+    <headlight ambient="0.32 0.32 0.34" diffuse="0.72 0.72 0.7" specular="0.18 0.18 0.18"/>
+  </visual>
+
+  <asset>
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.13 0.15 0.17" rgb2="0.23 0.25 0.27" width="512" height="512"/>
+    <material name="floor_mat" texture="floor_tex" texrepeat="5 5" reflectance="0.08"/>
+    <material name="bench_mat" rgba="0.56 0.59 0.62 1" specular="0.15" roughness="0.65"/>
+    <material name="frame_mat" rgba="0.12 0.14 0.16 1" specular="0.18" roughness="0.55"/>
+    <material name="ramp_mat" rgba="0.77 0.79 0.81 1" specular="0.12" roughness="0.75"/>
+    <material name="rail_mat" rgba="0.27 0.30 0.33 1" specular="0.18" roughness="0.62"/>
+    <material name="lever_blue_mat" rgba="0.03 0.25 0.92 1" specular="0.35" roughness="0.3"/>
+    <material name="gate_mat" rgba="0.95 0.64 0.08 1" specular="0.25" roughness="0.45"/>
+    <material name="ball_purple_mat" rgba="0.58 0.06 0.82 1" specular="0.42" roughness="0.25"/>
+    <material name="tray_mat" rgba="0.08 0.60 0.34 1" specular="0.18" roughness="0.55"/>
+  </asset>
+
+  <default>
+    <geom friction="0.65 0.01 0.002" condim="6" solref="0.008 1" solimp="0.9 0.95 0.001"/>
+  </default>
+
+  <worldbody>
+    <light name="key_light" pos="-1.0 -1.1 2.7" dir="0.3 0.25 -1" directional="true" castshadow="true"/>
+    <light name="fill_light" pos="1.3 0.5 1.9" dir="-0.8 -0.2 -1" directional="true" diffuse="0.38 0.4 0.45" specular="0.06 0.06 0.06"/>
+    <camera name="inspection_camera" pos="1.2 -1.2 1.42" quat="0.7612142645 0.5235515583 0.2168621560 0.3153052722" fovy="48"/>
+
+    <geom name="ground_geom" type="plane" size="2.5 2.5 0.1" material="floor_mat"/>
+
+    <body name="lab_bench" pos="0 0 0.72">
+      <geom name="lab_bench_top_geom" type="box" size="0.725 0.4 0.03" material="bench_mat" friction="0.9 0.01 0.001"/>
+      <geom name="bench_leg_fl" type="box" pos="-0.64 -0.32 -0.36" size="0.035 0.035 0.36" material="frame_mat"/>
+      <geom name="bench_leg_fr" type="box" pos="0.64 -0.32 -0.36" size="0.035 0.035 0.36" material="frame_mat"/>
+      <geom name="bench_leg_bl" type="box" pos="-0.64 0.32 -0.36" size="0.035 0.035 0.36" material="frame_mat"/>
+      <geom name="bench_leg_br" type="box" pos="0.64 0.32 -0.36" size="0.035 0.035 0.36" material="frame_mat"/>
+    </body>
+
+    <body name="ramp_track" pos="-0.15 0 0.9" quat="0.9925461516 0 0.1218693434 0">
+      <geom name="ramp_track_geom" type="box" size="0.37 0.14 0.015" material="ramp_mat" friction="0.55 0.01 0.002"/>
+    </body>
+    <body name="ramp_left_rail" pos="-0.15 0.14 0.93" quat="0.9925461516 0 0.1218693434 0">
+      <geom name="ramp_left_rail_geom" type="box" size="0.37 0.0125 0.0375" material="rail_mat"/>
+    </body>
+    <body name="ramp_right_rail" pos="-0.15 -0.14 0.93" quat="0.9925461516 0 0.1218693434 0">
+      <geom name="ramp_right_rail_geom" type="box" size="0.37 0.0125 0.0375" material="rail_mat"/>
+    </body>
+
+    <body name="lever_mount" pos="-0.48 -0.29 0.79">
+      <geom name="lever_mount_geom" type="cylinder" pos="0 0 0.03" size="0.052 0.03" material="frame_mat"/>
+      <body name="blue_lever" pos="0 0 0.04">
+        <joint name="lever_hinge" type="hinge" axis="0 1 0" range="-1.1 0.05" damping="1.2" armature="0.01"/>
+        <geom name="blue_lever_geom" type="capsule" pos="0 0 0.11" size="0.0225 0.0875" mass="0.12" material="lever_blue_mat" contype="0" conaffinity="0"/>
+        <site name="lever_interaction_marker" type="sphere" pos="0 0 0.235" size="0.027" rgba="1 0.9 0.05 1" group="2"/>
+      </body>
+    </body>
+
+    <body name="release_gate" pos="-0.31 0 0.98">
+      <joint name="gate_slide" type="slide" axis="0 0 1" range="0 0.135" damping="3.5" armature="0.01"/>
+      <geom name="release_gate_geom" type="box" size="0.0125 0.135 0.065" mass="0.18" material="gate_mat" contype="2" conaffinity="2"/>
+    </body>
+
+    <body name="purple_ball" pos="-0.44 0 1.02">
+      <freejoint name="purple_ball_free"/>
+      <geom name="purple_ball_geom" type="sphere" size="0.035" mass="0.09" material="ball_purple_mat" friction="0.45 0.01 0.003" contype="3" conaffinity="3"/>
+    </body>
+
+    <body name="target_tray" pos="0.41 0 0.755">
+      <geom name="target_tray_bottom" type="box" pos="0 0 0.01" size="0.2 0.17 0.01" material="tray_mat" friction="0.7 0.01 0.002"/>
+      <geom name="target_tray_left" type="box" pos="0 0.16 0.065" size="0.2 0.01 0.055" material="tray_mat"/>
+      <geom name="target_tray_right" type="box" pos="0 -0.16 0.065" size="0.2 0.01 0.055" material="tray_mat"/>
+      <geom name="target_tray_front" type="box" pos="0.19 0 0.065" size="0.01 0.15 0.055" material="tray_mat"/>
+      <geom name="target_tray_back" type="box" pos="-0.19 0 0.025" size="0.01 0.15 0.015" material="tray_mat"/>
+      <site name="target_zone_marker" type="cylinder" pos="0 0.105 0.026" size="0.035 0.008" rgba="0.02 1 0.9 1" group="2"/>
+    </body>
+
+    <site name="release_zone_marker" type="ellipsoid" pos="-0.42 0.1 1.045" size="0.035 0.016 0.009" rgba="1 0.08 0.62 1" group="2"/>
+    <site name="camera_checkpoint_marker" type="sphere" pos="0.54 0.28 0.98" size="0.028" rgba="1 0.22 0.02 1" group="2"/>
+    <geom name="camera_checkpoint_post" type="cylinder" pos="0.54 0.28 0.86" size="0.008 0.1" material="frame_mat" contype="0" conaffinity="0"/>
+  </worldbody>
+
+  <contact>
+    <exclude body1="release_gate" body2="ramp_track"/>
+  </contact>
+
+  <actuator>
+    <position name="lever_position" joint="lever_hinge" kp="48" kv="5" ctrlrange="-1.05 0"/>
+    <position name="gate_position" joint="gate_slide" kp="280" kv="18" ctrlrange="0 0.135"/>
+  </actuator>
+</mujoco>

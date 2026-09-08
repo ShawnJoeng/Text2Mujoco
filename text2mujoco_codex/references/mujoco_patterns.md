@@ -18,7 +18,7 @@ MUJOCO_GL=egl python render_smoke.py
 MUJOCO_GL=osmesa python render_smoke.py
 ```
 
-Run EGL and OSMesa probes as separate processes. EGL is preferred for NVIDIA GPU rendering; OSMesa is a CPU fallback for machines without graphics exposure. GLFW generally requires a display server on Linux. On macOS, `MUJOCO_GL=glfw` uses MuJoCo's native CGL context; record the actual context in the test result rather than calling it EGL.
+Run EGL and OSMesa probes as separate processes. EGL is preferred for NVIDIA GPU rendering; OSMesa is a CPU fallback for machines without graphics exposure. GLFW generally requires a display server on Linux. On macOS, use MuJoCo's `mjpython` with `MUJOCO_GL=glfw` and an active graphics session for the native CGL context; record the actual context in the test result rather than calling it EGL.
 
 ## Loading and Stepping
 

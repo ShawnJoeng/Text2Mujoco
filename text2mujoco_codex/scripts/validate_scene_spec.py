@@ -8,7 +8,7 @@ import json
 import math
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any
 
 
@@ -17,8 +17,22 @@ ALLOWED_ASSET_KINDS = {"primitive", "mesh", "mjcf_include", "robot"}
 ALLOWED_GL_BACKENDS = {"auto", "disable", "egl", "osmesa", "glfw", "cgl"}
 ALLOWED_SHAPES = {"box", "cylinder", "sphere", "capsule", "plane", "open_box"}
 ALLOWED_TARGET_TYPES = {"body", "geom", "joint", "actuator", "site", "camera"}
+ALLOWED_SCHEMA_TYPES = {"array", "boolean", "integer", "number", "object", "string"}
 ID_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 NAME_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_.-]*$")
+URI_SCHEME_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+SENSITIVE_KEY_PATTERN = re.compile(
+    r"(?i)(?:api[_-]?key|access[_-]?token|authorization|bearer|password|secret|private[_-]?key|credential|cookie|token)"
+)
+SENSITIVE_TEXT_PATTERNS = (
+    re.compile(r"(?i)\b(?:github_pat_|ghp_|gho_|ghs_|ghu_|ghr_|sk-)[A-Za-z0-9_./-]{16,}"),
+    re.compile(r"(?i)\b(?:bearer\s+)[A-Za-z0-9._-]{20,}"),
+    re.compile(r"(?i)\b(?:api[_ -]?key|access[_ -]?token|password|secret)\s*[:=]\s*\S+"),
+    re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
+    re.compile(r"(?<![A-Za-z0-9])(?:/Users|/home|/root)/[^\s,;]+"),
+    re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/][^\s,;]+"),
+    re.compile(r"\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b"),
+)
 
 
 class Reporter:
@@ -27,22 +41,75 @@ class Reporter:
         self.warnings: list[str] = []
 
     def error(self, message: str) -> None:
-        self.errors.append(message)
+        if message not in self.errors:
+            self.errors.append(message)
 
     def warning(self, message: str) -> None:
         self.warnings.append(message)
 
 
 def is_number(value: Any) -> bool:
-    return (
-        isinstance(value, (int, float))
-        and not isinstance(value, bool)
-        and math.isfinite(value)
-    )
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return False
+    try:
+        return math.isfinite(float(value))
+    except (OverflowError, TypeError, ValueError):
+        return False
 
 
 def is_integer(value: Any) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
+
+
+def is_allowed_string(value: Any, allowed: set[str]) -> bool:
+    return isinstance(value, str) and value in allowed
+
+
+def check_public_text(value: Any, label: str, report: Reporter) -> None:
+    """Reject credentials, email addresses, and machine-local paths in persisted text."""
+    if not isinstance(value, str):
+        return
+    if any(pattern.search(value) for pattern in SENSITIVE_TEXT_PATTERNS):
+        report.error(f"{label} contains a credential, email address, or machine-local path")
+
+
+def check_public_text_tree(value: Any, label: str, report: Reporter) -> None:
+    """Scan extension fields too, so free-form metadata cannot hide secrets."""
+    if isinstance(value, str):
+        check_public_text(value, label, report)
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            if isinstance(key, str):
+                if SENSITIVE_KEY_PATTERN.search(key):
+                    report.error(f"{label}.{key} contains a credential, email address, or machine-local path")
+                check_public_text(key, f"{label}.<key>", report)
+            check_public_text_tree(item, f"{label}.{key}", report)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            check_public_text_tree(item, f"{label}[{index}]", report)
+
+
+def is_absolute_reference(value: str) -> bool:
+    """Recognize POSIX and Windows absolute paths on every host OS."""
+    if "\x00" in value:
+        return True
+    path = Path(value)
+    windows_path = PureWindowsPath(value)
+    return path.is_absolute() or windows_path.is_absolute() or bool(windows_path.root) or bool(windows_path.drive)
+
+
+def check_package_reference(value: Any, label: str, report: Reporter) -> None:
+    if not isinstance(value, str) or not value.strip():
+        return
+    path = Path(value)
+    if (
+        is_absolute_reference(value)
+        or URI_SCHEME_PATTERN.match(value)
+        or ".." in path.parts
+        or ".." in PureWindowsPath(value).parts
+    ):
+        report.error(f"{label} must be a package-relative path")
+    check_public_text(value, label, report)
 
 
 def check_vector(value: Any, length: int, label: str, report: Reporter) -> bool:
@@ -60,7 +127,105 @@ def check_string_list(value: Any, label: str, report: Reporter) -> bool:
     if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
         report.error(f"{label} must be a list of strings")
         return False
+    for index, item in enumerate(value):
+        check_public_text(item, f"{label}[{index}]", report)
     return True
+
+
+def check_action_schema(value: Any, label: str, report: Reporter) -> None:
+    if not isinstance(value, dict):
+        report.error(f"{label} must be an object")
+        return
+    check_public_text_tree(value, label, report)
+
+    if value.get("type") != "object":
+        report.error(f"{label}.type must be 'object'")
+
+    raw_properties = value.get("properties")
+    if not isinstance(raw_properties, dict):
+        report.error(f"{label}.properties must be an object")
+        properties: dict[str, Any] = {}
+    else:
+        properties = raw_properties
+
+    raw_required = value.get("required")
+    if not isinstance(raw_required, list) or not all(
+        isinstance(item, str) and item for item in raw_required
+    ):
+        report.error(f"{label}.required must be a list of non-empty strings")
+        required: list[str] = []
+    else:
+        required = raw_required
+        if len(required) != len(set(required)):
+            report.error(f"{label}.required must not contain duplicates")
+
+    for field in required:
+        if field not in properties:
+            report.error(f"{label}.required references unknown property: {field}")
+
+    additional_properties = value.get("additionalProperties")
+    if "additionalProperties" in value and not isinstance(additional_properties, bool):
+        report.error(f"{label}.additionalProperties must be a boolean when provided")
+
+    for field, definition in properties.items():
+        field_label = f"{label}.properties.{field}"
+        if not isinstance(field, str) or not field:
+            report.error(f"{label}.properties keys must be non-empty strings")
+            continue
+        if not isinstance(definition, dict):
+            report.error(f"{field_label} must be an object")
+            continue
+
+        field_type = definition.get("type")
+        if not is_allowed_string(field_type, ALLOWED_SCHEMA_TYPES):
+            report.error(
+                f"{field_label}.type must be one of {sorted(ALLOWED_SCHEMA_TYPES)}"
+            )
+            continue
+
+        minimum = definition.get("minimum")
+        maximum = definition.get("maximum")
+        for bound_name, bound in (("minimum", minimum), ("maximum", maximum)):
+            if bound_name in definition and not is_number(bound):
+                report.error(f"{field_label}.{bound_name} must be a finite number")
+        if (
+            "minimum" in definition
+            and "maximum" in definition
+            and is_number(minimum)
+            and is_number(maximum)
+            and minimum > maximum
+        ):
+            report.error(f"{field_label}.minimum must not exceed maximum")
+
+        if field_type == "array":
+            items = definition.get("items")
+            if not isinstance(items, dict):
+                report.error(f"{field_label}.items must be an object")
+            elif (
+                not is_allowed_string(items.get("type"), ALLOWED_SCHEMA_TYPES)
+            ):
+                report.error(
+                    f"{field_label}.items.type must be one of {sorted(ALLOWED_SCHEMA_TYPES)}"
+                )
+
+            minimum_items = definition.get("minItems")
+            maximum_items = definition.get("maxItems")
+            for bound_name, bound in (
+                ("minItems", minimum_items),
+                ("maxItems", maximum_items),
+            ):
+                if bound_name in definition and (not is_integer(bound) or bound < 0):
+                    report.error(
+                        f"{field_label}.{bound_name} must be a non-negative integer"
+                    )
+            if (
+                "minItems" in definition
+                and "maxItems" in definition
+                and is_integer(minimum_items)
+                and is_integer(maximum_items)
+                and minimum_items > maximum_items
+            ):
+                report.error(f"{field_label}.minItems must not exceed maxItems")
 
 
 def check_condition_list(value: Any, label: str, report: Reporter) -> bool:
@@ -73,6 +238,7 @@ def check_condition_list(value: Any, label: str, report: Reporter) -> bool:
             if not condition.strip():
                 report.error(f"{label}[{index}] must not be empty")
                 valid = False
+            check_public_text(condition, f"{label}[{index}]", report)
         elif isinstance(condition, dict):
             if not isinstance(condition.get("op"), str) or not condition["op"].strip():
                 report.error(f"{label}[{index}].op must be a non-empty string")
@@ -80,6 +246,8 @@ def check_condition_list(value: Any, label: str, report: Reporter) -> bool:
             if not isinstance(condition.get("path"), str) or not condition["path"].strip():
                 report.error(f"{label}[{index}].path must be a non-empty string")
                 valid = False
+            for key, item in condition.items():
+                check_public_text(item, f"{label}[{index}].{key}", report)
         else:
             report.error(f"{label}[{index}] must be a string or object")
             valid = False
@@ -99,11 +267,15 @@ def check_pose(value: Any, label: str, report: Reporter) -> None:
         return
     check_vector(value.get("position"), 3, f"{label}.position", report)
     quaternion = value.get("orientation_xyzw")
-    if quaternion is not None and check_vector(
+    if quaternion is None:
+        report.error(f"{label}.orientation_xyzw is required")
+    elif check_vector(
         quaternion, 4, f"{label}.orientation_xyzw", report
     ):
-        norm = math.sqrt(sum(component * component for component in quaternion))
-        if norm < 1e-8:
+        norm = math.sqrt(sum(float(component) * float(component) for component in quaternion))
+        if not math.isfinite(norm):
+            report.error(f"{label}.orientation_xyzw must have a finite norm")
+        elif norm < 1e-8:
             report.error(f"{label}.orientation_xyzw must not be zero")
         elif abs(norm - 1.0) > 1e-2:
             report.warning(
@@ -252,6 +424,8 @@ def validate(data: Any) -> Reporter:
         report.error("backend must be 'mujoco'")
     if not isinstance(data.get("source_prompt"), str) or not data["source_prompt"].strip():
         report.error("source_prompt must be a non-empty string")
+    else:
+        check_public_text(data["source_prompt"], "source_prompt", report)
     check_string_list(data.get("assumptions"), "assumptions", report)
     check_string_list(data.get("open_questions"), "open_questions", report)
 
@@ -259,6 +433,8 @@ def validate(data: Any) -> Reporter:
     if not isinstance(scene, dict):
         report.error("scene must be an object")
         scene = {}
+    else:
+        check_public_text_tree(scene, "scene", report)
     if not isinstance(scene.get("name"), str) or not scene.get("name", "").strip():
         report.error("scene.name must be a non-empty string")
     runtime = scene.get("runtime")
@@ -269,23 +445,25 @@ def validate(data: Any) -> Reporter:
         "mujoco_version", ""
     ).strip():
         report.error("scene.runtime.mujoco_version must be a non-empty string")
-    if runtime.get("mode") not in {"python", "viewer"}:
+    if not is_allowed_string(runtime.get("mode"), {"python", "viewer"}):
         report.error("scene.runtime.mode must be 'python' or 'viewer'")
     if not isinstance(runtime.get("headless"), bool):
         report.error("scene.runtime.headless must be a boolean")
-    if runtime.get("gl_backend") not in ALLOWED_GL_BACKENDS:
+    if not is_allowed_string(runtime.get("gl_backend"), ALLOWED_GL_BACKENDS):
         report.error(
             f"scene.runtime.gl_backend must be one of {sorted(ALLOWED_GL_BACKENDS)}"
         )
+    elif runtime.get("headless") is True and runtime.get("gl_backend") in {"glfw", "cgl"}:
+        report.error("scene.runtime.headless cannot use glfw or cgl; an active graphics session is required")
 
     world = scene.get("world")
     if not isinstance(world, dict):
         report.error("scene.world must be an object")
         world = {}
     if world.get("units") != "m":
-        report.warning("scene.world.units is not 'm'; generated helpers assume meters")
+        report.error("scene.world.units must be 'm'; no unit conversion is performed")
     if world.get("up_axis") != "Z":
-        report.warning("scene.world.up_axis is not 'Z'; MJCF conversion is required")
+        report.error("scene.world.up_axis must be 'Z'; no axis conversion is performed")
     check_vector(world.get("gravity"), 3, "scene.world.gravity", report)
     if not isinstance(world.get("ground"), bool):
         report.error("scene.world.ground must be a boolean")
@@ -294,23 +472,25 @@ def validate(data: Any) -> Reporter:
 
     namespaces = {object_type: set() for object_type in ALLOWED_TARGET_TYPES}
     assets, _ = check_unique_ids(data.get("assets"), "assets", report)
+    check_public_text_tree(data.get("assets"), "assets", report)
     for index, asset in enumerate(assets):
         if not isinstance(asset, dict):
             continue
         label = f"assets[{index}]"
-        if asset.get("kind") not in ALLOWED_ASSET_KINDS:
+        kind = asset.get("kind")
+        if not is_allowed_string(kind, ALLOWED_ASSET_KINDS):
             report.error(f"{label}.kind must be one of {sorted(ALLOWED_ASSET_KINDS)}")
         add_object_name(namespaces, "body", asset.get("body_name"), f"{label}.body_name", report)
         check_pose(asset.get("pose"), f"{label}.pose", report)
 
         geometry = asset.get("geometry")
         if not isinstance(geometry, dict):
-            if asset.get("kind") in {"primitive", "mesh"}:
+            if isinstance(kind, str) and kind in {"primitive", "mesh"}:
                 report.error(f"{label}.geometry must be an object")
             geometry = {}
-        if asset.get("kind") == "primitive":
+        if kind == "primitive":
             shape = geometry.get("shape")
-            if shape not in ALLOWED_SHAPES:
+            if not is_allowed_string(shape, ALLOWED_SHAPES):
                 report.error(
                     f"{label}.geometry.shape must be one of {sorted(ALLOWED_SHAPES)}"
                 )
@@ -348,10 +528,12 @@ def validate(data: Any) -> Reporter:
                     f"{label}.geometry.geom_name",
                     report,
                 )
-        elif asset.get("kind") == "mesh":
+        elif kind == "mesh":
             source = asset.get("source") or geometry.get("mesh_path")
             if not isinstance(source, str) or not source.strip():
                 report.error(f"{label}.source or geometry.mesh_path is required for mesh assets")
+            else:
+                check_package_reference(source, f"{label}.source", report)
             add_object_name(
                 namespaces,
                 "geom",
@@ -359,18 +541,24 @@ def validate(data: Any) -> Reporter:
                 f"{label}.geometry.geom_name",
                 report,
             )
-        elif asset.get("kind") == "mjcf_include":
+        elif kind == "mjcf_include":
             source = asset.get("source") or asset.get("include_path")
             if not isinstance(source, str) or not source.strip():
                 report.error(f"{label}.source or include_path is required for mjcf_include assets")
-        elif asset.get("kind") == "robot":
+            else:
+                check_package_reference(source, f"{label}.source", report)
+        elif kind == "robot":
             source = asset.get("source") or asset.get("model_path")
             if not isinstance(source, str) or not source.strip():
                 report.error(f"{label}.source or model_path is required for robot assets")
-        if asset.get("kind") in {"mjcf_include", "robot"}:
+            else:
+                check_package_reference(source, f"{label}.source", report)
+        exports: dict[str, Any] = {}
+        if isinstance(kind, str) and kind in {"mjcf_include", "robot"}:
             exports = asset.get("exports", {})
             if not isinstance(exports, dict):
                 report.error(f"{label}.exports must be an object when provided")
+                exports = {}
             else:
                 for object_type, names in exports.items():
                     if object_type not in ALLOWED_TARGET_TYPES:
@@ -414,8 +602,8 @@ def validate(data: Any) -> Reporter:
                 namespaces, "joint", physics["joint_name"], f"{label}.physics.joint_name", report
             )
         elif physics.get("dynamic"):
-            exported_joints = asset.get("exports", {}).get("joint", [])
-            if asset.get("kind") not in {"mjcf_include", "robot"} or not exported_joints:
+            exported_joints = exports.get("joint", [])
+            if not (isinstance(kind, str) and kind in {"mjcf_include", "robot"}) or not exported_joints:
                 report.error(f"{label}.physics.joint_name is required for a dynamic asset")
         if "actuator_name" in physics:
             add_object_name(
@@ -427,6 +615,7 @@ def validate(data: Any) -> Reporter:
             )
 
     sensors, _ = check_unique_ids(data.get("sensors"), "sensors", report)
+    check_public_text_tree(data.get("sensors"), "sensors", report)
     for index, sensor in enumerate(sensors):
         if not isinstance(sensor, dict):
             continue
@@ -449,6 +638,7 @@ def validate(data: Any) -> Reporter:
     points, point_ids = check_unique_ids(
         data.get("interaction_points"), "interaction_points", report
     )
+    check_public_text_tree(data.get("interaction_points"), "interaction_points", report)
     for index, point in enumerate(points):
         if not isinstance(point, dict):
             continue
@@ -463,12 +653,13 @@ def validate(data: Any) -> Reporter:
         if not isinstance(action, dict):
             report.error(f"{label}.action must be an object")
         else:
-            if action.get("mode") not in ALLOWED_ACTION_MODES:
+            if not is_allowed_string(action.get("mode"), ALLOWED_ACTION_MODES):
                 report.error(f"{label}.action.mode must be one of {sorted(ALLOWED_ACTION_MODES)}")
             if not isinstance(action.get("command"), str) or not action.get("command", "").strip():
                 report.error(f"{label}.action.command must be a non-empty string")
-            if not isinstance(action.get("schema"), dict):
-                report.error(f"{label}.action.schema must be an object")
+            else:
+                check_public_text(action["command"], f"{label}.action.command", report)
+            check_action_schema(action.get("schema"), f"{label}.action.schema", report)
         for field in ("preconditions", "success_conditions"):
             check_condition_list(point.get(field), f"{label}.{field}", report)
         check_string_list(point.get("effects"), f"{label}.effects", report)
@@ -487,7 +678,7 @@ def validate(data: Any) -> Reporter:
             continue
         object_type = target.get("type")
         name = target.get("name")
-        if object_type not in ALLOWED_TARGET_TYPES:
+        if not is_allowed_string(object_type, ALLOWED_TARGET_TYPES):
             report.error(f"{label}.type must be one of {sorted(ALLOWED_TARGET_TYPES)}")
         elif not check_name(name, f"{label}.name", report):
             continue
@@ -495,22 +686,28 @@ def validate(data: Any) -> Reporter:
             report.error(f"{label} references unknown {object_type}: {name}")
 
     task = data.get("task")
+    check_public_text_tree(task, "task", report)
     if not isinstance(task, dict):
         report.error("task must be an object")
     else:
         if not isinstance(task.get("goal"), str) or not task.get("goal", "").strip():
             report.error("task.goal must be a non-empty string")
+        else:
+            check_public_text(task["goal"], "task.goal", report)
         check_condition_list(task.get("success_conditions"), "task.success_conditions", report)
         check_condition_list(task.get("failure_conditions"), "task.failure_conditions", report)
         if not isinstance(task.get("reset_policy"), str) or not task.get(
             "reset_policy", ""
         ).strip():
             report.error("task.reset_policy must be a non-empty string")
+        else:
+            check_public_text(task["reset_policy"], "task.reset_policy", report)
 
     outputs = data.get("outputs")
     if not isinstance(outputs, dict):
         report.error("outputs must be an object")
     else:
+        check_public_text_tree(outputs, "outputs", report)
         for flag, path_field in (
             ("save_mjcf", "mjcf_path"),
             ("save_mjb", "mjb_path"),
@@ -522,6 +719,12 @@ def validate(data: Any) -> Reporter:
                 or not outputs[path_field].strip()
             ):
                 report.error(f"outputs.{path_field} is required when {flag} is true")
+            elif outputs.get(flag):
+                output_path = Path(outputs[path_field])
+                if is_absolute_reference(outputs[path_field]) or ".." in output_path.parts or ".." in PureWindowsPath(outputs[path_field]).parts:
+                    report.error(
+                        f"outputs.{path_field} must stay inside the generated package"
+                    )
         if "resolution" in outputs:
             resolution = outputs["resolution"]
             if (
@@ -541,7 +744,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         data = json.loads(args.spec.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 

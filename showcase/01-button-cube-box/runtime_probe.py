@@ -7,7 +7,6 @@ import argparse
 import json
 import os
 import platform
-import sys
 from pathlib import Path
 
 import mujoco
@@ -19,6 +18,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", type=Path, default=base / "model.xml")
     args = parser.parse_args()
+    args.model = args.model.resolve()
 
     model = mujoco.MjModel.from_xml_path(str(args.model.resolve()))
     data = mujoco.MjData(model)
@@ -37,9 +37,7 @@ def main() -> int:
                 "status": "PASS",
                 "mujoco_version": mujoco.__version__,
                 "python_version": platform.python_version(),
-                "host": platform.node(),
-                "platform": platform.platform(),
-                "command": " ".join(sys.argv),
+                "path_base": "package_root",
                 "mujoco_gl": os.environ.get("MUJOCO_GL", "unset"),
                 "mjcf_compile": "PASS",
                 "mjdata_create": "PASS",

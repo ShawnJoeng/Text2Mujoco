@@ -8,9 +8,7 @@ import json
 import math
 import os
 import platform
-import sys
 import tempfile
-import traceback
 from pathlib import Path
 from typing import Any
 
@@ -217,11 +215,15 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     artifacts = environment.save_artifacts(args.output_dir)
     if environment.spec["outputs"].get("save_mjcf", False):
-        xml_model = mujoco.MjModel.from_xml_path(artifacts["mjcf"])
+        xml_model = mujoco.MjModel.from_xml_path(
+            str(environment.package_root / artifacts["mjcf"])
+        )
         if xml_model.nq != environment.model.nq:
             raise AssertionError("reloaded MJCF dimensions differ from compiled model")
     if environment.spec["outputs"].get("save_mjb", False):
-        binary_model = mujoco.MjModel.from_binary_path(artifacts["mjb"])
+        binary_model = mujoco.MjModel.from_binary_path(
+            str(environment.package_root / artifacts["mjb"])
+        )
         if binary_model.nq != environment.model.nq:
             raise AssertionError("reloaded MJB dimensions differ from compiled model")
     original_outputs = environment.spec["outputs"]
@@ -274,9 +276,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mujoco_executed": True,
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
-        "host": platform.node(),
-        "platform": platform.platform(),
-        "command": " ".join(sys.argv),
+        "path_base": "package_root",
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "model_checks": model_checks,
         "physics": {
@@ -298,9 +298,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mjb_reload": "PASS" if environment.spec["outputs"].get("save_mjb", False) else "SKIPPED",
         "output_flags": "PASS",
         "artifacts": {
-            key: str(
-                Path(value).resolve().relative_to(Path(__file__).resolve().parent)
-            )
+            key: value
             for key, value in artifacts.items()
         },
     }
@@ -316,6 +314,10 @@ def main() -> int:
         "--result", type=Path, default=base / "output" / "physics_results.json"
     )
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.output_dir = args.output_dir.resolve()
+    args.result = args.result.resolve()
     exit_code = 0
     try:
         result = run(args)
@@ -326,13 +328,10 @@ def main() -> int:
             "mujoco_executed": True,
             "mujoco_version": mujoco.__version__,
             "python_version": platform.python_version(),
-            "host": platform.node(),
-            "platform": platform.platform(),
-            "command": " ".join(sys.argv),
+            "path_base": "package_root",
             "mujoco_gl": os.environ.get("MUJOCO_GL"),
             "error_type": type(exc).__name__,
-            "error": str(exc),
-            "traceback": traceback.format_exc(),
+            "error": type(exc).__name__,
         }
     args.result.parent.mkdir(parents=True, exist_ok=True)
     args.result.write_text(json.dumps(result, indent=2), encoding="utf-8")

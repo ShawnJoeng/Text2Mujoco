@@ -18,7 +18,7 @@
       "mujoco_version": "3.2.7",
       "mode": "python",
       "headless": true,
-      "gl_backend": "glfw"
+      "gl_backend": "auto"
     },
     "world": {
       "units": "m",
@@ -352,7 +352,7 @@
   },
   "outputs": {
     "save_mjcf": true,
-    "mjcf_path": "./model.xml",
+    "mjcf_path": "./output/model.xml",
     "save_mjb": false,
     "resolution": [640, 480]
   }

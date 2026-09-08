@@ -2,8 +2,7 @@
   "status": "PASS",
   "mujoco_version": "3.2.7",
   "python_version": "3.9.6",
-  "platform": "macOS-26.6.2-arm64-arm-64bit",
-  "command": "physics_smoke.py",
+  "path_base": "package_root",
   "mujoco_gl": "disable",
   "model_compile": "PASS",
   "typed_targets": "PASS",
@@ -30,5 +29,8 @@
     "confirm_target_tray"
   ],
   "deterministic_reset": "PASS",
-  "mjcf_reload": "PASS"
+  "mjcf_reload": "PASS",
+  "artifacts": {
+    "mjcf": "output/model.xml"
+  }
 }

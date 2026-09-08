@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import json
-import py_compile
 import sys
 import xml.etree.ElementTree as ET
 from collections import defaultdict
@@ -61,21 +60,19 @@ def main() -> int:
         raise AssertionError("model.xml root must be <mujoco>")
 
     spec_points = {point["id"]: point for point in spec["interaction_points"]}
-    manifest_points = {point["id"]: point for point in manifest["points"]}
+    manifest_points = {point["id"]: point for point in manifest["interaction_points"]}
     if set(spec_points) != set(manifest_points):
         raise AssertionError("manifest interaction IDs differ from scene spec")
     required = {
         "target",
         "pose",
         "affordance",
-        "activation",
-        "action_schema",
+        "action",
         "preconditions",
         "success_conditions",
         "depends_on",
         "effects",
         "reset",
-        "status",
     }
     for point_id, manifest_point in manifest_points.items():
         missing = required - manifest_point.keys()
@@ -86,7 +83,7 @@ def main() -> int:
             "target": source["target"],
             "pose": source["pose"],
             "affordance": source["affordance"],
-            "action_schema": source["action"]["schema"],
+            "action": source["action"],
             "preconditions": source["preconditions"],
             "success_conditions": source["success_conditions"],
             "depends_on": source["depends_on"],
@@ -101,11 +98,6 @@ def main() -> int:
                 raise AssertionError(f"{point_id} marker_site mismatch")
         elif "marker_site" in manifest_point:
             raise AssertionError(f"{point_id} unexpectedly declares marker_site")
-        if manifest_point["activation"] != {
-            "mode": source["action"]["mode"],
-            "command": source["action"]["command"],
-        }:
-            raise AssertionError(f"{point_id} activation mismatch")
 
     names = _xml_names(root)
     for point in spec["interaction_points"]:
@@ -131,7 +123,8 @@ def main() -> int:
         "physics_smoke.py",
         "render_smoke.py",
     ):
-        py_compile.compile(str(base / filename), doraise=True)
+        source_path = base / filename
+        compile(source_path.read_text(encoding="utf-8"), str(source_path), "exec")
 
     result = {
         "status": "PASS",
@@ -151,5 +144,5 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except Exception as exc:
-        print(f"FAIL: {type(exc).__name__}: {exc}", file=sys.stderr)
+        print(f"FAIL: {type(exc).__name__}", file=sys.stderr)
         raise

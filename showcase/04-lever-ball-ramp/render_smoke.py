@@ -8,7 +8,6 @@ import json
 import os
 import platform
 import sys
-import traceback
 from pathlib import Path
 
 import mujoco
@@ -43,7 +42,13 @@ def run(args: argparse.Namespace) -> dict:
     expected = (SCENE_DIR / "output" / "screenshots").resolve()
     if screenshot_dir != expected:
         raise ValueError("canonical screenshot directory is " + str(expected))
-    sequence = run_scene("04-lever-ball-ramp", SCENES["04-lever-ball-ramp"], SHOWCASE_ROOT)
+    sequence = run_scene(
+        "04-lever-ball-ramp",
+        SCENES["04-lever-ball-ramp"],
+        SHOWCASE_ROOT,
+        model_path=args.model.resolve(),
+        spec_path=args.spec.resolve(),
+    )
     before = np.asarray(Image.open(screenshot_dir / "before.png").convert("RGB"))
     after = np.asarray(Image.open(screenshot_dir / "after.png").convert("RGB"))
     before_depth = np.load(screenshot_dir / "before_depth.npy")
@@ -65,8 +70,7 @@ def run(args: argparse.Namespace) -> dict:
         "mujoco_executed": True,
         "mujoco_version": mujoco.__version__,
         "python_version": platform.python_version(),
-        "platform": platform.platform(),
-        "command": " ".join(sys.argv),
+        "path_base": "package_root",
         "render_backend_requested": backend,
         "renderer_context": "native macOS CGL via glfw" if platform.system() == "Darwin" and backend == "glfw" else backend,
         "renderer_verified": "PASS",
@@ -96,12 +100,18 @@ def main() -> int:
     parser.add_argument("--model", type=Path, default=SCENE_DIR / "model.xml")
     parser.add_argument("--spec", type=Path, default=SCENE_DIR / "scene_spec.json")
     parser.add_argument("--screenshot-dir", type=Path, default=SCENE_DIR / "output" / "screenshots")
-    parser.add_argument("--result", type=Path, default=SCENE_DIR / "render_results.json")
+    parser.add_argument(
+        "--result", type=Path, default=SCENE_DIR / "output" / "render_results.json"
+    )
     args = parser.parse_args()
+    args.model = args.model.resolve()
+    args.spec = args.spec.resolve()
+    args.screenshot_dir = args.screenshot_dir.resolve()
+    args.result = args.result.resolve()
     try:
         result, code = run(args), 0
     except Exception as exc:
-        result, code = {"status": "FAIL", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "command": " ".join(sys.argv), "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"), "renderer_verified": "FAIL", "error_type": type(exc).__name__, "error": str(exc), "traceback": traceback.format_exc()}, 1
+        result, code = {"status": "FAIL", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "path_base": "package_root", "render_backend_requested": os.environ.get("MUJOCO_GL", "unset"), "renderer_verified": "FAIL", "error_type": type(exc).__name__, "error": type(exc).__name__}, 1
     args.result.parent.mkdir(parents=True, exist_ok=True)
     args.result.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps(result, indent=2, ensure_ascii=False))
