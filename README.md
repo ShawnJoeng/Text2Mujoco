@@ -28,7 +28,7 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 
 > **Prompt**
 >
-> Place a button, a red cube, and an open box on a table. Press the button, grasp the cube, place it in the box, and inspect the result with an RGB-D camera.
+>  Place a button, a red cube, and an open box on a table. Press the button, grasp the cube, place it in the box, and inspect the result with an RGB-D camera.
 
 **Interaction** - `press_start_button` -> `grasp_red_cube` -> `place_cube_in_box` -> `inspect_rgbd`
 
@@ -60,7 +60,7 @@ Use the [Codex skill](text2mujoco_codex/README.md) or the [Claude Code skill](te
 
 > **Prompt**
 >
-> Generate a desktop tool cabinet. Press the green unlock button, pull the drawer open by 22 cm, and verify the open state with a fixed camera. Keep the unlock point, handle, and camera checkpoint visible.
+>  Generate a desktop tool cabinet. Press the green unlock button, pull the drawer open by 22 cm, and verify the open state with a fixed camera. Keep the unlock point, handle, and camera checkpoint visible.
 
 **Interaction** - `press_unlock_button` -> `pull_drawer_22cm` -> `inspect_open_drawer`
 
