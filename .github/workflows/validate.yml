@@ -30,6 +30,7 @@ jobs:
           python text2mujoco_codex/scripts/test_validate_scene_spec.py
           python text2mujoco_claude/scripts/test_validate_scene_spec.py
           cmp text2mujoco_codex/scripts/validate_scene_spec.py text2mujoco_claude/scripts/validate_scene_spec.py
+          cmp text2mujoco_codex/scripts/test_validate_scene_spec.py text2mujoco_claude/scripts/test_validate_scene_spec.py
 
       - name: Validate scene specifications
         run: |
@@ -46,5 +47,6 @@ jobs:
 
       - name: Run static contract checks
         run: |
+          python showcase/artifact_path_test.py
           python showcase/01-button-cube-box/contract_test.py
           python showcase/01-button-cube-box/validator_unit_test.py

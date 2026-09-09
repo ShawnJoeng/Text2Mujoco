@@ -33,7 +33,7 @@ render_smoke.py
 README.md
 ```
 
-`environment.py` must load a caller-supplied model/spec path, validate manifest/spec parity, avoid global mutable simulator state, and keep task logic independent of viewer keyboard timing. `model.xml` must compile with `mujoco.MjModel.from_xml_path`. Save `.mjb` only after a real model compile succeeds. Keep persisted reports package-relative and free of hostnames, credentials, user paths, and raw tracebacks. Resolve capture output directories under the package root and reject escapes.
+`environment.py` must load a caller-supplied model/spec path, validate manifest/spec parity, avoid global mutable simulator state, and keep task logic independent of viewer keyboard timing. `model.xml` must compile with `mujoco.MjModel.from_xml_path`. Save `.mjb` only after a real model compile succeeds. Keep persisted reports package-relative and free of hostnames, credentials, user paths, and raw tracebacks. Resolve capture output directories under the package root and reject escapes; artifact files must be written beneath a package subdirectory (typically `output/`), with symlink traversal rejected.
 
 Before writing `source_prompt`, assumptions, or reports, remove credential-like values and machine-local paths from user text. Never persist API keys, access tokens, cookies, private keys, or full command lines; keep failure reports limited to an error type and a redacted diagnostic.
 

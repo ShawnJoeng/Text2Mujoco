@@ -7,6 +7,7 @@ import copy
 import json
 import math
 import os
+import re
 import shutil
 from pathlib import Path, PureWindowsPath
 from typing import Any, Mapping
@@ -27,6 +28,7 @@ OBJECT_TYPES = {
     "site": mujoco.mjtObj.mjOBJ_SITE,
     "camera": mujoco.mjtObj.mjOBJ_CAMERA,
 }
+URI_SCHEME_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -444,51 +446,88 @@ class LeverBallRampEnvironment:
             windows_path = PureWindowsPath(requested)
         except (TypeError, ValueError) as exc:
             raise EnvironmentError("artifact path is invalid") from exc
-        if path.is_absolute() or (os.name != "nt" and (windows_path.drive or requested.startswith("\\"))):
+        if (
+            path.is_absolute()
+            or windows_path.drive
+            or windows_path.root
+            or (path.parts and URI_SCHEME_PATTERN.match(path.parts[0]))
+        ):
             raise EnvironmentError("artifact paths must be relative to the package")
         if ".." in path.parts or ".." in windows_path.parts:
             raise EnvironmentError("artifact paths must not escape the package with '..'")
         parts = path.parts
         if parts and parts[0] == "output":
             path = Path(*parts[1:])
-        return output_dir / path
+        if not path.parts:
+            raise EnvironmentError("artifact path must name a file")
+
+        output_root = Path(output_dir).resolve()
+        candidate = output_root / path
+        try:
+            resolved = candidate.resolve(strict=False)
+            resolved.relative_to(output_root)
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise EnvironmentError("artifact path must stay inside the output directory") from exc
+        cursor = output_root
+        for part in path.parts[:-1]:
+            cursor = cursor / part
+            if cursor.is_symlink():
+                raise EnvironmentError("artifact path must not traverse symlinks")
+        if candidate.is_symlink():
+            raise EnvironmentError("artifact path must not target a symlink")
+        if resolved.exists() and resolved.is_dir():
+            raise EnvironmentError("artifact path must name a file")
+        return resolved
 
     def save_artifacts(self, output_dir: Path) -> dict[str, str]:
         outputs = self.spec.get("outputs", {})
+        if not isinstance(outputs, dict):
+            raise EnvironmentError("outputs must be an object")
+        raw_save_mjcf = outputs.get("save_mjcf", True)
+        raw_save_mjb = outputs.get("save_mjb", False)
+        if not isinstance(raw_save_mjcf, bool) or not isinstance(raw_save_mjb, bool):
+            raise EnvironmentError("outputs save flags must be booleans")
         artifacts: dict[str, str] = {}
-        save_mjcf = bool(outputs.get("save_mjcf", True))
-        save_mjb = bool(outputs.get("save_mjb", False))
+        save_mjcf = raw_save_mjcf
+        save_mjb = raw_save_mjb
         if not save_mjcf and not save_mjb:
             return artifacts
         output_dir = validate_output_dir(output_dir, self.package_root)
-        output_dir.mkdir(parents=True, exist_ok=True)
+        package_root = self.package_root.resolve()
+        if output_dir == package_root:
+            raise EnvironmentError("artifact output directory must be a package subdirectory")
+        xml_path: Path | None = None
+        mjb_path: Path | None = None
         if save_mjcf:
             xml_path = self._resolve_output_path(
-                str(outputs.get("mjcf_path", "model.xml")), output_dir
+                outputs.get("mjcf_path", "model.xml"), output_dir
             )
-            if xml_path.resolve() in {
-                self.model_path,
-                self.package_root / "scene_spec.json",
-                self.package_root / "interaction_manifest.json",
-            }:
-                raise EnvironmentError("artifact path would overwrite a package source file")
-            xml_path.parent.mkdir(parents=True, exist_ok=True)
-            if self.model_path != xml_path.resolve():
-                shutil.copy2(self.model_path, xml_path)
-            artifacts["mjcf"] = package_relative_path(xml_path, self.package_root)
         if save_mjb:
             mjb_path = self._resolve_output_path(
-                str(outputs.get("mjb_path", "model.mjb")), output_dir
+                outputs.get("mjb_path", "model.mjb"), output_dir
             )
-            if mjb_path.resolve() in {
-                self.model_path,
-                self.package_root / "scene_spec.json",
-                self.package_root / "interaction_manifest.json",
-            }:
+            if xml_path is not None and mjb_path == xml_path:
+                raise EnvironmentError("MJCF and MJB artifact paths must differ")
+
+        protected_paths = {
+            self.model_path.resolve(),
+            (package_root / "scene_spec.json").resolve(),
+            (package_root / "interaction_manifest.json").resolve(),
+        }
+        for artifact_path in (xml_path, mjb_path):
+            if artifact_path is not None and artifact_path in protected_paths:
                 raise EnvironmentError("artifact path would overwrite a package source file")
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        if xml_path is not None:
+            xml_path.parent.mkdir(parents=True, exist_ok=True)
+            if self.model_path != xml_path:
+                shutil.copy2(self.model_path, xml_path)
+            artifacts["mjcf"] = package_relative_path(xml_path, package_root)
+        if mjb_path is not None:
             mjb_path.parent.mkdir(parents=True, exist_ok=True)
             mujoco.mj_saveModel(self.model, str(mjb_path), None)
-            artifacts["mjb"] = package_relative_path(mjb_path, self.package_root)
+            artifacts["mjb"] = package_relative_path(mjb_path, package_root)
         return artifacts
 
     def is_success(self) -> bool:

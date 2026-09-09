@@ -22,15 +22,27 @@ ID_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 NAME_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_.-]*$")
 URI_SCHEME_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 SENSITIVE_KEY_PATTERN = re.compile(
-    r"(?i)(?:api[_-]?key|access[_-]?token|authorization|bearer|password|secret|private[_-]?key|credential|cookie|token)"
+    r"(?i)(?:api[_-]?key|access[_-]?token|authorization|bearer|password|secret|"
+    r"private[_-]?key|credential|cookie|token)"
 )
 SENSITIVE_TEXT_PATTERNS = (
     re.compile(r"(?i)\b(?:github_pat_|ghp_|gho_|ghs_|ghu_|ghr_|sk-)[A-Za-z0-9_./-]{16,}"),
+    re.compile(r"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b"),
+    re.compile(r"\bAIza[0-9A-Za-z_-]{35}\b"),
+    re.compile(r"\bxox[baprs]-[0-9A-Za-z-]{10,}\b"),
+    re.compile(r"\b(?:glpat-|npm_|pypi-)[A-Za-z0-9_-]{16,}\b"),
+    re.compile(r"\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b"),
     re.compile(r"(?i)\b(?:bearer\s+)[A-Za-z0-9._-]{20,}"),
     re.compile(r"(?i)\b(?:api[_ -]?key|access[_ -]?token|password|secret)\s*[:=]\s*\S+"),
+    re.compile(r"(?i)\b(?:token)\s*[:=]\s*[A-Za-z0-9._~+/=-]{12,}"),
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
-    re.compile(r"(?<![A-Za-z0-9])(?:/Users|/home|/root)/[^\s,;]+"),
+    re.compile(
+        r"(?<![A-Za-z0-9])(?:/Users|/home|/root|/tmp|/private/tmp|/var|"
+        r"/private/var)/[^\s,;]+"
+    ),
+    re.compile(r"(?<![A-Za-z0-9])~(?:/|[A-Za-z0-9_.-]+/)[^\s,;]+"),
     re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/][^\s,;]+"),
+    re.compile(r"(?<![A-Za-z0-9])(?:\$HOME|\$\{HOME\}|%USERPROFILE%)[\\/][^\s,;]+"),
     re.compile(r"\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b"),
 )
 
@@ -73,6 +85,17 @@ def check_public_text(value: Any, label: str, report: Reporter) -> None:
         report.error(f"{label} contains a credential, email address, or machine-local path")
 
 
+def redact_identifier(value: Any) -> str:
+    """Hide user-controlled identifiers without retaining a correlatable digest."""
+    return "<redacted>"
+
+
+def contains_sensitive_text(value: Any) -> bool:
+    return isinstance(value, str) and any(
+        pattern.search(value) for pattern in SENSITIVE_TEXT_PATTERNS
+    )
+
+
 def check_public_text_tree(value: Any, label: str, report: Reporter) -> None:
     """Scan extension fields too, so free-form metadata cannot hide secrets."""
     if isinstance(value, str):
@@ -80,10 +103,15 @@ def check_public_text_tree(value: Any, label: str, report: Reporter) -> None:
     elif isinstance(value, dict):
         for key, item in value.items():
             if isinstance(key, str):
+                safe_key = redact_identifier(key) if contains_sensitive_text(key) else key
                 if SENSITIVE_KEY_PATTERN.search(key):
-                    report.error(f"{label}.{key} contains a credential, email address, or machine-local path")
+                    report.error(
+                        f"{label}.{safe_key} contains a credential, email address, or machine-local path"
+                    )
                 check_public_text(key, f"{label}.<key>", report)
-            check_public_text_tree(item, f"{label}.{key}", report)
+            else:
+                safe_key = "<non-string-key>"
+            check_public_text_tree(item, f"{label}.{safe_key}", report)
     elif isinstance(value, list):
         for index, item in enumerate(value):
             check_public_text_tree(item, f"{label}[{index}]", report)
@@ -112,6 +140,14 @@ def check_package_reference(value: Any, label: str, report: Reporter) -> None:
     check_public_text(value, label, report)
 
 
+def normalize_output_reference(value: str) -> tuple[str, ...]:
+    """Normalize safe relative references for collision checks across hosts."""
+    parts = tuple(part for part in value.replace("\\", "/").split("/") if part not in {"", "."})
+    if parts and parts[0].casefold() == "output":
+        parts = parts[1:]
+    return tuple(part.casefold() for part in parts)
+
+
 def check_vector(value: Any, length: int, label: str, report: Reporter) -> bool:
     if (
         not isinstance(value, list)
@@ -136,8 +172,6 @@ def check_action_schema(value: Any, label: str, report: Reporter) -> None:
     if not isinstance(value, dict):
         report.error(f"{label} must be an object")
         return
-    check_public_text_tree(value, label, report)
-
     if value.get("type") != "object":
         report.error(f"{label}.type must be 'object'")
 
@@ -161,14 +195,16 @@ def check_action_schema(value: Any, label: str, report: Reporter) -> None:
 
     for field in required:
         if field not in properties:
-            report.error(f"{label}.required references unknown property: {field}")
+            report.error(
+                f"{label}.required references unknown property: {redact_identifier(field)}"
+            )
 
     additional_properties = value.get("additionalProperties")
     if "additionalProperties" in value and not isinstance(additional_properties, bool):
         report.error(f"{label}.additionalProperties must be a boolean when provided")
 
     for field, definition in properties.items():
-        field_label = f"{label}.properties.{field}"
+        field_label = f"{label}.properties.{redact_identifier(field)}"
         if not isinstance(field, str) or not field:
             report.error(f"{label}.properties keys must be non-empty strings")
             continue
@@ -247,7 +283,8 @@ def check_condition_list(value: Any, label: str, report: Reporter) -> bool:
                 report.error(f"{label}[{index}].path must be a non-empty string")
                 valid = False
             for key, item in condition.items():
-                check_public_text(item, f"{label}[{index}].{key}", report)
+                safe_key = redact_identifier(key) if contains_sensitive_text(key) else key
+                check_public_text(item, f"{label}[{index}].{safe_key}", report)
         else:
             report.error(f"{label}[{index}] must be a string or object")
             valid = False
@@ -297,7 +334,7 @@ def check_unique_ids(items: Any, label: str, report: Reporter) -> tuple[list[Any
             report.error(f"{label}[{index}].id must match {ID_PATTERN.pattern}")
             continue
         if item_id in seen:
-            report.error(f"duplicate {label} id: {item_id}")
+            report.error(f"duplicate {label} id: {redact_identifier(item_id)}")
         seen.add(item_id)
     return items, seen
 
@@ -312,7 +349,7 @@ def add_object_name(
     if not check_name(value, label, report):
         return
     if value in namespaces[object_type]:
-        report.error(f"duplicate MuJoCo {object_type} name: {value}")
+        report.error(f"duplicate MuJoCo {object_type} name: {redact_identifier(value)}")
     namespaces[object_type].add(value)
 
 
@@ -366,13 +403,13 @@ def check_dependencies(points: list[Any], point_ids: set[str], report: Reporter)
         for dependency in dependencies:
             if not isinstance(dependency, str) or dependency not in point_ids:
                 report.error(
-                    f"interaction_points[{index}].depends_on references unknown id: {dependency}"
+                    f"interaction_points[{index}].depends_on references unknown id: {redact_identifier(dependency)}"
                 )
             elif dependency == point["id"]:
-                report.error(f"interaction point cannot depend on itself: {dependency}")
+                report.error(f"interaction point cannot depend on itself: {redact_identifier(dependency)}")
             elif point_indices.get(dependency, index) >= index:
                 report.error(
-                    f"interaction_points[{index}].depends_on must reference an earlier point: {dependency}"
+                    f"interaction_points[{index}].depends_on must reference an earlier point: {redact_identifier(dependency)}"
                 )
             else:
                 graph[point["id"]].append(dependency)
@@ -382,7 +419,7 @@ def check_dependencies(points: list[Any], point_ids: set[str], report: Reporter)
 
     def visit(node: str) -> None:
         if node in visiting:
-            report.error(f"interaction dependency cycle includes: {node}")
+            report.error(f"interaction dependency cycle includes: {redact_identifier(node)}")
             return
         if node in visited:
             return
@@ -401,7 +438,6 @@ def validate(data: Any) -> Reporter:
     if not isinstance(data, dict):
         report.error("the root value must be a JSON object")
         return report
-
     required = {
         "schema_version",
         "backend",
@@ -415,6 +451,20 @@ def validate(data: Any) -> Reporter:
         "task",
         "outputs",
     }
+    # Known sections retain their stable diagnostic labels below. Scan any
+    # extension fields here so they cannot bypass the privacy checks.
+    for key, value in data.items():
+        if key in required:
+            continue
+        if isinstance(key, str):
+            safe_key = redact_identifier(key) if contains_sensitive_text(key) else key
+            if SENSITIVE_KEY_PATTERN.search(key):
+                report.error(f"root.{safe_key} contains a credential, email address, or machine-local path")
+            check_public_text(key, "root.<key>", report)
+        else:
+            safe_key = "<non-string-key>"
+        check_public_text_tree(value, f"root.{safe_key}", report)
+
     for key in sorted(required - data.keys()):
         report.error(f"missing top-level field: {key}")
 
@@ -563,7 +613,7 @@ def validate(data: Any) -> Reporter:
                 for object_type, names in exports.items():
                     if object_type not in ALLOWED_TARGET_TYPES:
                         report.error(
-                            f"{label}.exports has unsupported object type: {object_type}"
+                            f"{label}.exports has unsupported object type: {redact_identifier(object_type)}"
                         )
                         continue
                     if not isinstance(names, list):
@@ -683,7 +733,7 @@ def validate(data: Any) -> Reporter:
         elif not check_name(name, f"{label}.name", report):
             continue
         elif name not in namespaces[object_type]:
-            report.error(f"{label} references unknown {object_type}: {name}")
+            report.error(f"{label} references unknown {object_type}: {redact_identifier(name)}")
 
     task = data.get("task")
     check_public_text_tree(task, "task", report)
@@ -708,6 +758,7 @@ def validate(data: Any) -> Reporter:
         report.error("outputs must be an object")
     else:
         check_public_text_tree(outputs, "outputs", report)
+        output_paths: dict[str, tuple[str, ...]] = {}
         for flag, path_field in (
             ("save_mjcf", "mjcf_path"),
             ("save_mjb", "mjb_path"),
@@ -721,10 +772,45 @@ def validate(data: Any) -> Reporter:
                 report.error(f"outputs.{path_field} is required when {flag} is true")
             elif outputs.get(flag):
                 output_path = Path(outputs[path_field])
-                if is_absolute_reference(outputs[path_field]) or ".." in output_path.parts or ".." in PureWindowsPath(outputs[path_field]).parts:
+                if (
+                    is_absolute_reference(outputs[path_field])
+                    or URI_SCHEME_PATTERN.match(outputs[path_field])
+                    or ".." in output_path.parts
+                    or ".." in PureWindowsPath(outputs[path_field]).parts
+                ):
                     report.error(
                         f"outputs.{path_field} must stay inside the generated package"
                     )
+                else:
+                    normalized = normalize_output_reference(outputs[path_field])
+                    if not normalized:
+                        report.error(f"outputs.{path_field} must name a file")
+                    else:
+                        output_paths[path_field] = normalized
+        if (
+            outputs.get("save_mjcf") is True
+            and outputs.get("save_mjb") is True
+            and output_paths.get("mjcf_path") is not None
+            and output_paths.get("mjb_path") is not None
+            and output_paths.get("mjcf_path") == output_paths.get("mjb_path")
+        ):
+            report.error("outputs.mjcf_path and outputs.mjb_path must differ")
+
+        for collection_name in ("screenshots", "depth"):
+            if collection_name not in outputs:
+                continue
+            collection = outputs[collection_name]
+            if not isinstance(collection, list):
+                report.error(
+                    f"outputs.{collection_name} must be a list of package-relative paths"
+                )
+                continue
+            for index, reference in enumerate(collection):
+                reference_label = f"outputs.{collection_name}[{index}]"
+                if not isinstance(reference, str) or not reference.strip():
+                    report.error(f"{reference_label} must be a non-empty package-relative path")
+                else:
+                    check_package_reference(reference, reference_label, report)
         if "resolution" in outputs:
             resolution = outputs["resolution"]
             if (
@@ -745,7 +831,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         data = json.loads(args.spec.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, ValueError) as exc:
-        print(f"ERROR: {exc}", file=sys.stderr)
+        # Do not echo the user-supplied filename or parser text; either may
+        # contain a local path or credential-like value.
+        print(f"ERROR: could not read scene spec ({type(exc).__name__})", file=sys.stderr)
         return 2
 
     report = validate(data)
