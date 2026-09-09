@@ -1,0 +1,369 @@
+{
+  "status": "PASS",
+  "scene": "08-conveyor-arm",
+  "path_base": "package_root",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.13.5",
+  "render_backend_requested": "osmesa",
+  "renderer_context": "osmesa",
+  "interaction_sequence": [
+    "start_conveyor_to_pickup",
+    "move_arm_to_parcel",
+    "grasp_parcel_with_arm",
+    "move_arm_to_target_bin",
+    "release_parcel_in_target_bin",
+    "inspect_handoff"
+  ],
+  "frame_count": 8,
+  "frames": [
+    {
+      "index": 0,
+      "label": "initial",
+      "rgb": "output/screenshots/sequence/00_initial/rgb.png",
+      "depth": "output/screenshots/sequence/00_initial/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 79.02785525933768,
+      "rgb_dynamic_range": 251,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.5050164461135864,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [],
+        "conveyor_state": "stopped",
+        "arm_state": "home",
+        "gripper_state": "open",
+        "parcel_state": "on_belt",
+        "tool_position": [
+          1.157453878361948,
+          -0.32696156427311035,
+          1.0307939143835512
+        ],
+        "parcel_position": [
+          -0.55,
+          8.890527183325421e-18,
+          0.9339459383603561
+        ],
+        "parcel_inside_target_bin": false
+      }
+    },
+    {
+      "index": 1,
+      "label": "start_conveyor_to_pickup",
+      "rgb": "output/screenshots/sequence/01_start_conveyor_to_pickup/rgb.png",
+      "depth": "output/screenshots/sequence/01_start_conveyor_to_pickup/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 80.33519208934645,
+      "rgb_dynamic_range": 251,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.5050164461135864,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "start_conveyor_to_pickup"
+        ],
+        "conveyor_state": "stopped",
+        "arm_state": "home",
+        "gripper_state": "open",
+        "parcel_state": "at_pickup",
+        "tool_position": [
+          1.1599999984405023,
+          -0.29999594346058817,
+          1.0306571428571736
+        ],
+        "parcel_position": [
+          -0.08,
+          0.0,
+          0.92
+        ],
+        "parcel_inside_target_bin": false
+      }
+    },
+    {
+      "index": 2,
+      "label": "move_arm_to_parcel",
+      "rgb": "output/screenshots/sequence/02_move_arm_to_parcel/rgb.png",
+      "depth": "output/screenshots/sequence/02_move_arm_to_parcel/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 78.55572647287148,
+      "rgb_dynamic_range": 251,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.5050164461135864,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "start_conveyor_to_pickup",
+          "move_arm_to_parcel"
+        ],
+        "conveyor_state": "stopped",
+        "arm_state": "at_parcel",
+        "gripper_state": "open",
+        "parcel_state": "at_pickup",
+        "tool_position": [
+          -0.08000025320000523,
+          2.2177581439006278e-07,
+          0.9306573004544639
+        ],
+        "parcel_position": [
+          -0.08,
+          8.161757803845364e-17,
+          0.933965036175258
+        ],
+        "parcel_inside_target_bin": false
+      }
+    },
+    {
+      "index": 3,
+      "label": "grasp_parcel_with_arm",
+      "rgb": "output/screenshots/sequence/03_grasp_parcel_with_arm/rgb.png",
+      "depth": "output/screenshots/sequence/03_grasp_parcel_with_arm/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 78.54353850496395,
+      "rgb_dynamic_range": 251,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.5050164461135864,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "start_conveyor_to_pickup",
+          "move_arm_to_parcel",
+          "grasp_parcel_with_arm"
+        ],
+        "conveyor_state": "stopped",
+        "arm_state": "at_parcel",
+        "gripper_state": "closed",
+        "parcel_state": "grasped",
+        "tool_position": [
+          -0.0800000045843747,
+          4.159617709303953e-09,
+          0.9306571428580191
+        ],
+        "parcel_position": [
+          -0.08000000467354038,
+          4.2508946059352515e-09,
+          0.9306571428580743
+        ],
+        "parcel_inside_target_bin": false
+      }
+    },
+    {
+      "index": 4,
+      "label": "move_arm_to_target_bin",
+      "rgb": "output/screenshots/sequence/04_move_arm_to_target_bin/rgb.png",
+      "depth": "output/screenshots/sequence/04_move_arm_to_target_bin/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 78.09119287825982,
+      "rgb_dynamic_range": 251,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.5050164461135864,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "start_conveyor_to_pickup",
+          "move_arm_to_parcel",
+          "grasp_parcel_with_arm",
+          "move_arm_to_target_bin"
+        ],
+        "conveyor_state": "stopped",
+        "arm_state": "over_target_bin",
+        "gripper_state": "closed",
+        "parcel_state": "grasped",
+        "tool_position": [
+          0.24999735595365896,
+          0.18003550938449342,
+          0.930657142857143
+        ],
+        "parcel_position": [
+          0.24999731515672344,
+          0.18003623595823726,
+          0.930657142857143
+        ],
+        "parcel_inside_target_bin": true
+      }
+    },
+    {
+      "index": 5,
+      "label": "release_parcel_in_target_bin",
+      "rgb": "output/screenshots/sequence/05_release_parcel_in_target_bin/rgb.png",
+      "depth": "output/screenshots/sequence/05_release_parcel_in_target_bin/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 78.09425475717767,
+      "rgb_dynamic_range": 251,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.5050164461135864,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "start_conveyor_to_pickup",
+          "move_arm_to_parcel",
+          "grasp_parcel_with_arm",
+          "move_arm_to_target_bin",
+          "release_parcel_in_target_bin"
+        ],
+        "conveyor_state": "stopped",
+        "arm_state": "over_target_bin",
+        "gripper_state": "open",
+        "parcel_state": "inside_target_bin",
+        "tool_position": [
+          0.24999999950394064,
+          0.18000000799944965,
+          0.930657142857143
+        ],
+        "parcel_position": [
+          0.25,
+          0.16471337418600832,
+          0.9339650363298768
+        ],
+        "parcel_inside_target_bin": true
+      }
+    },
+    {
+      "index": 6,
+      "label": "settled_after_release_parcel_in_target_bin",
+      "rgb": "output/screenshots/sequence/06_settled_after_release_parcel_in_target_bin/rgb.png",
+      "depth": "output/screenshots/sequence/06_settled_after_release_parcel_in_target_bin/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 78.0942564283782,
+      "rgb_dynamic_range": 251,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.5050164461135864,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "start_conveyor_to_pickup",
+          "move_arm_to_parcel",
+          "grasp_parcel_with_arm",
+          "move_arm_to_target_bin",
+          "release_parcel_in_target_bin"
+        ],
+        "conveyor_state": "stopped",
+        "arm_state": "over_target_bin",
+        "gripper_state": "open",
+        "parcel_state": "inside_target_bin",
+        "tool_position": [
+          0.24999999995132333,
+          0.1800000007169342,
+          0.930657142857143
+        ],
+        "parcel_position": [
+          0.25,
+          0.16471337418600832,
+          0.9339650361753187
+        ],
+        "parcel_inside_target_bin": true
+      }
+    },
+    {
+      "index": 7,
+      "label": "inspect_handoff",
+      "rgb": "output/screenshots/sequence/07_inspect_handoff/rgb.png",
+      "depth": "output/screenshots/sequence/07_inspect_handoff/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 78.0942564283782,
+      "rgb_dynamic_range": 251,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.5050164461135864,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "start_conveyor_to_pickup",
+          "move_arm_to_parcel",
+          "grasp_parcel_with_arm",
+          "move_arm_to_target_bin",
+          "release_parcel_in_target_bin",
+          "inspect_handoff"
+        ],
+        "conveyor_state": "stopped",
+        "arm_state": "over_target_bin",
+        "gripper_state": "open",
+        "parcel_state": "inside_target_bin",
+        "tool_position": [
+          0.24999999995132333,
+          0.1800000007169342,
+          0.930657142857143
+        ],
+        "parcel_position": [
+          0.25,
+          0.16471337418600832,
+          0.9339650361753187
+        ],
+        "parcel_inside_target_bin": true
+      }
+    }
+  ],
+  "contact_sheet": "output/screenshots/sequence.png",
+  "tiff": "output/screenshots/sequence.tif",
+  "gif": "output/screenshots/sequence.gif",
+  "sequence_kind": "discrete interaction keyframes",
+  "gif_frame_duration_ms": 1600,
+  "gif_final_frame_duration_ms": 2600,
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "before_depth": "output/screenshots/before_depth.npy",
+  "after_depth": "output/screenshots/after_depth.npy",
+  "task_success": true
+}

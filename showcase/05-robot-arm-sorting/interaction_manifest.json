@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source": "scene_spec.json",
+  "scene": "robot_arm_sorting_cell",
+  "action_envelope": {
+    "type": "object",
+    "properties": {"id": {"type": "string"}, "payload": {"type": "object"}},
+    "required": ["id", "payload"],
+    "additionalProperties": false
+  },
+  "dependency_order": [
+    "approach_blue_part",
+    "grasp_blue_part",
+    "transfer_to_blue_bin",
+    "release_blue_part",
+    "inspect_sorting_result"
+  ],
+  "interaction_points": [
+    {
+      "id": "approach_blue_part",
+      "target": {"type": "joint", "name": "arm_shoulder"},
+      "marker_site": "approach_blue_part_marker",
+      "pose": {"position": [0.18, 0, 0.98], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "approach",
+      "action": {"mode": "direct", "command": "approach_blue_part", "schema": {"type": "object", "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["arm_state == 'home'", "blue_part_state == 'on_conveyor'"],
+      "success_conditions": ["distance(arm_tcp, blue_part) <= 0.08 m"],
+      "depends_on": [],
+      "effects": ["arm_state = 'at_pick_pose'"],
+      "reset": {"arm_state": "home"}
+    },
+    {
+      "id": "grasp_blue_part",
+      "target": {"type": "actuator", "name": "gripper_left_motor"},
+      "marker_site": "grasp_blue_part_marker",
+      "pose": {"position": [0.18, 0, 0.91], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "grasp",
+      "action": {"mode": "direct", "command": "grasp_blue_part", "schema": {"type": "object", "properties": {"close": {"type": "boolean"}}, "required": ["close"], "additionalProperties": false}},
+      "preconditions": ["arm_state == 'at_pick_pose'", "blue_part_state == 'on_conveyor'"],
+      "success_conditions": ["gripper_state == 'closed'", "blue_part_state == 'grasped'"],
+      "depends_on": ["approach_blue_part"],
+      "effects": ["gripper_state = 'closed'", "blue_part_state = 'grasped'"],
+      "reset": {"gripper_state": "open", "blue_part_state": "on_conveyor"}
+    },
+    {
+      "id": "transfer_to_blue_bin",
+      "target": {"type": "joint", "name": "arm_elbow"},
+      "marker_site": "transfer_blue_bin_marker",
+      "pose": {"position": [0.78, 0, 0.84], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "transfer",
+      "action": {"mode": "direct", "command": "transfer_to_blue_bin", "schema": {"type": "object", "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["blue_part_state == 'grasped'", "gripper_state == 'closed'"],
+      "success_conditions": ["distance(arm_tcp, blue_bin) <= 0.12 m", "blue_part_state == 'grasped'"],
+      "depends_on": ["grasp_blue_part"],
+      "effects": ["arm_state = 'over_blue_bin'"],
+      "reset": {"arm_state": "home"}
+    },
+    {
+      "id": "release_blue_part",
+      "target": {"type": "actuator", "name": "gripper_left_motor"},
+      "marker_site": "release_blue_part_marker",
+      "pose": {"position": [0.78, -0.34, 1.22], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "release",
+      "action": {"mode": "direct", "command": "release_blue_part", "schema": {"type": "object", "properties": {"open": {"type": "boolean"}}, "required": ["open"], "additionalProperties": false}},
+      "preconditions": ["arm_state == 'over_blue_bin'", "blue_part_state == 'grasped'"],
+      "success_conditions": ["gripper_state == 'open'", "blue_part_state == 'inside_blue_bin'", "blue_part_speed_mps < 0.15"],
+      "depends_on": ["transfer_to_blue_bin"],
+      "effects": ["gripper_state = 'open'", "blue_part_state = 'inside_blue_bin'"],
+      "reset": {"gripper_state": "open", "blue_part_state": "on_conveyor"}
+    },
+    {
+      "id": "inspect_sorting_result",
+      "target": {"type": "camera", "name": "sorting_camera"},
+      "marker_site": "inspect_sorting_marker",
+      "pose": {"position": [1.12, -0.62, 0.86], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "inspect",
+      "action": {"mode": "direct", "command": "inspect_sorting_result", "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"], "additionalProperties": false}},
+      "preconditions": ["blue_part_state == 'inside_blue_bin'"],
+      "success_conditions": ["observation contains finite RGB and depth arrays"],
+      "depends_on": ["release_blue_part"],
+      "effects": ["inspection_state = 'captured'"],
+      "reset": {"inspection_state": "pending"}
+    }
+  ]
+}

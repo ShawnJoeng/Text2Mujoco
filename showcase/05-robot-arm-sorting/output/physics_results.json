@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "path_base": "package_root",
+  "mujoco_gl": "disable",
+  "static_checks": {
+    "xml_parse": "PASS",
+    "mjcf_compile": "PASS",
+    "articulated_joints": 5,
+    "arm_actuators": 5,
+    "typed_targets": "PASS",
+    "visible_markers": "PASS",
+    "quaternion_conversion": "PASS"
+  },
+  "physics": {
+    "mj_step": "PASS",
+    "finite_state": "PASS"
+  },
+  "interaction_sequence": [
+    "approach_blue_part",
+    "grasp_blue_part",
+    "transfer_to_blue_bin",
+    "release_blue_part"
+  ],
+  "grasp_sync": "PASS",
+  "release_inside_bin": "PASS",
+  "dependency_enforcement": "PASS",
+  "deterministic_reset": "PASS",
+  "mjcf_reload": "PASS",
+  "mjb_reload": "PASS"
+}

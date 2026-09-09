@@ -80,6 +80,56 @@ SCENES: Dict[str, Dict[str, Any]] = {
             ("inspect_with_camera", {"output_dir": "runtime_inspect"}),
         ],
     },
+    "05-robot-arm-sorting": {
+        "warmup_steps": 100,
+        "camera": "sorting_camera",
+        "actions": [
+            ("approach_blue_part", {"speed_rad_s": 1.0}),
+            ("grasp_blue_part", {"close": True}),
+            ("transfer_to_blue_bin", {"speed_rad_s": 1.0}),
+            ("release_blue_part", {"open": True}),
+            ("inspect_sorting_result", {"output_dir": "runtime_inspect"}),
+        ],
+    },
+    "06-forklift-pallet": {
+        "warmup_steps": 100,
+        "camera": "delivery_camera",
+        "settle_after": {"lower_forks_release": 120},
+        "actions": [
+            ("drive_to_pallet", {"speed_mps": 0.8}),
+            ("raise_forks", {"lift_m": 0.18}),
+            ("engage_pallet", {"confirm": True}),
+            ("carry_to_drop_zone", {"speed_mps": 0.8}),
+            ("lower_forks_release", {"release": True}),
+            ("inspect_forklift_delivery", {"output_dir": "runtime_inspect"}),
+        ],
+    },
+    "07-robot-assembly": {
+        "warmup_steps": 100,
+        "camera": "assembly_camera",
+        "settle_after": {"release_assembled_peg": 120},
+        "actions": [
+            ("move_arm_to_peg", {"speed_rad_s": 1.0}),
+            ("grasp_peg_with_arm", {"close": True}),
+            ("move_arm_to_socket", {"speed_rad_s": 1.0}),
+            ("insert_peg_into_socket", {"depth_m": 0.08}),
+            ("release_assembled_peg", {"open": True}),
+            ("inspect_assembly", {"output_dir": "runtime_inspect"}),
+        ],
+    },
+    "08-conveyor-arm": {
+        "warmup_steps": 100,
+        "camera": "handoff_camera",
+        "settle_after": {"release_parcel_in_target_bin": 120},
+        "actions": [
+            ("start_conveyor_to_pickup", {"speed_mps": 0.6}),
+            ("move_arm_to_parcel", {"speed_rad_s": 1.0}),
+            ("grasp_parcel_with_arm", {"close": True}),
+            ("move_arm_to_target_bin", {"speed_rad_s": 1.0}),
+            ("release_parcel_in_target_bin", {"open": True}),
+            ("inspect_handoff", {"output_dir": "runtime_inspect"}),
+        ],
+    },
 }
 
 
@@ -563,6 +613,49 @@ def compact_observation(scene_name: str, observation: Dict[str, Any]) -> Dict[st
             "ball_position": observation["ball_position"],
             "ball_speed_mps": observation["ball_speed_mps"],
             "ball_inside_target": observation["ball_inside_target"],
+        }
+    if scene_name == "05-robot-arm-sorting":
+        return {
+            "history": observation["history"],
+            "arm_state": observation["state"]["arm_state"],
+            "gripper_state": observation["state"]["gripper_state"],
+            "blue_part_state": observation["state"]["blue_part_state"],
+            "arm_tcp_position": observation["arm_tcp_position"],
+            "blue_part_position": observation["blue_part_position"],
+            "blue_part_inside_bin": observation["blue_part_inside_bin"],
+        }
+    if scene_name == "06-forklift-pallet":
+        return {
+            "history": observation["history"],
+            "forklift_state": observation["state"]["forklift_state"],
+            "pallet_state": observation["state"]["pallet_state"],
+            "forklift_position": observation["forklift_position"],
+            "fork_lift_qpos_m": observation["fork_lift_qpos_m"],
+            "pallet_position": observation["pallet_position"],
+            "pallet_inside_delivery": observation["pallet_inside_delivery"],
+            "rack_collision_count": observation["rack_collision_count"],
+        }
+    if scene_name == "07-robot-assembly":
+        return {
+            "history": observation["history"],
+            "arm_state": observation["state"]["arm_state"],
+            "gripper_state": observation["state"]["gripper_state"],
+            "tool_state": observation["state"]["tool_state"],
+            "peg_state": observation["state"]["peg_state"],
+            "tool_position": observation["tool_position"],
+            "peg_position": observation["peg_position"],
+            "peg_socket_error_m": observation["peg_socket_error_m"],
+        }
+    if scene_name == "08-conveyor-arm":
+        return {
+            "history": observation["history"],
+            "conveyor_state": observation["state"]["conveyor_state"],
+            "arm_state": observation["state"]["arm_state"],
+            "gripper_state": observation["state"]["gripper_state"],
+            "parcel_state": observation["state"]["parcel_state"],
+            "tool_position": observation["tool_position"],
+            "parcel_position": observation["parcel_position"],
+            "parcel_inside_target_bin": observation["parcel_inside_target_bin"],
         }
     raise KeyError(scene_name)
 

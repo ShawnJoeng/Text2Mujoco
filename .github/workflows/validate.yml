@@ -48,5 +48,6 @@ jobs:
       - name: Run static contract checks
         run: |
           python showcase/artifact_path_test.py
+          python showcase/dense_archive_test.py
           python showcase/01-button-cube-box/contract_test.py
           python showcase/01-button-cube-box/validator_unit_test.py

@@ -1,0 +1,139 @@
+<mujoco model="conveyor_robot_handoff_cell">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton" cone="elliptic"/>
+  <size nconmax="500" njmax="1000"/>
+  <statistic center="0 0.18 0.86" extent="1.45"/>
+  <visual>
+    <global offwidth="640" offheight="480"/>
+    <quality shadowsize="2048"/>
+    <map znear="0.01" zfar="8"/>
+    <headlight ambient="0.30 0.31 0.34" diffuse="0.72 0.74 0.76" specular="0.18 0.18 0.20"/>
+  </visual>
+
+  <asset>
+    <texture name="ground_tex" type="2d" builtin="checker" rgb1="0.12 0.14 0.17" rgb2="0.22 0.24 0.27" width="512" height="512"/>
+    <material name="ground_mat" texture="ground_tex" texrepeat="5 5" reflectance="0.08"/>
+    <material name="bench_mat" rgba="0.53 0.57 0.61 1" specular="0.18" roughness="0.62"/>
+    <material name="frame_mat" rgba="0.08 0.10 0.13 1" specular="0.20" roughness="0.48"/>
+    <material name="belt_mat" rgba="0.07 0.09 0.11 1" specular="0.12" roughness="0.82"/>
+    <material name="rail_mat" rgba="0.34 0.38 0.43 1" specular="0.22" roughness="0.52"/>
+    <material name="roller_mat" rgba="0.57 0.61 0.66 1" specular="0.34" roughness="0.32"/>
+    <material name="arm_mat" rgba="0.95 0.31 0.07 1" specular="0.35" roughness="0.30"/>
+    <material name="arm_dark_mat" rgba="0.20 0.23 0.27 1" specular="0.25" roughness="0.42"/>
+    <material name="parcel_mat" rgba="0.04 0.30 0.92 1" specular="0.34" roughness="0.28"/>
+    <material name="target_bin_mat" rgba="0.05 0.62 0.30 1" specular="0.24" roughness="0.42"/>
+    <material name="distractor_mat" rgba="0.76 0.07 0.06 1" specular="0.24" roughness="0.42"/>
+    <material name="marker_yellow" rgba="1 0.88 0.04 1" emission="0.35"/>
+    <material name="marker_cyan" rgba="0.02 0.95 0.95 1" emission="0.35"/>
+    <material name="marker_green" rgba="0.05 1 0.18 1" emission="0.35"/>
+    <material name="marker_magenta" rgba="1 0.05 0.65 1" emission="0.35"/>
+    <material name="marker_orange" rgba="1 0.35 0.02 1" emission="0.35"/>
+  </asset>
+
+  <default>
+    <geom friction="0.72 0.01 0.002" condim="6" solref="0.008 1" solimp="0.90 0.95 0.001"/>
+  </default>
+
+  <worldbody>
+    <light name="key_light" pos="-1.2 -1.1 2.8" dir="0.35 0.32 -1" directional="true" castshadow="true"/>
+    <light name="fill_light" pos="1.4 0.3 2.0" dir="-0.7 -0.2 -1" directional="true" diffuse="0.42 0.44 0.48" specular="0.08 0.08 0.08"/>
+    <camera name="handoff_camera" pos="0 0 2.8" quat="1 0 0 0" fovy="50"/>
+    <geom name="ground_geom" type="plane" size="3 3 0.1" material="ground_mat"/>
+
+    <body name="workbench" pos="0 0 0.74">
+      <geom name="workbench_top_geom" type="box" size="0.90 0.575 0.04" material="bench_mat" friction="0.90 0.01 0.001"/>
+      <geom name="workbench_leg_fl" type="box" pos="-0.80 -0.47 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
+      <geom name="workbench_leg_fr" type="box" pos="0.80 -0.47 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
+      <geom name="workbench_leg_bl" type="box" pos="-0.80 0.47 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
+      <geom name="workbench_leg_br" type="box" pos="0.80 0.47 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
+    </body>
+
+    <body name="conveyor_frame" pos="-0.30 0 0.81">
+      <geom name="conveyor_frame_geom" type="box" size="0.675 0.26 0.04" material="frame_mat" friction="0.82 0.01 0.001"/>
+      <geom name="belt_surface_geom" type="box" pos="0 0 0.052" size="0.64 0.225 0.012" material="belt_mat" friction="0.95 0.01 0.001"/>
+      <geom name="conveyor_left_rail" type="box" pos="0 0.245 0.08" size="0.66 0.018 0.055" material="rail_mat"/>
+      <geom name="conveyor_right_rail" type="box" pos="0 -0.245 0.08" size="0.66 0.018 0.055" material="rail_mat"/>
+    </body>
+    <body name="conveyor_drive" pos="-0.94 0 0.89">
+      <joint name="conveyor_drive_hinge" type="hinge" axis="0 1 0" damping="0.12" armature="0.008"/>
+      <geom name="conveyor_drive_geom" type="cylinder" size="0.19 0.06" quat="0.70710678 0 0.70710678 0" material="roller_mat" contype="0" conaffinity="0"/>
+      <site name="conveyor_drive_site" type="sphere" pos="0 0 0.20" size="0.014" rgba="0.9 0.9 0.9 1" group="2"/>
+    </body>
+    <body name="conveyor_tail" pos="0.34 0 0.89">
+      <geom name="conveyor_tail_geom" type="cylinder" size="0.19 0.06" quat="0.70710678 0 0.70710678 0" material="roller_mat" contype="0" conaffinity="0"/>
+    </body>
+
+    <!-- Articulated planar handoff arm. Link collisions are disabled to keep the
+         demonstration deterministic while payload collisions remain physical. -->
+    <body name="arm_base" pos="0.40 -0.30 1.08">
+      <geom name="arm_base_geom" type="cylinder" size="0.12 0.08" material="arm_dark_mat" contype="0" conaffinity="0"/>
+      <body name="arm_link1" pos="0 0 0">
+        <joint name="arm_shoulder" type="hinge" axis="0 0 1" range="-3.05 3.05" damping="1.5" armature="0.015"/>
+        <geom name="arm_link1_geom" type="capsule" fromto="0 0 0 0.32 0 0" size="0.045" mass="0.65" material="arm_mat" contype="0" conaffinity="0"/>
+        <geom name="arm_shoulder_hub" type="cylinder" size="0.065 0.035" material="arm_dark_mat" contype="0" conaffinity="0"/>
+        <body name="arm_link2" pos="0.32 0 0">
+          <joint name="arm_elbow" type="hinge" axis="0 0 1" range="-2.8 2.8" damping="1.2" armature="0.012"/>
+          <geom name="arm_link2_geom" type="capsule" fromto="0 0 0 0.28 0 0" size="0.040" mass="0.52" material="arm_mat" contype="0" conaffinity="0"/>
+          <geom name="arm_elbow_hub" type="cylinder" size="0.058 0.032" material="arm_dark_mat" contype="0" conaffinity="0"/>
+          <body name="arm_link3" pos="0.28 0 0">
+            <joint name="arm_wrist" type="hinge" axis="0 0 1" range="-2.8 2.8" damping="1.0" armature="0.010"/>
+            <geom name="arm_link3_geom" type="capsule" fromto="0 0 0 0.16 0 0" size="0.035" mass="0.30" material="arm_mat" contype="0" conaffinity="0"/>
+            <geom name="arm_wrist_hub" type="cylinder" size="0.050 0.028" material="arm_dark_mat" contype="0" conaffinity="0"/>
+            <body name="arm_tool" pos="0.16 0 0">
+              <joint name="tool_z" type="slide" axis="0 0 1" range="-0.12 0" damping="3.0" armature="0.008"/>
+              <geom name="tool_palm_geom" type="box" pos="0 0 -0.025" size="0.075 0.075 0.025" mass="0.24" material="arm_dark_mat" contype="0" conaffinity="0"/>
+              <body name="left_finger" pos="0 0 -0.04">
+                <joint name="gripper_left_slide" type="slide" axis="0 1 0" range="-0.045 0" damping="2.0" armature="0.004"/>
+                <geom name="left_finger_geom" type="box" pos="0 0.048 0" size="0.035 0.012 0.055" mass="0.08" material="arm_mat" contype="0" conaffinity="0"/>
+              </body>
+              <body name="right_finger" pos="0 0 -0.04">
+                <joint name="gripper_right_slide" type="slide" axis="0 1 0" range="0 0.045" damping="2.0" armature="0.004"/>
+                <geom name="right_finger_geom" type="box" pos="0 -0.048 0" size="0.035 0.012 0.055" mass="0.08" material="arm_mat" contype="0" conaffinity="0"/>
+              </body>
+              <site name="arm_tcp" type="sphere" pos="0 0 -0.04" size="0.012" rgba="1 0.45 0.02 1" group="2"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+
+    <body name="blue_parcel" pos="-0.55 0 0.92">
+      <freejoint name="parcel_free"/>
+      <geom name="blue_parcel_geom" type="box" size="0.06 0.06 0.06" mass="0.22" material="parcel_mat" friction="0.76 0.01 0.002"/>
+      <site name="parcel_top_site" type="sphere" pos="0 0 0.075" size="0.010" rgba="0.04 0.45 1 1" group="2"/>
+    </body>
+
+    <body name="blue_target_bin" pos="0.25 0.18 0.80">
+      <geom name="blue_bin_bottom" type="box" pos="0 0 0.01" size="0.21 0.21 0.01" material="target_bin_mat" friction="0.78 0.01 0.002"/>
+      <geom name="blue_bin_left" type="box" pos="-0.22 0 0.135" size="0.01 0.21 0.125" material="target_bin_mat"/>
+      <geom name="blue_bin_right" type="box" pos="0.22 0 0.135" size="0.01 0.21 0.125" material="target_bin_mat"/>
+      <geom name="blue_bin_front" type="box" pos="0 -0.22 0.135" size="0.21 0.01 0.125" material="target_bin_mat"/>
+      <geom name="blue_bin_back" type="box" pos="0 0.22 0.135" size="0.21 0.01 0.125" material="target_bin_mat"/>
+      <site name="target_bin_center_site" type="cylinder" pos="0 0 0.03" size="0.055 0.006" rgba="0.05 1 0.18 1" group="2"/>
+    </body>
+    <body name="red_distractor_bin" pos="0.25 0.68 0.80">
+      <geom name="red_bin_bottom" type="box" pos="0 0 0.01" size="0.21 0.21 0.01" material="distractor_mat"/>
+      <geom name="red_bin_left" type="box" pos="-0.22 0 0.135" size="0.01 0.21 0.125" material="distractor_mat"/>
+      <geom name="red_bin_right" type="box" pos="0.22 0 0.135" size="0.01 0.21 0.125" material="distractor_mat"/>
+      <geom name="red_bin_front" type="box" pos="0 -0.22 0.135" size="0.21 0.01 0.125" material="distractor_mat"/>
+      <geom name="red_bin_back" type="box" pos="0 0.22 0.135" size="0.21 0.01 0.125" material="distractor_mat"/>
+    </body>
+
+    <site name="conveyor_start_marker" type="sphere" pos="-0.55 0 0.99" size="0.030" material="marker_yellow" group="2"/>
+    <site name="parcel_approach_marker" type="sphere" pos="-0.08 0 1.04" size="0.030" material="marker_cyan" group="2"/>
+    <site name="parcel_grasp_marker" type="sphere" pos="-0.08 0 1.12" size="0.040" material="marker_green" group="2"/>
+    <site name="target_bin_approach_marker" type="sphere" pos="0.25 0.18 1.25" size="0.045" material="marker_magenta" group="2"/>
+    <site name="parcel_release_marker" type="sphere" pos="0.25 0.18 1.14" size="0.040" material="marker_orange" group="2"/>
+    <site name="handoff_inspection_marker" type="sphere" pos="0.52 0.40 1.02" size="0.028" material="marker_yellow" group="2"/>
+  </worldbody>
+
+  <actuator>
+    <velocity name="conveyor_motor" joint="conveyor_drive_hinge" kv="0.35" ctrlrange="-8 8"/>
+    <position name="shoulder_motor" joint="arm_shoulder" kp="140" kv="14" ctrlrange="-3.05 3.05"/>
+    <position name="elbow_motor" joint="arm_elbow" kp="140" kv="14" ctrlrange="-2.8 2.8"/>
+    <position name="wrist_motor" joint="arm_wrist" kp="110" kv="11" ctrlrange="-2.8 2.8"/>
+    <position name="tool_lift_motor" joint="tool_z" kp="420" kv="24" ctrlrange="-0.12 0"/>
+    <position name="gripper_left_motor" joint="gripper_left_slide" kp="260" kv="16" ctrlrange="-0.045 0"/>
+    <position name="gripper_right_motor" joint="gripper_right_slide" kp="260" kv="16" ctrlrange="0 0.045"/>
+  </actuator>
+</mujoco>

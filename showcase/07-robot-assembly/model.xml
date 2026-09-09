@@ -1,0 +1,112 @@
+<mujoco model="robot_peg_insertion_assembly">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton" cone="elliptic"/>
+  <size nconmax="400" njmax="900"/>
+  <statistic center="0 0.08 0.85" extent="1.35"/>
+  <visual>
+    <global offwidth="640" offheight="480"/>
+    <quality shadowsize="2048"/>
+    <map znear="0.01" zfar="8"/>
+    <headlight ambient="0.30 0.31 0.34" diffuse="0.72 0.74 0.76" specular="0.18 0.18 0.20"/>
+  </visual>
+
+  <asset>
+    <texture name="ground_tex" type="2d" builtin="checker" rgb1="0.12 0.14 0.17" rgb2="0.22 0.24 0.27" width="512" height="512"/>
+    <material name="ground_mat" texture="ground_tex" texrepeat="5 5" reflectance="0.08"/>
+    <material name="bench_mat" rgba="0.53 0.57 0.61 1" specular="0.18" roughness="0.62"/>
+    <material name="frame_mat" rgba="0.08 0.10 0.13 1" specular="0.20" roughness="0.48"/>
+    <material name="arm_mat" rgba="0.95 0.31 0.07 1" specular="0.35" roughness="0.30"/>
+    <material name="arm_dark_mat" rgba="0.20 0.23 0.27 1" specular="0.25" roughness="0.42"/>
+    <material name="peg_mat" rgba="0.88 0.05 0.04 1" specular="0.34" roughness="0.28"/>
+    <material name="fixture_mat" rgba="0.08 0.32 0.78 1" specular="0.24" roughness="0.42"/>
+    <material name="socket_mat" rgba="0.03 0.12 0.25 1" specular="0.26" roughness="0.30"/>
+    <material name="marker_yellow" rgba="1 0.88 0.04 1" emission="0.35"/>
+    <material name="marker_cyan" rgba="0.02 0.95 0.95 1" emission="0.35"/>
+    <material name="marker_green" rgba="0.05 1 0.18 1" emission="0.35"/>
+    <material name="marker_magenta" rgba="1 0.05 0.65 1" emission="0.35"/>
+    <material name="marker_orange" rgba="1 0.35 0.02 1" emission="0.35"/>
+  </asset>
+
+  <default>
+    <geom friction="0.72 0.01 0.002" condim="6" solref="0.008 1" solimp="0.90 0.95 0.001"/>
+  </default>
+
+  <worldbody>
+    <light name="key_light" pos="-1.2 -1.1 2.8" dir="0.35 0.32 -1" directional="true" castshadow="true"/>
+    <light name="fill_light" pos="1.4 0.3 2.0" dir="-0.7 -0.2 -1" directional="true" diffuse="0.42 0.44 0.48" specular="0.08 0.08 0.08"/>
+    <camera name="assembly_camera" pos="0 0 2.8" quat="1 0 0 0" fovy="50"/>
+
+    <geom name="ground_geom" type="plane" size="3 3 0.1" material="ground_mat"/>
+    <body name="workbench" pos="0 0 0.74">
+      <geom name="workbench_top_geom" type="box" size="0.80 0.50 0.04" material="bench_mat" friction="0.90 0.01 0.001"/>
+      <geom name="workbench_leg_fl" type="box" pos="-0.70 -0.40 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
+      <geom name="workbench_leg_fr" type="box" pos="0.70 -0.40 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
+      <geom name="workbench_leg_bl" type="box" pos="-0.70 0.40 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
+      <geom name="workbench_leg_br" type="box" pos="0.70 0.40 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
+    </body>
+
+    <!-- The arm is a deterministic planar manipulator with an independently actuated tool lift. -->
+    <body name="arm_base" pos="-0.55 0 1.05">
+      <geom name="arm_base_geom" type="cylinder" size="0.12 0.08" material="arm_dark_mat" contype="0" conaffinity="0"/>
+      <body name="arm_link1" pos="0 0 0">
+        <joint name="arm_shoulder" type="hinge" axis="0 0 1" range="-3.05 3.05" damping="1.5" armature="0.015"/>
+        <geom name="arm_link1_geom" type="capsule" fromto="0 0 0 0.32 0 0" size="0.045" mass="0.65" material="arm_mat" contype="0" conaffinity="0"/>
+        <geom name="arm_shoulder_hub" type="cylinder" size="0.065 0.035" material="arm_dark_mat" contype="0" conaffinity="0"/>
+        <body name="arm_link2" pos="0.32 0 0">
+          <joint name="arm_elbow" type="hinge" axis="0 0 1" range="-2.8 2.8" damping="1.2" armature="0.012"/>
+          <geom name="arm_link2_geom" type="capsule" fromto="0 0 0 0.28 0 0" size="0.040" mass="0.52" material="arm_mat" contype="0" conaffinity="0"/>
+          <geom name="arm_elbow_hub" type="cylinder" size="0.058 0.032" material="arm_dark_mat" contype="0" conaffinity="0"/>
+          <body name="arm_link3" pos="0.28 0 0">
+            <joint name="arm_wrist" type="hinge" axis="0 0 1" range="-2.8 2.8" damping="1.0" armature="0.010"/>
+            <geom name="arm_link3_geom" type="capsule" fromto="0 0 0 0.16 0 0" size="0.035" mass="0.30" material="arm_mat" contype="0" conaffinity="0"/>
+            <geom name="arm_wrist_hub" type="cylinder" size="0.050 0.028" material="arm_dark_mat" contype="0" conaffinity="0"/>
+            <body name="arm_tool" pos="0.16 0 0">
+              <joint name="tool_z" type="slide" axis="0 0 1" range="-0.11 0" damping="3.0" armature="0.008"/>
+              <geom name="tool_palm_geom" type="box" pos="0 0 -0.025" size="0.075 0.075 0.025" mass="0.24" material="arm_dark_mat" contype="0" conaffinity="0"/>
+              <geom name="fixed_finger_geom" type="box" pos="0 0.048 -0.055" size="0.035 0.012 0.055" mass="0.08" material="arm_mat" contype="0" conaffinity="0"/>
+              <body name="moving_finger" pos="0 0 -0.04">
+                <joint name="gripper_slide" type="slide" axis="0 1 0" range="-0.045 0" damping="2.0" armature="0.004"/>
+                <geom name="moving_finger_geom" type="box" pos="0 -0.048 0" size="0.035 0.012 0.055" mass="0.08" material="arm_mat" contype="0" conaffinity="0"/>
+              </body>
+              <site name="tool_center_site" type="sphere" pos="0 0 -0.04" size="0.012" rgba="1 0.45 0.02 1" group="2"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+
+    <body name="red_peg" pos="0.20 0 0.94">
+      <freejoint name="peg_free"/>
+      <geom name="red_peg_geom" type="cylinder" size="0.030 0.070" mass="0.16" material="peg_mat" friction="0.65 0.01 0.002"/>
+      <site name="peg_top_site" type="sphere" pos="0 0 0.075" size="0.010" rgba="1 0.2 0.05 1" group="2"/>
+    </body>
+
+    <body name="insertion_fixture" pos="0.17 0.21 0.80">
+      <geom name="fixture_base_geom" type="box" size="0.17 0.15 0.05" material="fixture_mat" friction="0.82 0.01 0.001"/>
+      <geom name="fixture_guide_left" type="box" pos="-0.075 0 0.095" size="0.018 0.15 0.045" material="fixture_mat"/>
+      <geom name="fixture_guide_right" type="box" pos="0.075 0 0.095" size="0.018 0.15 0.045" material="fixture_mat"/>
+      <geom name="fixture_guide_front" type="box" pos="0 -0.115 0.095" size="0.075 0.018 0.045" material="fixture_mat"/>
+      <geom name="fixture_guide_back" type="box" pos="0 0.115 0.095" size="0.075 0.018 0.045" material="fixture_mat"/>
+      <site name="fixture_center_site" type="cylinder" pos="0 0 0.155" size="0.048 0.006" rgba="0.02 0.95 0.95 1" group="2"/>
+    </body>
+    <body name="socket_floor" pos="0.17 0.21 0.86">
+      <geom name="socket_floor_geom" type="cylinder" size="0.055 0.010" material="socket_mat" friction="0.72 0.01 0.002"/>
+    </body>
+
+    <!-- Fixed, non-colliding markers are intentionally large enough for render validation. -->
+    <site name="peg_approach_marker" type="sphere" pos="0.20 0 1.01" size="0.030" material="marker_yellow" group="2"/>
+    <site name="grasp_peg_marker" type="sphere" pos="0.20 0 0.94" size="0.028" material="marker_cyan" group="2"/>
+    <site name="socket_approach_marker" type="sphere" pos="0.17 0.21 1.26" size="0.045" material="marker_green" group="2"/>
+    <site name="insertion_marker" type="cylinder" pos="0.17 0.21 1.14" size="0.055 0.012" material="marker_magenta" group="2"/>
+    <site name="release_marker" type="sphere" pos="0.17 0.21 1.08" size="0.026" material="marker_orange" group="2"/>
+    <site name="inspection_marker" type="sphere" pos="0.48 0.36 1.02" size="0.028" material="marker_yellow" group="2"/>
+  </worldbody>
+
+  <actuator>
+    <position name="shoulder_motor" joint="arm_shoulder" kp="140" kv="14" ctrlrange="-3.05 3.05"/>
+    <position name="elbow_motor" joint="arm_elbow" kp="140" kv="14" ctrlrange="-2.8 2.8"/>
+    <position name="wrist_motor" joint="arm_wrist" kp="110" kv="11" ctrlrange="-2.8 2.8"/>
+    <position name="tool_lift_motor" joint="tool_z" kp="420" kv="24" ctrlrange="-0.11 0"/>
+    <position name="gripper_motor" joint="gripper_slide" kp="260" kv="16" ctrlrange="-0.045 0"/>
+  </actuator>
+</mujoco>

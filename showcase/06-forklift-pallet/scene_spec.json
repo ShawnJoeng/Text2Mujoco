@@ -1,0 +1,243 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source_prompt": "Create a warehouse forklift task. An orange mobile forklift drives to a loaded wooden pallet, raises its powered forks, engages the pallet, carries it around the storage rack to a green delivery zone, lowers the forks to release the load, and verifies the delivery with an RGB-D camera. Robot motion, fork lift, pallet synchronization, and all interaction points must be visible.",
+  "assumptions": [
+    "The scene uses SI meters, a Z-up frame, gravity [0, 0, -9.81], and deterministic seed 61.",
+    "The forklift has powered planar slide joints for x/y travel, a steering hinge, and a powered vertical fork-lift slide.",
+    "The loaded pallet is a dynamic free body. After engagement, a deterministic task controller synchronizes its pose with the fork anchor while MuJoCo advances every physical step.",
+    "A raised pallet follows a collision-free waypoint route around a storage rack; lowering the forks releases it onto the delivery pad for contact settling.",
+    "The fixed top-view camera writes 640 x 480 RGB-D evidence under the package output directory."
+  ],
+  "open_questions": [],
+  "scene": {
+    "name": "forklift_pallet_delivery",
+    "description": "An orange mobile forklift transports a loaded pallet from a loading pad to a marked delivery zone.",
+    "runtime": {
+      "mujoco_version": "3.2.7",
+      "mode": "python",
+      "headless": true,
+      "gl_backend": "auto"
+    },
+    "world": {
+      "units": "m",
+      "up_axis": "Z",
+      "gravity": [0, 0, -9.81],
+      "ground": true,
+      "seed": 61
+    }
+  },
+  "assets": [
+    {
+      "id": "loading_pad",
+      "kind": "primitive",
+      "body_name": "loading_pad",
+      "geometry": {"shape": "box", "dimensions": [1.44, 1.16, 0.06], "geom_name": "loading_pad_geom"},
+      "pose": {"position": [-1.0, -0.9, 0.67], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.8, 0.01, 0.002]},
+      "semantic": "loading_surface"
+    },
+    {
+      "id": "delivery_pad",
+      "kind": "primitive",
+      "body_name": "delivery_pad",
+      "geometry": {"shape": "box", "dimensions": [1.44, 1.16, 0.06], "geom_name": "delivery_pad_geom"},
+      "pose": {"position": [1.55, 0.35, 0.67], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.8, 0.01, 0.002]},
+      "semantic": "delivery_surface"
+    },
+    {
+      "id": "forklift_base",
+      "kind": "primitive",
+      "body_name": "forklift_base",
+      "geometry": {"shape": "box", "dimensions": [0.84, 0.68, 0.36], "geom_name": "forklift_base_geom"},
+      "pose": {"position": [-2.2, -0.9, 0.25], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "forklift_x", "actuator_name": "forklift_x_motor", "mass_kg": 5.8, "contype": 1, "conaffinity": 1, "friction": [0.78, 0.01, 0.002]},
+      "joint_names": ["forklift_x", "forklift_y", "forklift_yaw"],
+      "actuator_names": ["forklift_x_motor", "forklift_y_motor", "forklift_yaw_motor"],
+      "semantic": "mobile_forklift"
+    },
+    {
+      "id": "forklift_mast",
+      "kind": "primitive",
+      "body_name": "forklift_mast",
+      "geometry": {"shape": "box", "dimensions": [0.18, 0.14, 1.64], "geom_name": "forklift_mast_left"},
+      "pose": {"position": [-1.78, -0.9, 1.25], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.5, 0.01, 0.001]},
+      "semantic": "forklift_mast"
+    },
+    {
+      "id": "fork_carriage",
+      "kind": "primitive",
+      "body_name": "fork_carriage",
+      "geometry": {"shape": "box", "dimensions": [0.20, 0.64, 0.20], "geom_name": "fork_carriage_geom"},
+      "pose": {"position": [-1.78, -0.9, 0.70], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "fork_lift", "actuator_name": "fork_lift_motor", "mass_kg": 0.9, "contype": 1, "conaffinity": 1, "friction": [0.55, 0.01, 0.001]},
+      "semantic": "powered_fork_carriage"
+    },
+    {
+      "id": "left_fork",
+      "kind": "primitive",
+      "body_name": "left_fork",
+      "geometry": {"shape": "box", "dimensions": [1.10, 0.11, 0.07], "geom_name": "left_fork"},
+      "pose": {"position": [-1.26, -0.72, 0.46], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.55, 0.01, 0.001]},
+      "semantic": "fork_tine"
+    },
+    {
+      "id": "right_fork",
+      "kind": "primitive",
+      "body_name": "right_fork",
+      "geometry": {"shape": "box", "dimensions": [1.10, 0.11, 0.07], "geom_name": "right_fork"},
+      "pose": {"position": [-1.26, -1.08, 0.46], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.55, 0.01, 0.001]},
+      "semantic": "fork_tine"
+    },
+    {
+      "id": "pallet",
+      "kind": "primitive",
+      "body_name": "pallet",
+      "geometry": {"shape": "box", "dimensions": [1.0, 0.80, 0.14], "geom_name": "pallet_deck"},
+      "pose": {"position": [-1.0, -0.9, 0.78], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "pallet_free", "mass_kg": 1.5, "contype": 1, "conaffinity": 1, "friction": [0.85, 0.01, 0.003]},
+      "semantic": "loaded_pallet"
+    },
+    {
+      "id": "payload_crate",
+      "kind": "primitive",
+      "body_name": "payload_crate",
+      "geometry": {"shape": "box", "dimensions": [0.64, 0.56, 0.40], "geom_name": "payload_crate_geom"},
+      "pose": {"position": [-1.0, -0.9, 1.05], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.65, 0.01, 0.002]},
+      "semantic": "pallet_load"
+    },
+    {
+      "id": "delivery_zone",
+      "kind": "primitive",
+      "body_name": "delivery_zone",
+      "geometry": {
+        "shape": "open_box",
+        "dimensions": [1.26, 1.06, 0.24],
+        "interior_bounds": {"min": [-0.55, -0.45, 0.07], "max": [0.55, 0.45, 0.22]},
+        "part_geom_names": ["delivery_zone_bottom", "delivery_zone_left", "delivery_zone_right", "delivery_zone_front", "delivery_zone_back"]
+      },
+      "pose": {"position": [1.55, 0.35, 0.68], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.75, 0.01, 0.002]},
+      "semantic": "target_receptacle"
+    },
+    {
+      "id": "storage_rack",
+      "kind": "primitive",
+      "body_name": "storage_rack",
+      "geometry": {"shape": "box", "dimensions": [1.36, 0.60, 0.09], "geom_name": "storage_rack_shelf"},
+      "pose": {"position": [0.10, 1.15, 1.22], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.6, 0.01, 0.001]},
+      "semantic": "route_obstacle"
+    }
+  ],
+  "interaction_points": [
+    {
+      "id": "drive_to_pallet",
+      "target": {"type": "joint", "name": "forklift_x"},
+      "marker_site": "drive_to_pallet_marker",
+      "pose": {"position": [-0.98, -0.9, 0.98], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "navigate",
+      "action": {"mode": "direct", "command": "drive_to_pallet", "schema": {"type": "object", "properties": {"speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.2}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["forklift_state == 'parked'", "pallet_state == 'loaded'"],
+      "success_conditions": ["fork anchor is within 0.12 m of pallet center"],
+      "depends_on": [],
+      "effects": ["forklift_state = 'aligned'"],
+      "reset": {"forklift_state": "parked"}
+    },
+    {
+      "id": "raise_forks",
+      "target": {"type": "joint", "name": "fork_lift"},
+      "marker_site": "raise_forks_marker",
+      "pose": {"position": [-0.02, -0.9, 0.78], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "lift",
+      "action": {"mode": "direct", "command": "raise_forks", "schema": {"type": "object", "properties": {"lift_m": {"type": "number", "minimum": 0.12, "maximum": 0.30}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["forklift_state == 'aligned'", "pallet_state == 'loaded'"],
+      "success_conditions": ["fork_lift_qpos_m >= 0.15"],
+      "depends_on": ["drive_to_pallet"],
+      "effects": ["forklift_state = 'raised'"],
+      "reset": {"forklift_state": "parked", "fork_lift_qpos_m": 0.0}
+    },
+    {
+      "id": "engage_pallet",
+      "target": {"type": "body", "name": "pallet"},
+      "marker_site": "engage_pallet_marker",
+      "pose": {"position": [-0.15, -0.9, 0.92], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "engage",
+      "action": {"mode": "direct", "command": "engage_pallet", "schema": {"type": "object", "properties": {"confirm": {"type": "boolean"}}, "required": ["confirm"], "additionalProperties": false}},
+      "preconditions": ["forklift_state == 'raised'", "pallet_state == 'loaded'"],
+      "success_conditions": ["pallet_state == 'engaged'", "pallet follows fork anchor"],
+      "depends_on": ["raise_forks"],
+      "effects": ["pallet_state = 'engaged'"],
+      "reset": {"pallet_state": "loaded"}
+    },
+    {
+      "id": "carry_to_drop_zone",
+      "target": {"type": "joint", "name": "forklift_x"},
+      "marker_site": "carry_to_drop_zone_marker",
+      "pose": {"position": [1.55, 0.35, 1.15], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "transport",
+      "action": {"mode": "direct", "command": "carry_to_drop_zone", "schema": {"type": "object", "properties": {"speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.2}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["pallet_state == 'engaged'", "forklift_state == 'raised'"],
+      "success_conditions": ["pallet center is within 0.14 m of delivery zone center", "route avoids storage rack"],
+      "depends_on": ["engage_pallet"],
+      "effects": ["forklift_state = 'at_delivery'"],
+      "reset": {"forklift_state": "parked", "pallet_state": "loaded"}
+    },
+    {
+      "id": "lower_forks_release",
+      "target": {"type": "joint", "name": "fork_lift"},
+      "marker_site": "lower_forks_release_marker",
+      "pose": {"position": [1.55, 0.35, 0.98], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "release",
+      "action": {"mode": "direct", "command": "lower_forks_release", "schema": {"type": "object", "properties": {"release": {"type": "boolean"}}, "required": ["release"], "additionalProperties": false}},
+      "preconditions": ["forklift_state == 'at_delivery'", "pallet_state == 'engaged'"],
+      "success_conditions": ["fork_lift_qpos_m <= 0.05", "pallet_state == 'delivered'", "pallet is inside delivery_zone"],
+      "depends_on": ["carry_to_drop_zone"],
+      "effects": ["forklift_state = 'released'", "pallet_state = 'delivered'"],
+      "reset": {"forklift_state": "parked", "pallet_state": "loaded"}
+    },
+    {
+      "id": "inspect_forklift_delivery",
+      "target": {"type": "camera", "name": "delivery_camera"},
+      "marker_site": "inspect_forklift_delivery_marker",
+      "pose": {"position": [2.35, -0.95, 0.90], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "inspect",
+      "action": {"mode": "direct", "command": "inspect_forklift_delivery", "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"], "additionalProperties": false}},
+      "preconditions": ["pallet_state == 'delivered'"],
+      "success_conditions": ["observation contains finite RGB and depth arrays"],
+      "depends_on": ["lower_forks_release"],
+      "effects": ["inspection_state = 'captured'"],
+      "reset": {"inspection_state": "pending"}
+    }
+  ],
+  "sensors": [
+    {
+      "id": "delivery_camera_sensor",
+      "type": "camera",
+      "camera_name": "delivery_camera",
+      "pose": {"position": [0, 0, 5.8], "orientation_xyzw": [0, 0, 0, 1]},
+      "frequency_hz": 20,
+      "data": ["rgb", "depth", "camera_pose"]
+    }
+  ],
+  "task": {
+    "goal": "Drive the forklift to the loaded pallet, lift and engage it, carry it to the green delivery zone, lower the forks to release it, and verify delivery.",
+    "success_conditions": ["pallet_state == 'delivered'", "inspection_state == 'captured'", "pallet is inside delivery_zone", "fork lift is lowered"],
+    "failure_conditions": ["interaction dependency is violated", "pallet contacts the storage rack", "forklift leaves the operating area", "a non-finite simulator state occurs"],
+    "reset_policy": "mj_resetData_and_task_state_with_seed_61"
+  },
+  "outputs": {
+    "save_mjcf": true,
+    "mjcf_path": "./output/model.xml",
+    "save_mjb": true,
+    "mjb_path": "./output/model.mjb",
+    "resolution": [640, 480],
+    "screenshots": ["./output/screenshots/before.png", "./output/screenshots/after.png"],
+    "depth": ["./output/screenshots/before_depth.npy", "./output/screenshots/after_depth.npy"]
+  }
+}

@@ -1,0 +1,1604 @@
+{
+  "status": "PASS",
+  "scene": "06-forklift-pallet",
+  "path_base": "package_root",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.13.5",
+  "render_backend_requested": "osmesa",
+  "renderer_context": "osmesa",
+  "sequence_kind": "dense simulation frames",
+  "simulation_interval_s": 0.2,
+  "sampling_clock": "MuJoCo data.time elapsed since reset",
+  "sampling_policy": "first post-step state at or beyond each target; action-boundary event frames are extra",
+  "gif_frame_duration_ms": 200,
+  "gif_final_frame_duration_ms": 800,
+  "depth_capture": "keyframes_only; dense pass stores RGB frames",
+  "frame_count": 43,
+  "regular_frame_count": 37,
+  "event_frame_count": 6,
+  "simulation_time_span_s": 7.27,
+  "gif": "output/screenshots/dense_sequence.gif",
+  "tiff": "output/screenshots/dense_sequence.tif",
+  "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
+  "frames": [
+    {
+      "archive_frame": 1,
+      "index": 0,
+      "target_time_s": 0.0,
+      "actual_time_s": 0.0,
+      "absolute_sim_time_s": 0.0,
+      "physics_step": 0,
+      "phase": "initial",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "forklift_state": "parked",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.2,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.0,
+        "pallet_position": [
+          -1.0,
+          -0.9,
+          0.78
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 2,
+      "index": 1,
+      "target_time_s": 0.2,
+      "actual_time_s": 0.2,
+      "absolute_sim_time_s": 0.2,
+      "physics_step": 100,
+      "phase": "warmup",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "forklift_state": "parked",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.2,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667627022236155,
+        "pallet_position": [
+          -1.0,
+          -0.9000009382756519,
+          0.7233814391699062
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 3,
+      "index": 2,
+      "target_time_s": 0.4,
+      "actual_time_s": 0.4,
+      "absolute_sim_time_s": 0.4,
+      "physics_step": 200,
+      "phase": "drive_to_pallet",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "forklift_state": "parked",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.1961485116197403,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667654440011403,
+        "pallet_position": [
+          -1.0,
+          -0.900000974531796,
+          0.7233238144762486
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 4,
+      "index": 3,
+      "target_time_s": null,
+      "actual_time_s": 0.578,
+      "absolute_sim_time_s": 0.578,
+      "physics_step": 289,
+      "phase": "drive_to_pallet",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.0253167985185176,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.00036676544387110325,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746133218,
+          0.7233237577888529
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 5,
+      "index": 4,
+      "target_time_s": 0.6,
+      "actual_time_s": 0.6,
+      "absolute_sim_time_s": 0.6,
+      "physics_step": 300,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.024804780752888,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003433769120813032,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746134553,
+          0.7233237577249859
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 6,
+      "index": 5,
+      "target_time_s": 0.8,
+      "actual_time_s": 0.8,
+      "absolute_sim_time_s": 0.8,
+      "physics_step": 400,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.0166148609364427,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003068324760038541,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690936
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 7,
+      "index": 6,
+      "target_time_s": 1.0,
+      "actual_time_s": 1.0,
+      "absolute_sim_time_s": 1.0,
+      "physics_step": 500,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.002786329234538,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.00030683370884093816,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690389
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 8,
+      "index": 7,
+      "target_time_s": 1.2,
+      "actual_time_s": 1.2,
+      "absolute_sim_time_s": 1.2,
+      "physics_step": 600,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -1.9846551397480128,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.000306833708814985,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690388
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 9,
+      "index": 8,
+      "target_time_s": 1.4,
+      "actual_time_s": 1.4,
+      "absolute_sim_time_s": 1.4,
+      "physics_step": 700,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -1.9638347392035644,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003068337088149852,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690387
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 10,
+      "index": 9,
+      "target_time_s": 1.6,
+      "actual_time_s": 1.6,
+      "absolute_sim_time_s": 1.6,
+      "physics_step": 800,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -1.942077202903053,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003068337088149852,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690386
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 11,
+      "index": 10,
+      "target_time_s": 1.8,
+      "actual_time_s": 1.8,
+      "absolute_sim_time_s": 1.8,
+      "physics_step": 900,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -1.9211297145142303,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003068337088149852,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690386
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 12,
+      "index": 11,
+      "target_time_s": 2.0,
+      "actual_time_s": 2.0,
+      "absolute_sim_time_s": 2.0,
+      "physics_step": 1000,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -1.9025978465178977,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003068337088149852,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690386
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 13,
+      "index": 12,
+      "target_time_s": 2.2,
+      "actual_time_s": 2.2,
+      "absolute_sim_time_s": 2.2,
+      "physics_step": 1100,
+      "phase": "raise_forks",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -1.887826052841946,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003068337088149852,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690386
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 14,
+      "index": 13,
+      "target_time_s": null,
+      "actual_time_s": 2.378,
+      "absolute_sim_time_s": 2.378,
+      "physics_step": 1189,
+      "phase": "raise_forks",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -1.8785726661642732,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.18,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690386
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 15,
+      "index": 14,
+      "target_time_s": null,
+      "actual_time_s": 2.378,
+      "absolute_sim_time_s": 2.378,
+      "physics_step": 1189,
+      "phase": "engage_pallet",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.8785726661642732,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.18,
+        "pallet_position": [
+          -0.9385726661642733,
+          -0.9,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 16,
+      "index": 15,
+      "target_time_s": 2.4,
+      "actual_time_s": 2.4,
+      "absolute_sim_time_s": 2.4,
+      "physics_step": 1200,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.8777591006093994,
+          -0.8999092852587566,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.9378417167867095,
+          -0.8999257046068876,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 17,
+      "index": 16,
+      "target_time_s": 2.6,
+      "actual_time_s": 2.6,
+      "absolute_sim_time_s": 2.6,
+      "physics_step": 1300,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.8678291731789387,
+          -0.8893499236625473,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.9279521774240831,
+          -0.8895686637114543,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 18,
+      "index": 17,
+      "target_time_s": 2.8,
+      "actual_time_s": 2.8,
+      "absolute_sim_time_s": 2.8,
+      "physics_step": 1400,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.7975261275952037,
+          -0.7394245551158818,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.8575658889675557,
+          -0.7395229729432737,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 19,
+      "index": 18,
+      "target_time_s": 3.0,
+      "actual_time_s": 3.0,
+      "absolute_sim_time_s": 3.0,
+      "physics_step": 1500,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.7187403600511055,
+          -0.5854434985657322,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.778761526637674,
+          -0.5854501912687647,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 20,
+      "index": 19,
+      "target_time_s": 3.2,
+      "actual_time_s": 3.2,
+      "absolute_sim_time_s": 3.2,
+      "physics_step": 1600,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.6396631782245332,
+          -0.4287787658309214,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.699670935292622,
+          -0.4287659572141566,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 21,
+      "index": 20,
+      "target_time_s": 3.4,
+      "actual_time_s": 3.4,
+      "absolute_sim_time_s": 3.4,
+      "physics_step": 1700,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.6371682358913544,
+          -0.4353458198201892,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.6972208547601801,
+          -0.4352077970755726,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 22,
+      "index": 21,
+      "target_time_s": 3.6,
+      "actual_time_s": 3.6,
+      "absolute_sim_time_s": 3.6,
+      "physics_step": 1800,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.439900242210078,
+          -0.4223127659355036,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.49992569559290523,
+          -0.42225683479375553,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 23,
+      "index": 22,
+      "target_time_s": 3.8,
+      "actual_time_s": 3.8,
+      "absolute_sim_time_s": 3.8,
+      "physics_step": 1900,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.2414492546218914,
+          -0.4127779255493986,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.3014629433312703,
+          -0.4127666604873337,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 24,
+      "index": 23,
+      "target_time_s": 4.0,
+      "actual_time_s": 4.0,
+      "absolute_sim_time_s": 4.0,
+      "physics_step": 2000,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.234622065037598,
+          -0.4153962792500435,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.2947636028505163,
+          -0.4153711332045927,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 25,
+      "index": 24,
+      "target_time_s": 4.2,
+      "actual_time_s": 4.2,
+      "absolute_sim_time_s": 4.2,
+      "physics_step": 2100,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.0385884718140221,
+          -0.40344214421835256,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          -0.09869169268562517,
+          -0.40346907443336893,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 26,
+      "index": 25,
+      "target_time_s": 4.4,
+      "actual_time_s": 4.4,
+      "absolute_sim_time_s": 4.4,
+      "physics_step": 2200,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -0.8420015078979637,
+          -0.39458766601347695,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          0.0979428291170985,
+          -0.39463014454174883,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 27,
+      "index": 26,
+      "target_time_s": 4.6,
+      "actual_time_s": 4.6,
+      "absolute_sim_time_s": 4.6,
+      "physics_step": 2300,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -0.6443405371808801,
+          -0.38697576235015907,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          0.2956295481402178,
+          -0.3870068385130925,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 28,
+      "index": 27,
+      "target_time_s": 4.8,
+      "actual_time_s": 4.8,
+      "absolute_sim_time_s": 4.8,
+      "physics_step": 2400,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -0.4459978935891289,
+          -0.3791824097394817,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          0.49399225934767754,
+          -0.3791916534603391,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 29,
+      "index": 28,
+      "target_time_s": 5.0,
+      "actual_time_s": 5.0,
+      "absolute_sim_time_s": 5.0,
+      "physics_step": 2500,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -0.440229530054866,
+          -0.37531283527020454,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          0.4996470526591945,
+          -0.3753747311264479,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 30,
+      "index": 29,
+      "target_time_s": 5.2,
+      "actual_time_s": 5.2,
+      "absolute_sim_time_s": 5.2,
+      "physics_step": 2600,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -0.243937793905878,
+          -0.3695522805226704,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          0.6959750050697429,
+          -0.36957914936616576,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 31,
+      "index": 30,
+      "target_time_s": 5.4,
+      "actual_time_s": 5.4,
+      "absolute_sim_time_s": 5.4,
+      "physics_step": 2700,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -0.046774607229733256,
+          -0.36244074686311556,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          0.893176048537748,
+          -0.3624422764210221,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 32,
+      "index": 31,
+      "target_time_s": 5.6,
+      "actual_time_s": 5.6,
+      "absolute_sim_time_s": 5.6,
+      "physics_step": 2800,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.151074158365466,
+          -0.3543003458332078,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          1.091045825942965,
+          -0.3542933248700828,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 33,
+      "index": 32,
+      "target_time_s": 5.8,
+      "actual_time_s": 5.8,
+      "absolute_sim_time_s": 5.8,
+      "physics_step": 2900,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.15688886981749617,
+          -0.35238483038485224,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          1.0968060050361483,
+          -0.352466260159611,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 34,
+      "index": 33,
+      "target_time_s": 6.0,
+      "actual_time_s": 6.0,
+      "absolute_sim_time_s": 6.0,
+      "physics_step": 3000,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.2544382135069978,
+          -0.19743032316649434,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          1.1944166086511254,
+          -0.19745330807679518,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 35,
+      "index": 34,
+      "target_time_s": 6.2,
+      "actual_time_s": 6.2,
+      "absolute_sim_time_s": 6.2,
+      "physics_step": 3100,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.3557482566538299,
+          -0.041453941778635484,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          1.2957399641285217,
+          -0.04145227328156187,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 36,
+      "index": 35,
+      "target_time_s": 6.4,
+      "actual_time_s": 6.4,
+      "absolute_sim_time_s": 6.4,
+      "physics_step": 3200,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.3592569802371868,
+          -0.039854098922188275,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          1.2991844254687468,
+          -0.03992155296452482,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 37,
+      "index": 36,
+      "target_time_s": 6.6,
+      "actual_time_s": 6.6,
+      "absolute_sim_time_s": 6.6,
+      "physics_step": 3300,
+      "phase": "carry_to_drop_zone",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.4587942266116909,
+          0.11384519558601325,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.17996090016920474,
+        "pallet_position": [
+          1.398753682908438,
+          0.11383665941407817,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 38,
+      "index": 37,
+      "target_time_s": null,
+      "actual_time_s": 6.788,
+      "absolute_sim_time_s": 6.788,
+      "physics_step": 3394,
+      "phase": "carry_to_drop_zone",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone"
+        ],
+        "forklift_state": "at_delivery",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.5594887149990697,
+          0.2705879760225999,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.18,
+        "pallet_position": [
+          1.4994774996852134,
+          0.2706210603716609,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 39,
+      "index": 38,
+      "target_time_s": 6.8,
+      "actual_time_s": 6.8,
+      "absolute_sim_time_s": 6.8,
+      "physics_step": 3400,
+      "phase": "lower_forks_release",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone"
+        ],
+        "forklift_state": "at_delivery",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.5595476056613728,
+          0.2704164228135876,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.00016070788870693972,
+        "pallet_position": [
+          1.55,
+          0.35000098359153087,
+          0.8026038846162287
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 40,
+      "index": 39,
+      "target_time_s": 7.0,
+      "actual_time_s": 7.0,
+      "absolute_sim_time_s": 7.0,
+      "physics_step": 3500,
+      "phase": "lower_forks_release",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone"
+        ],
+        "forklift_state": "at_delivery",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.5618604369769038,
+          0.265677611657415,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667627496568531,
+        "pallet_position": [
+          1.55,
+          0.35000085621410465,
+          0.8139829206751746
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 41,
+      "index": 40,
+      "target_time_s": null,
+      "actual_time_s": 7.03,
+      "absolute_sim_time_s": 7.03,
+      "physics_step": 3515,
+      "phase": "lower_forks_release",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone",
+          "lower_forks_release"
+        ],
+        "forklift_state": "released",
+        "pallet_state": "delivered",
+        "forklift_position": [
+          0.562426323161112,
+          0.2649198583177782,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667645047826841,
+        "pallet_position": [
+          1.55,
+          0.3500008620762097,
+          0.8139902402025115
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 42,
+      "index": 41,
+      "target_time_s": 7.2,
+      "actual_time_s": 7.2,
+      "absolute_sim_time_s": 7.2,
+      "physics_step": 3600,
+      "phase": "settled_after_lower_forks_release",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone",
+          "lower_forks_release"
+        ],
+        "forklift_state": "released",
+        "pallet_state": "delivered",
+        "forklift_position": [
+          0.566955058722217,
+          0.2617994773889437,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.00036676544392431166,
+        "pallet_position": [
+          1.55,
+          0.35000086626696036,
+          0.8139942433983701
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 43,
+      "index": 42,
+      "target_time_s": null,
+      "actual_time_s": 7.27,
+      "absolute_sim_time_s": 7.27,
+      "physics_step": 3635,
+      "phase": "inspect_forklift_delivery",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone",
+          "lower_forks_release",
+          "inspect_forklift_delivery"
+        ],
+        "forklift_state": "released",
+        "pallet_state": "delivered",
+        "forklift_position": [
+          0.5695161730318894,
+          0.2615158676861301,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667654438685311,
+        "pallet_position": [
+          1.55,
+          0.35000086628768645,
+          0.8139942536065415
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    }
+  ],
+  "archive_verification": {
+    "status": "PASS",
+    "gif_frame_count": 43,
+    "tiff_page_count": 43,
+    "gif_frame_durations_ms": [
+      200,
+      800
+    ],
+    "all_gif_frames_nonblank": true
+  },
+  "task_success": true
+}

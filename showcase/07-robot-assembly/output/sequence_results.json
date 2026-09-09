@@ -1,0 +1,369 @@
+{
+  "status": "PASS",
+  "scene": "07-robot-assembly",
+  "path_base": "package_root",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.13.5",
+  "render_backend_requested": "osmesa",
+  "renderer_context": "osmesa",
+  "interaction_sequence": [
+    "move_arm_to_peg",
+    "grasp_peg_with_arm",
+    "move_arm_to_socket",
+    "insert_peg_into_socket",
+    "release_assembled_peg",
+    "inspect_assembly"
+  ],
+  "frame_count": 8,
+  "frames": [
+    {
+      "index": 0,
+      "label": "initial",
+      "rgb": "output/screenshots/sequence/00_initial/rgb.png",
+      "depth": "output/screenshots/sequence/00_initial/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 74.1402353271058,
+      "rgb_dynamic_range": 249,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.4950597286224365,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.20724078251847977,
+          -0.02330648212888781,
+          1.0007939143835511
+        ],
+        "peg_position": [
+          0.20002832915587973,
+          -1.8457482287900432e-05,
+          0.8498491153315682
+        ],
+        "peg_socket_error_m": 0.23051384999959182
+      }
+    },
+    {
+      "index": 1,
+      "label": "move_arm_to_peg",
+      "rgb": "output/screenshots/sequence/01_move_arm_to_peg/rgb.png",
+      "depth": "output/screenshots/sequence/01_move_arm_to_peg/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 74.28026552490283,
+      "rgb_dynamic_range": 249,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.4950597286224365,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "move_arm_to_peg"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.2099999981572006,
+          4.3356909237493635e-05,
+          1.0006571428571451
+        ],
+        "peg_position": [
+          0.19999825029783883,
+          5.633594990266604e-06,
+          0.8498686356493792
+        ],
+        "peg_socket_error_m": 0.23048035010056198
+      }
+    },
+    {
+      "index": 2,
+      "label": "grasp_peg_with_arm",
+      "rgb": "output/screenshots/sequence/02_grasp_peg_with_arm/rgb.png",
+      "depth": "output/screenshots/sequence/02_grasp_peg_with_arm/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 74.26639272872072,
+      "rgb_dynamic_range": 249,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.4950597286224365,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "closed",
+        "tool_state": "raised",
+        "peg_state": "grasped",
+        "tool_position": [
+          0.2099999458373847,
+          -0.0002803259782584955,
+          0.9656571428581815
+        ],
+        "peg_position": [
+          0.2099999440515891,
+          -0.00028490692405722394,
+          0.9656571428582468
+        ],
+        "peg_socket_error_m": 0.21558763086930138
+      }
+    },
+    {
+      "index": 3,
+      "label": "move_arm_to_socket",
+      "rgb": "output/screenshots/sequence/03_move_arm_to_socket/rgb.png",
+      "depth": "output/screenshots/sequence/03_move_arm_to_socket/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 75.02740505814167,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.4950597286224365,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "closed",
+        "tool_state": "raised",
+        "peg_state": "grasped",
+        "tool_position": [
+          0.16861339751980356,
+          0.2135889621394499,
+          0.965657142857143
+        ],
+        "peg_position": [
+          0.16861536253418996,
+          0.21358303543827406,
+          0.965657142857143
+        ],
+        "peg_socket_error_m": 0.0259430981853652
+      }
+    },
+    {
+      "index": 4,
+      "label": "insert_peg_into_socket",
+      "rgb": "output/screenshots/sequence/04_insert_peg_into_socket/rgb.png",
+      "depth": "output/screenshots/sequence/04_insert_peg_into_socket/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 75.04126370908205,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.4950597286224365,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "closed",
+        "tool_state": "lowered",
+        "peg_state": "inserted",
+        "tool_position": [
+          0.16854564849907175,
+          0.2137850521799022,
+          0.9206572097075831
+        ],
+        "peg_position": [
+          0.16854564383818796,
+          0.21378507086671764,
+          0.9206572137759373
+        ],
+        "peg_socket_error_m": 0.019763230814349695
+      }
+    },
+    {
+      "index": 5,
+      "label": "release_assembled_peg",
+      "rgb": "output/screenshots/sequence/05_release_assembled_peg/rgb.png",
+      "depth": "output/screenshots/sequence/05_release_assembled_peg/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 75.06721393123799,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.4950597286224365,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket",
+          "release_assembled_peg"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "open",
+        "tool_state": "lowered",
+        "peg_state": "seated",
+        "tool_position": [
+          0.16854632632703803,
+          0.2137826792725831,
+          0.920657142857143
+        ],
+        "peg_position": [
+          0.14025428898119394,
+          0.27402092028995095,
+          0.9343284940785388
+        ],
+        "peg_socket_error_m": 0.07082126473174384
+      }
+    },
+    {
+      "index": 6,
+      "label": "settled_after_release_assembled_peg",
+      "rgb": "output/screenshots/sequence/06_settled_after_release_assembled_peg/rgb.png",
+      "depth": "output/screenshots/sequence/06_settled_after_release_assembled_peg/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 75.0674246232535,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.4950597286224365,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket",
+          "release_assembled_peg"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "open",
+        "tool_state": "lowered",
+        "peg_state": "seated",
+        "tool_position": [
+          0.16854486784301118,
+          0.21378740218820694,
+          0.920657142857143
+        ],
+        "peg_position": [
+          0.1402507803890958,
+          0.27403620649035454,
+          0.9346293315382728
+        ],
+        "peg_socket_error_m": 0.07081310534681362
+      }
+    },
+    {
+      "index": 7,
+      "label": "inspect_assembly",
+      "rgb": "output/screenshots/sequence/07_inspect_assembly/rgb.png",
+      "depth": "output/screenshots/sequence/07_inspect_assembly/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 75.0674246232535,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 1.4950597286224365,
+      "finite_depth_max_m": 2.799999952316284,
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket",
+          "release_assembled_peg",
+          "inspect_assembly"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "open",
+        "tool_state": "lowered",
+        "peg_state": "seated",
+        "tool_position": [
+          0.16854486784301118,
+          0.21378740218820694,
+          0.920657142857143
+        ],
+        "peg_position": [
+          0.1402507803890958,
+          0.27403620649035454,
+          0.9346293315382728
+        ],
+        "peg_socket_error_m": 0.07081310534681362
+      }
+    }
+  ],
+  "contact_sheet": "output/screenshots/sequence.png",
+  "tiff": "output/screenshots/sequence.tif",
+  "gif": "output/screenshots/sequence.gif",
+  "sequence_kind": "discrete interaction keyframes",
+  "gif_frame_duration_ms": 1600,
+  "gif_final_frame_duration_ms": 2600,
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "before_depth": "output/screenshots/before_depth.npy",
+  "after_depth": "output/screenshots/after_depth.npy",
+  "task_success": true
+}

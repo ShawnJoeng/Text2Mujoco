@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.13.5",
+  "render_backend_requested": "osmesa",
+  "renderer_context": "mujoco.osmesa.GLContext",
+  "path_base": "package_root",
+  "resolution": [
+    640,
+    480
+  ],
+  "task_success": true,
+  "interaction_sequence": [
+    "drive_to_pallet",
+    "raise_forks",
+    "engage_pallet",
+    "carry_to_drop_zone",
+    "lower_forks_release",
+    "inspect_forklift_delivery"
+  ],
+  "visible_interaction_markers": {
+    "status": "PASS",
+    "pixels": {
+      "yellow": 4741,
+      "cyan": 19622,
+      "green": 2702,
+      "magenta": 261,
+      "orange": 2123
+    }
+  },
+  "forklift_movement_m": 2.9980055815819515,
+  "screenshots": {
+    "initial": {
+      "path": "output/screenshots/initial/rgb.png"
+    },
+    "final": {
+      "path": "output/screenshots/final/rgb.png"
+    },
+    "reset": {
+      "path": "output/screenshots/reset/rgb.png"
+    }
+  },
+  "depth": {
+    "initial": {
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 307200,
+      "min_m": 3.7100000381469727,
+      "max_m": 5.8000006675720215
+    },
+    "final": {
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 307200,
+      "min_m": 3.7100000381469727,
+      "max_m": 5.8000006675720215
+    }
+  }
+}

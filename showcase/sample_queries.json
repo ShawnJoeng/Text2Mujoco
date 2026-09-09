@@ -52,5 +52,88 @@
       "confirm_target_tray",
       "inspect_with_camera"
     ]
+  },
+  {
+    "query": "生成一个桌面机器人分拣单元：三关节机械臂从输送带上接近蓝色圆柱零件，闭合双指夹爪抓住它，绕开红色干扰通道后同步搬到蓝色料箱并释放，最后用固定 RGB-D 相机检查分拣结果。每一步都要有可见交互点。",
+    "scene_directory": "05-robot-arm-sorting",
+    "expected_checks": {
+      "physics": "PASS",
+      "render": "PASS"
+    },
+    "interaction_points": [
+      "approach_blue_part",
+      "grasp_blue_part",
+      "transfer_to_blue_bin",
+      "release_blue_part",
+      "inspect_sorting_result"
+    ],
+    "dense_capture": {
+      "simulation_interval_s": 0.2,
+      "gif_frame_duration_ms": 200,
+      "tiff": true
+    }
+  },
+  {
+    "query": "生成一个仓储叉车任务：橙色电动叉车驶向装载货物的托盘，升起货叉并接合托盘，绕过货架把托盘运到绿色交付区，降低货叉释放货物，最后用顶视 RGB-D 相机验证。叉车、货叉、托盘和每个动作都要可见。",
+    "scene_directory": "06-forklift-pallet",
+    "expected_checks": {
+      "physics": "PASS",
+      "render": "PASS"
+    },
+    "interaction_points": [
+      "drive_to_pallet",
+      "raise_forks",
+      "engage_pallet",
+      "carry_to_drop_zone",
+      "lower_forks_release",
+      "inspect_forklift_delivery"
+    ],
+    "dense_capture": {
+      "simulation_interval_s": 0.2,
+      "gif_frame_duration_ms": 200,
+      "tiff": true
+    }
+  },
+  {
+    "query": "生成一个机器人装配工作站：橙色机械臂移动到红色定位销，闭合夹爪抓取定位销，搬到蓝色装配座后垂直插入，打开夹爪释放并用固定 RGB-D 相机检查。抓取期间定位销必须与机械臂末端同步，所有交互点可见。",
+    "scene_directory": "07-robot-assembly",
+    "expected_checks": {
+      "physics": "PASS",
+      "render": "PASS"
+    },
+    "interaction_points": [
+      "move_arm_to_peg",
+      "grasp_peg_with_arm",
+      "move_arm_to_socket",
+      "insert_peg_into_socket",
+      "release_assembled_peg",
+      "inspect_assembly"
+    ],
+    "dense_capture": {
+      "simulation_interval_s": 0.2,
+      "gif_frame_duration_ms": 200,
+      "tiff": true
+    }
+  },
+  {
+    "query": "生成一个输送带到机械臂的同步交接单元：输送带把蓝色包裹送到取件位，三关节机械臂移动并闭合双指夹爪抓住包裹，把它同步搬到绿色目标箱后释放，最后用固定 RGB-D 相机检查交接。输送带、机械臂、夹爪、包裹和动作标记都要可见。",
+    "scene_directory": "08-conveyor-arm",
+    "expected_checks": {
+      "physics": "PASS",
+      "render": "PASS"
+    },
+    "interaction_points": [
+      "start_conveyor_to_pickup",
+      "move_arm_to_parcel",
+      "grasp_parcel_with_arm",
+      "move_arm_to_target_bin",
+      "release_parcel_in_target_bin",
+      "inspect_handoff"
+    ],
+    "dense_capture": {
+      "simulation_interval_s": 0.2,
+      "gif_frame_duration_ms": 200,
+      "tiff": true
+    }
   }
 ]

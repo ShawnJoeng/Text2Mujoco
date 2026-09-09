@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source": "scene_spec.json",
+  "scene": "forklift_pallet_delivery",
+  "action_envelope": {
+    "type": "object",
+    "properties": {"id": {"type": "string"}, "payload": {"type": "object"}},
+    "required": ["id", "payload"],
+    "additionalProperties": false
+  },
+  "dependency_order": [
+    "drive_to_pallet",
+    "raise_forks",
+    "engage_pallet",
+    "carry_to_drop_zone",
+    "lower_forks_release",
+    "inspect_forklift_delivery"
+  ],
+  "interaction_points": [
+    {
+      "id": "drive_to_pallet",
+      "target": {"type": "joint", "name": "forklift_x"},
+      "marker_site": "drive_to_pallet_marker",
+      "pose": {"position": [-0.98, -0.9, 0.98], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "navigate",
+      "action": {"mode": "direct", "command": "drive_to_pallet", "schema": {"type": "object", "properties": {"speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.2}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["forklift_state == 'parked'", "pallet_state == 'loaded'"],
+      "success_conditions": ["fork anchor is within 0.12 m of pallet center"],
+      "depends_on": [],
+      "effects": ["forklift_state = 'aligned'"],
+      "reset": {"forklift_state": "parked"}
+    },
+    {
+      "id": "raise_forks",
+      "target": {"type": "joint", "name": "fork_lift"},
+      "marker_site": "raise_forks_marker",
+      "pose": {"position": [-0.02, -0.9, 0.78], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "lift",
+      "action": {"mode": "direct", "command": "raise_forks", "schema": {"type": "object", "properties": {"lift_m": {"type": "number", "minimum": 0.12, "maximum": 0.30}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["forklift_state == 'aligned'", "pallet_state == 'loaded'"],
+      "success_conditions": ["fork_lift_qpos_m >= 0.15"],
+      "depends_on": ["drive_to_pallet"],
+      "effects": ["forklift_state = 'raised'"],
+      "reset": {"forklift_state": "parked", "fork_lift_qpos_m": 0.0}
+    },
+    {
+      "id": "engage_pallet",
+      "target": {"type": "body", "name": "pallet"},
+      "marker_site": "engage_pallet_marker",
+      "pose": {"position": [-0.15, -0.9, 0.92], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "engage",
+      "action": {"mode": "direct", "command": "engage_pallet", "schema": {"type": "object", "properties": {"confirm": {"type": "boolean"}}, "required": ["confirm"], "additionalProperties": false}},
+      "preconditions": ["forklift_state == 'raised'", "pallet_state == 'loaded'"],
+      "success_conditions": ["pallet_state == 'engaged'", "pallet follows fork anchor"],
+      "depends_on": ["raise_forks"],
+      "effects": ["pallet_state = 'engaged'"],
+      "reset": {"pallet_state": "loaded"}
+    },
+    {
+      "id": "carry_to_drop_zone",
+      "target": {"type": "joint", "name": "forklift_x"},
+      "marker_site": "carry_to_drop_zone_marker",
+      "pose": {"position": [1.55, 0.35, 1.15], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "transport",
+      "action": {"mode": "direct", "command": "carry_to_drop_zone", "schema": {"type": "object", "properties": {"speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.2}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["pallet_state == 'engaged'", "forklift_state == 'raised'"],
+      "success_conditions": ["pallet center is within 0.14 m of delivery zone center", "route avoids storage rack"],
+      "depends_on": ["engage_pallet"],
+      "effects": ["forklift_state = 'at_delivery'"],
+      "reset": {"forklift_state": "parked", "pallet_state": "loaded"}
+    },
+    {
+      "id": "lower_forks_release",
+      "target": {"type": "joint", "name": "fork_lift"},
+      "marker_site": "lower_forks_release_marker",
+      "pose": {"position": [1.55, 0.35, 0.98], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "release",
+      "action": {"mode": "direct", "command": "lower_forks_release", "schema": {"type": "object", "properties": {"release": {"type": "boolean"}}, "required": ["release"], "additionalProperties": false}},
+      "preconditions": ["forklift_state == 'at_delivery'", "pallet_state == 'engaged'"],
+      "success_conditions": ["fork_lift_qpos_m <= 0.05", "pallet_state == 'delivered'", "pallet is inside delivery_zone"],
+      "depends_on": ["carry_to_drop_zone"],
+      "effects": ["forklift_state = 'released'", "pallet_state = 'delivered'"],
+      "reset": {"forklift_state": "parked", "pallet_state": "loaded"}
+    },
+    {
+      "id": "inspect_forklift_delivery",
+      "target": {"type": "camera", "name": "delivery_camera"},
+      "marker_site": "inspect_forklift_delivery_marker",
+      "pose": {"position": [2.35, -0.95, 0.90], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "inspect",
+      "action": {"mode": "direct", "command": "inspect_forklift_delivery", "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"], "additionalProperties": false}},
+      "preconditions": ["pallet_state == 'delivered'"],
+      "success_conditions": ["observation contains finite RGB and depth arrays"],
+      "depends_on": ["lower_forks_release"],
+      "effects": ["inspection_state = 'captured'"],
+      "reset": {"inspection_state": "pending"}
+    }
+  ]
+}

@@ -1,0 +1,1022 @@
+{
+  "status": "PASS",
+  "scene": "05-robot-arm-sorting",
+  "path_base": "package_root",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.13.5",
+  "render_backend_requested": "osmesa",
+  "renderer_context": "osmesa",
+  "sequence_kind": "dense simulation frames",
+  "simulation_interval_s": 0.2,
+  "sampling_clock": "MuJoCo data.time elapsed since reset",
+  "sampling_policy": "first post-step state at or beyond each target; action-boundary event frames are extra",
+  "gif_frame_duration_ms": 200,
+  "gif_final_frame_duration_ms": 800,
+  "depth_capture": "keyframes_only; dense pass stores RGB frames",
+  "frame_count": 29,
+  "regular_frame_count": 24,
+  "event_frame_count": 5,
+  "simulation_time_span_s": 4.768,
+  "gif": "output/screenshots/dense_sequence.gif",
+  "tiff": "output/screenshots/dense_sequence.tif",
+  "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
+  "frames": [
+    {
+      "archive_frame": 1,
+      "index": 0,
+      "target_time_s": 0.0,
+      "actual_time_s": 0.0,
+      "absolute_sim_time_s": 0.0,
+      "physics_step": 0,
+      "phase": "initial",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.6398696406957849,
+          0.0,
+          1.864219791216986
+        ],
+        "blue_part_position": [
+          0.18,
+          0.0,
+          0.86
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 2,
+      "index": 1,
+      "target_time_s": 0.2,
+      "actual_time_s": 0.2,
+      "absolute_sim_time_s": 0.2,
+      "physics_step": 100,
+      "phase": "warmup",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.6601675621546252,
+          0.0,
+          1.7182359742493507
+        ],
+        "blue_part_position": [
+          0.17999879528939927,
+          1.0058478144950802e-05,
+          0.8546397438787133
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 3,
+      "index": 2,
+      "target_time_s": 0.4,
+      "actual_time_s": 0.4,
+      "absolute_sim_time_s": 0.4,
+      "physics_step": 200,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.5268996537408409,
+          0.0,
+          1.0728810285886792
+        ],
+        "blue_part_position": [
+          0.17999919918011054,
+          1.001243510442336e-05,
+          0.8546397783317093
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 4,
+      "index": 3,
+      "target_time_s": 0.6,
+      "actual_time_s": 0.6,
+      "absolute_sim_time_s": 0.6,
+      "physics_step": 300,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          -0.11204331744859719,
+          0.0,
+          0.6058718214250018
+        ],
+        "blue_part_position": [
+          0.1799991422200844,
+          1.0010106705940374e-05,
+          0.854639778809007
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 5,
+      "index": 4,
+      "target_time_s": 0.8,
+      "actual_time_s": 0.8,
+      "absolute_sim_time_s": 0.8,
+      "physics_step": 400,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          -0.4010266507045688,
+          0.0,
+          0.6821386799611935
+        ],
+        "blue_part_position": [
+          0.1799991470960857,
+          1.0010745575478245e-05,
+          0.8546397787170723
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 6,
+      "index": 5,
+      "target_time_s": 1.0,
+      "actual_time_s": 1.0,
+      "absolute_sim_time_s": 1.0,
+      "physics_step": 500,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          -0.14872592638964371,
+          0.0,
+          0.6823145841698206
+        ],
+        "blue_part_position": [
+          0.17999915065750743,
+          1.0011038672600867e-05,
+          0.8546397787047513
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 7,
+      "index": 6,
+      "target_time_s": 1.2,
+      "actual_time_s": 1.2,
+      "absolute_sim_time_s": 1.2,
+      "physics_step": 600,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.16187728871868412,
+          0.0,
+          0.7353844995710188
+        ],
+        "blue_part_position": [
+          0.17999915371258715,
+          1.0011319888007928e-05,
+          0.8546397787061938
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 8,
+      "index": 7,
+      "target_time_s": 1.4,
+      "actual_time_s": 1.4,
+      "absolute_sim_time_s": 1.4,
+      "physics_step": 700,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.21331348052241478,
+          0.0,
+          0.7838534324826909
+        ],
+        "blue_part_position": [
+          0.17999915680262113,
+          1.0011605045449146e-05,
+          0.8546397787062431
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 9,
+      "index": 8,
+      "target_time_s": 1.6,
+      "actual_time_s": 1.6,
+      "absolute_sim_time_s": 1.6,
+      "physics_step": 800,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.09467855275041287,
+          0.0,
+          0.7397951232278979
+        ],
+        "blue_part_position": [
+          0.1799991598957098,
+          1.001189013161838e-05,
+          0.8546397787062306
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 10,
+      "index": 9,
+      "target_time_s": 1.8,
+      "actual_time_s": 1.8,
+      "absolute_sim_time_s": 1.8,
+      "physics_step": 900,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          -0.020776274760066882,
+          0.0,
+          0.7010633623379053
+        ],
+        "blue_part_position": [
+          0.1799991629883401,
+          1.0012175183224757e-05,
+          0.8546397787062343
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 11,
+      "index": 10,
+      "target_time_s": 2.0,
+      "actual_time_s": 2.0,
+      "absolute_sim_time_s": 2.0,
+      "physics_step": 1000,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          -0.03279569701221169,
+          0.0,
+          0.6974285299455362
+        ],
+        "blue_part_position": [
+          0.17999916608096278,
+          1.00124602354393e-05,
+          0.8546397787062371
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 12,
+      "index": 11,
+      "target_time_s": 2.2,
+      "actual_time_s": 2.2,
+      "absolute_sim_time_s": 2.2,
+      "physics_step": 1100,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.023790746172196953,
+          0.0,
+          0.7095256205101276
+        ],
+        "blue_part_position": [
+          0.17999916917359002,
+          1.0012745286447313e-05,
+          0.85463977870624
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 13,
+      "index": 12,
+      "target_time_s": null,
+      "actual_time_s": 2.2,
+      "absolute_sim_time_s": 2.2,
+      "physics_step": 1100,
+      "phase": "approach_blue_part",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.18000000000000033,
+          0.0,
+          0.86
+        ],
+        "blue_part_position": [
+          0.17999918431264902,
+          -1.3222244749163525e-05,
+          0.8546373207111053
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 14,
+      "index": 13,
+      "target_time_s": null,
+      "actual_time_s": 2.364,
+      "absolute_sim_time_s": 2.364,
+      "physics_step": 1182,
+      "phase": "grasp_blue_part",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.1496852796809299,
+          0.0,
+          0.7870888344471781
+        ],
+        "blue_part_position": [
+          0.15054685018129613,
+          0.0,
+          0.7882878620546017
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 15,
+      "index": 14,
+      "target_time_s": 2.4,
+      "actual_time_s": 2.4,
+      "absolute_sim_time_s": 2.4,
+      "physics_step": 1200,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.15865349817328853,
+          0.0,
+          0.7437073409674966
+        ],
+        "blue_part_position": [
+          0.15731452393337653,
+          0.0,
+          0.7471405927195766
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 16,
+      "index": 15,
+      "target_time_s": 2.6,
+      "actual_time_s": 2.6,
+      "absolute_sim_time_s": 2.6,
+      "physics_step": 1300,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.35492151643306125,
+          0.0,
+          0.4722345993510014
+        ],
+        "blue_part_position": [
+          0.3539967216092482,
+          0.0,
+          0.4725447978308437
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 17,
+      "index": 16,
+      "target_time_s": 2.8,
+      "actual_time_s": 2.8,
+      "absolute_sim_time_s": 2.8,
+      "physics_step": 1400,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.42240101218003157,
+          0.0,
+          0.506134170257066
+        ],
+        "blue_part_position": [
+          0.4217225688523939,
+          0.0,
+          0.5056035841959314
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 18,
+      "index": 17,
+      "target_time_s": 3.0,
+      "actual_time_s": 3.0,
+      "absolute_sim_time_s": 3.0,
+      "physics_step": 1500,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.4842605393825839,
+          0.0,
+          0.5539316561239064
+        ],
+        "blue_part_position": [
+          0.4837803328536384,
+          0.0,
+          0.5535521769167755
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 19,
+      "index": 18,
+      "target_time_s": 3.2,
+      "actual_time_s": 3.2,
+      "absolute_sim_time_s": 3.2,
+      "physics_step": 1600,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.5098262587306803,
+          0.0,
+          0.57488114554309
+        ],
+        "blue_part_position": [
+          0.5097950873083941,
+          0.0,
+          0.5748504755778316
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 20,
+      "index": 19,
+      "target_time_s": 3.4,
+      "actual_time_s": 3.4,
+      "absolute_sim_time_s": 3.4,
+      "physics_step": 1700,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.4942459307138781,
+          0.0,
+          0.5626486732996083
+        ],
+        "blue_part_position": [
+          0.4945462782774816,
+          0.0,
+          0.5628858064627474
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 21,
+      "index": 20,
+      "target_time_s": 3.6,
+      "actual_time_s": 3.6,
+      "absolute_sim_time_s": 3.6,
+      "physics_step": 1800,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.4592086454426195,
+          0.0,
+          0.5358002408489905
+        ],
+        "blue_part_position": [
+          0.45955814064699063,
+          0.0,
+          0.5360596677690118
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 22,
+      "index": 21,
+      "target_time_s": 3.8,
+      "actual_time_s": 3.8,
+      "absolute_sim_time_s": 3.8,
+      "physics_step": 1900,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.43277909858014124,
+          0.0,
+          0.5166320443109323
+        ],
+        "blue_part_position": [
+          0.43293310140306174,
+          0.0,
+          0.5167418050705442
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 23,
+      "index": 22,
+      "target_time_s": 4.0,
+      "actual_time_s": 4.0,
+      "absolute_sim_time_s": 4.0,
+      "physics_step": 2000,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.4301872710278618,
+          0.0,
+          0.5146148985559392
+        ],
+        "blue_part_position": [
+          0.43009817869589917,
+          0.0,
+          0.5145548838219348
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 24,
+      "index": 23,
+      "target_time_s": 4.2,
+      "actual_time_s": 4.2,
+      "absolute_sim_time_s": 4.2,
+      "physics_step": 2100,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.4461510866140521,
+          0.0,
+          0.5257711448666766
+        ],
+        "blue_part_position": [
+          0.4459517912482675,
+          0.0,
+          0.5256284281358982
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 25,
+      "index": 24,
+      "target_time_s": null,
+      "actual_time_s": 4.364,
+      "absolute_sim_time_s": 4.364,
+      "physics_step": 2182,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.78,
+          0.0,
+          0.9099999999999999
+        ],
+        "blue_part_position": [
+          0.78,
+          0.0,
+          0.9099999999999999
+        ],
+        "blue_part_inside_bin": true
+      }
+    },
+    {
+      "archive_frame": 26,
+      "index": 25,
+      "target_time_s": 4.4,
+      "actual_time_s": 4.4,
+      "absolute_sim_time_s": 4.4,
+      "physics_step": 2200,
+      "phase": "release_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.7784044255286686,
+          0.0,
+          0.9046333355682323
+        ],
+        "blue_part_position": [
+          0.6652724424648263,
+          6.336673886228227e-07,
+          0.9292725394357829
+        ],
+        "blue_part_inside_bin": true
+      }
+    },
+    {
+      "archive_frame": 27,
+      "index": 26,
+      "target_time_s": 4.6,
+      "actual_time_s": 4.6,
+      "absolute_sim_time_s": 4.6,
+      "physics_step": 2300,
+      "phase": "release_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "open",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.6668733496028867,
+          0.0,
+          0.732310566034267
+        ],
+        "blue_part_position": [
+          0.6156330285441792,
+          4.6937444187868255e-06,
+          1.0930998658229514
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 28,
+      "index": 27,
+      "target_time_s": null,
+      "actual_time_s": 4.768,
+      "absolute_sim_time_s": 4.768,
+      "physics_step": 2384,
+      "phase": "release_blue_part",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin",
+          "release_blue_part"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "open",
+        "blue_part_state": "inside_blue_bin",
+        "arm_tcp_position": [
+          0.4652656652088055,
+          0.0,
+          0.5401303651615307
+        ],
+        "blue_part_position": [
+          0.78,
+          0.0,
+          0.86
+        ],
+        "blue_part_inside_bin": true
+      }
+    },
+    {
+      "archive_frame": 29,
+      "index": 28,
+      "target_time_s": null,
+      "actual_time_s": 4.768,
+      "absolute_sim_time_s": 4.768,
+      "physics_step": 2384,
+      "phase": "inspect_sorting_result",
+      "event_frame": true,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin",
+          "release_blue_part",
+          "inspect_sorting_result"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "open",
+        "blue_part_state": "inside_blue_bin",
+        "arm_tcp_position": [
+          0.4652656652088055,
+          0.0,
+          0.5401303651615307
+        ],
+        "blue_part_position": [
+          0.78,
+          0.0,
+          0.86
+        ],
+        "blue_part_inside_bin": true
+      }
+    }
+  ],
+  "archive_verification": {
+    "status": "PASS",
+    "gif_frame_count": 29,
+    "tiff_page_count": 29,
+    "gif_frame_durations_ms": [
+      200,
+      800
+    ],
+    "all_gif_frames_nonblank": true
+  },
+  "task_success": true
+}

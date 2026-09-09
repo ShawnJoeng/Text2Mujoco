@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.9.6",
+  "path_base": "package_root",
+  "mujoco_gl": "disable",
+  "static_checks": {
+    "xml_parse": "PASS",
+    "mjcf_compile": "PASS",
+    "mobile_joints": [
+      "forklift_x",
+      "forklift_y",
+      "forklift_yaw"
+    ],
+    "fork_lift_joint": "fork_lift",
+    "actuators": 4,
+    "typed_targets": "PASS",
+    "visible_markers": "PASS",
+    "quaternion_conversion": "PASS"
+  },
+  "physics": {
+    "mj_step": "PASS",
+    "finite_state": "PASS"
+  },
+  "interaction_sequence": [
+    "drive_to_pallet",
+    "raise_forks",
+    "engage_pallet",
+    "carry_to_drop_zone",
+    "lower_forks_release"
+  ],
+  "pallet_sync": "PASS",
+  "route_collision_count": 0,
+  "delivery_zone": "PASS",
+  "dependency_enforcement": "PASS",
+  "deterministic_reset": "PASS",
+  "mjcf_reload": "PASS",
+  "mjb_reload": "PASS"
+}

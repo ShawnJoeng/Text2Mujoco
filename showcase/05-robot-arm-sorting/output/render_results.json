@@ -1,0 +1,69 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.13.5",
+  "path_base": "package_root",
+  "render_backend_requested": "osmesa",
+  "renderer_context": "mujoco.osmesa.GLContext",
+  "rgb_verified": "PASS",
+  "depth_verified": "PASS",
+  "visible_markers": {
+    "blue": 5512,
+    "red": 6154,
+    "yellow": 3292,
+    "cyan": 2623,
+    "magenta": 234,
+    "green": 232
+  },
+  "interaction_sequence": [
+    "approach_blue_part",
+    "grasp_blue_part",
+    "transfer_to_blue_bin",
+    "release_blue_part",
+    "inspect_sorting_result"
+  ],
+  "task_success": true,
+  "blue_part_motion_m": 0.6000000000000001,
+  "rgb_mean_absolute_delta": 3.093317057291667,
+  "depth": {
+    "before": {
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 307200,
+      "min_m": 2.5795962810516357,
+      "max_m": 4.800000190734863
+    },
+    "after": {
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 307200,
+      "min_m": 3.1370482444763184,
+      "max_m": 4.800000190734863
+    }
+  },
+  "screenshots": {
+    "before": {
+      "path": "output/screenshots/before/rgb.png",
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "dtype": "uint8"
+    },
+    "after": {
+      "path": "output/screenshots/after/rgb.png",
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "dtype": "uint8"
+    }
+  }
+}

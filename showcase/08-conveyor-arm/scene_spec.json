@@ -1,0 +1,238 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source_prompt": "生成一个带输送带和机械臂的同步分拣单元。输送带先把蓝色包裹送到取件位，机械臂移动到包裹并闭合平行夹爪，然后把包裹搬运到蓝色目标箱中释放，最后用固定相机检查交接结果。需要展示输送带、机械臂、夹爪和包裹之间的连续交互。",
+  "assumptions": [
+    "使用 SI 米制、Z 轴向上、重力 [0, 0, -9.81] 和确定性种子 108。",
+    "输送带由带驱动滚筒铰链和位置执行器构成；为保证跨平台可复现，包裹沿输送方向的移动由任务级带速控制器在每个 mujoco.mj_step 前更新。",
+    "机械臂是三关节平面机械臂，带工具升降关节和左右两个独立夹爪滑动关节；机械臂和包裹都保留真实 MuJoCo 关节。",
+    "夹取后启用确定性的 task-level hold，使自由包裹跟随工具中心；释放阶段关闭 hold，让重力和箱体碰撞完成沉降。",
+    "蓝色目标箱和红色干扰箱均使用五片式开放容器，固定相机输出 640 x 480 RGB-D。",
+    "场景只使用 MJCF primitive，不依赖下载的网格或外部机器人文件。"
+  ],
+  "open_questions": [],
+  "scene": {
+    "name": "conveyor_robot_handoff_cell",
+    "description": "输送带将包裹交给机械臂，机械臂把包裹放入目标箱并完成视觉检查。",
+    "runtime": {
+      "mujoco_version": "3.2.7",
+      "mode": "python",
+      "headless": true,
+      "gl_backend": "auto"
+    },
+    "world": {
+      "units": "m",
+      "up_axis": "Z",
+      "gravity": [0, 0, -9.81],
+      "ground": true,
+      "seed": 108
+    }
+  },
+  "assets": [
+    {
+      "id": "handoff_arm",
+      "kind": "robot",
+      "source": "./model.xml",
+      "body_name": "arm_base",
+      "pose": {"position": [0.40, -0.30, 1.08], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 0, "conaffinity": 0},
+      "exports": {
+        "body": ["arm_tool"],
+        "joint": ["arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "gripper_left_slide", "gripper_right_slide"],
+        "actuator": ["shoulder_motor", "elbow_motor", "wrist_motor", "tool_lift_motor", "gripper_left_motor", "gripper_right_motor"]
+      },
+      "semantic": "planar_robotic_handoff_arm"
+    },
+    {
+      "id": "workbench",
+      "kind": "primitive",
+      "body_name": "workbench",
+      "geometry": {"shape": "box", "dimensions": [1.8, 1.15, 0.08], "geom_name": "workbench_top_geom"},
+      "pose": {"position": [0, 0, 0.74], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.90, 0.01, 0.001]},
+      "semantic": "support_surface"
+    },
+    {
+      "id": "conveyor_frame",
+      "kind": "primitive",
+      "body_name": "conveyor_frame",
+      "geometry": {"shape": "box", "dimensions": [1.35, 0.52, 0.08], "geom_name": "conveyor_frame_geom"},
+      "pose": {"position": [-0.30, 0.0, 0.81], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.72, 0.01, 0.001]},
+      "semantic": "conveyor_support"
+    },
+    {
+      "id": "conveyor_drive",
+      "kind": "primitive",
+      "body_name": "conveyor_drive",
+      "geometry": {"shape": "cylinder", "dimensions": [0.38, 0.38, 0.12], "geom_name": "conveyor_drive_geom"},
+      "pose": {"position": [-0.94, 0.0, 0.89], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "conveyor_drive_hinge", "actuator_name": "conveyor_motor", "mass_kg": 0.35, "contype": 0, "conaffinity": 0, "friction": [0.50, 0.01, 0.001]},
+      "semantic": "powered_conveyor_roller"
+    },
+    {
+      "id": "blue_parcel",
+      "kind": "primitive",
+      "body_name": "blue_parcel",
+      "geometry": {"shape": "box", "dimensions": [0.12, 0.12, 0.12], "geom_name": "blue_parcel_geom"},
+      "pose": {"position": [-0.55, 0.0, 0.92], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "parcel_free", "mass_kg": 0.22, "contype": 1, "conaffinity": 1, "friction": [0.76, 0.01, 0.002]},
+      "semantic": "conveyor_payload"
+    },
+    {
+      "id": "blue_target_bin",
+      "kind": "primitive",
+      "body_name": "blue_target_bin",
+      "geometry": {
+        "shape": "open_box",
+        "dimensions": [0.46, 0.46, 0.27],
+        "interior_bounds": {"min": [-0.19, -0.19, 0.08], "max": [0.19, 0.19, 0.24]},
+        "part_geom_names": ["blue_bin_bottom", "blue_bin_left", "blue_bin_right", "blue_bin_front", "blue_bin_back"]
+      },
+      "pose": {"position": [0.25, 0.18, 0.80], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.78, 0.01, 0.002]},
+      "semantic": "target_receptacle"
+    },
+    {
+      "id": "red_distractor_bin",
+      "kind": "primitive",
+      "body_name": "red_distractor_bin",
+      "geometry": {
+        "shape": "open_box",
+        "dimensions": [0.46, 0.46, 0.27],
+        "interior_bounds": {"min": [-0.19, -0.19, 0.08], "max": [0.19, 0.19, 0.24]},
+        "part_geom_names": ["red_bin_bottom", "red_bin_left", "red_bin_right", "red_bin_front", "red_bin_back"]
+      },
+      "pose": {"position": [0.25, 0.68, 0.80], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.78, 0.01, 0.002]},
+      "semantic": "distractor_receptacle"
+    }
+  ],
+  "interaction_points": [
+    {
+      "id": "start_conveyor_to_pickup",
+      "affordance": "convey",
+      "target": {"type": "actuator", "name": "conveyor_motor"},
+      "marker_site": "conveyor_start_marker",
+      "pose": {"position": [-0.55, 0.0, 0.99], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "start_conveyor_to_pickup",
+        "schema": {"type": "object", "properties": {"speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.0}}, "required": [], "additionalProperties": false}
+      },
+      "preconditions": ["parcel_state == 'on_belt'", "conveyor_state == 'stopped'"],
+      "success_conditions": ["parcel_x >= -0.10", "parcel_state == 'at_pickup'"],
+      "depends_on": [],
+      "effects": ["conveyor_state = 'stopped'", "parcel_state = 'at_pickup'"],
+      "reset": {"conveyor_state": "stopped", "parcel_state": "on_belt"}
+    },
+    {
+      "id": "move_arm_to_parcel",
+      "affordance": "reach",
+      "target": {"type": "joint", "name": "arm_shoulder"},
+      "marker_site": "parcel_approach_marker",
+      "pose": {"position": [-0.08, 0.0, 1.04], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "move_arm_to_parcel",
+        "schema": {"type": "object", "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}}, "required": [], "additionalProperties": false}
+      },
+      "preconditions": ["parcel_state == 'at_pickup'", "arm_state == 'home'"],
+      "success_conditions": ["arm_state == 'at_parcel'", "distance(tool, parcel) <= 0.10 m"],
+      "depends_on": ["start_conveyor_to_pickup"],
+      "effects": ["arm_state = 'at_parcel'"],
+      "reset": {"arm_state": "home"}
+    },
+    {
+      "id": "grasp_parcel_with_arm",
+      "affordance": "grasp",
+      "target": {"type": "actuator", "name": "gripper_left_motor"},
+      "marker_site": "parcel_grasp_marker",
+      "pose": {"position": [-0.08, 0.0, 1.12], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "grasp_parcel_with_arm",
+        "schema": {"type": "object", "properties": {"close": {"type": "boolean"}}, "required": ["close"], "additionalProperties": false}
+      },
+      "preconditions": ["arm_state == 'at_parcel'", "parcel_state == 'at_pickup'"],
+      "success_conditions": ["gripper_state == 'closed'", "parcel_state == 'grasped'"],
+      "depends_on": ["move_arm_to_parcel"],
+      "effects": ["gripper_state = 'closed'", "parcel_state = 'grasped'"],
+      "reset": {"gripper_state": "open", "parcel_state": "on_belt"}
+    },
+    {
+      "id": "move_arm_to_target_bin",
+      "affordance": "transport",
+      "target": {"type": "joint", "name": "arm_elbow"},
+      "marker_site": "target_bin_approach_marker",
+      "pose": {"position": [0.25, 0.18, 1.25], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "move_arm_to_target_bin",
+        "schema": {"type": "object", "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}}, "required": [], "additionalProperties": false}
+      },
+      "preconditions": ["parcel_state == 'grasped'", "gripper_state == 'closed'"],
+      "success_conditions": ["arm_state == 'over_target_bin'", "parcel_state == 'grasped'"],
+      "depends_on": ["grasp_parcel_with_arm"],
+      "effects": ["arm_state = 'over_target_bin'"],
+      "reset": {"arm_state": "home"}
+    },
+    {
+      "id": "release_parcel_in_target_bin",
+      "affordance": "release",
+      "target": {"type": "actuator", "name": "gripper_left_motor"},
+      "marker_site": "parcel_release_marker",
+      "pose": {"position": [0.25, 0.18, 1.14], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "release_parcel_in_target_bin",
+        "schema": {"type": "object", "properties": {"open": {"type": "boolean"}}, "required": ["open"], "additionalProperties": false}
+      },
+      "preconditions": ["arm_state == 'over_target_bin'", "parcel_state == 'grasped'"],
+      "success_conditions": ["gripper_state == 'open'", "parcel_state == 'inside_target_bin'", "parcel_speed_mps < 0.15"],
+      "depends_on": ["move_arm_to_target_bin"],
+      "effects": ["gripper_state = 'open'", "parcel_state = 'inside_target_bin'"],
+      "reset": {"gripper_state": "open", "parcel_state": "on_belt"}
+    },
+    {
+      "id": "inspect_handoff",
+      "affordance": "inspect",
+      "target": {"type": "camera", "name": "handoff_camera"},
+      "marker_site": "handoff_inspection_marker",
+      "pose": {"position": [0.52, 0.40, 1.02], "orientation_xyzw": [0, 0, 0, 1]},
+      "action": {
+        "mode": "direct",
+        "command": "inspect_handoff",
+        "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"], "additionalProperties": false}
+      },
+      "preconditions": ["parcel_state == 'inside_target_bin'"],
+      "success_conditions": ["handoff RGB-D capture is valid", "task_state == 'verified'"],
+      "depends_on": ["release_parcel_in_target_bin"],
+      "effects": ["task_state = 'verified'"],
+      "reset": {"task_state": "pending"}
+    }
+  ],
+  "sensors": [
+    {
+      "id": "handoff_rgbd_sensor",
+      "type": "camera",
+      "camera_name": "handoff_camera",
+      "pose": {"position": [0, 0, 2.8], "orientation_xyzw": [0, 0, 0, 1]},
+      "frequency_hz": 30,
+      "data": ["rgb", "depth", "camera_pose", "arm_joint_qpos", "parcel_position", "conveyor_state"]
+    }
+  ],
+  "task": {
+    "goal": "输送带把蓝色包裹送到取件位，机械臂抓取并放入蓝色目标箱，再由相机确认交接。",
+    "success_conditions": ["parcel_state == 'inside_target_bin'", "gripper_state == 'open'", "task_state == 'verified'", "all interactions completed in dependency order"],
+    "failure_conditions": ["non_finite_state == true", "red distractor bin is modified", "parcel leaves workbench bounds"],
+    "reset_policy": "mj_resetData_and_task_state"
+  },
+  "outputs": {
+    "save_mjcf": true,
+    "mjcf_path": "./output/model.xml",
+    "save_mjb": true,
+    "mjb_path": "./output/model.mjb",
+    "resolution": [640, 480]
+  }
+}

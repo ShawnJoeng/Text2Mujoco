@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "path_base": "package_root",
+  "static_checks": {
+    "xml_parse": "PASS",
+    "mjcf_compile": "PASS",
+    "conveyor_hinge": "PASS",
+    "parcel_free_joint": "PASS",
+    "explicit_actuators": 7,
+    "visible_markers": 6
+  },
+  "physics": {
+    "mj_step": "PASS",
+    "finite_state": "PASS",
+    "conveyor_delivery": "PASS",
+    "held_parcel_transport": "PASS",
+    "target_bin_settle": "PASS"
+  },
+  "dependency_enforcement": "PASS",
+  "deterministic_reset": "PASS",
+  "interaction_sequence": [
+    "start_conveyor_to_pickup",
+    "move_arm_to_parcel",
+    "grasp_parcel_with_arm",
+    "move_arm_to_target_bin",
+    "release_parcel_in_target_bin"
+  ]
+}

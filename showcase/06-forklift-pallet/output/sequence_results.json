@@ -1,0 +1,369 @@
+{
+  "status": "PASS",
+  "scene": "06-forklift-pallet",
+  "path_base": "package_root",
+  "mujoco_version": "3.2.7",
+  "python_version": "3.13.5",
+  "render_backend_requested": "osmesa",
+  "renderer_context": "osmesa",
+  "interaction_sequence": [
+    "drive_to_pallet",
+    "raise_forks",
+    "engage_pallet",
+    "carry_to_drop_zone",
+    "lower_forks_release",
+    "inspect_forklift_delivery"
+  ],
+  "frame_count": 8,
+  "frames": [
+    {
+      "index": 0,
+      "label": "initial",
+      "rgb": "output/screenshots/sequence/00_initial/rgb.png",
+      "depth": "output/screenshots/sequence/00_initial/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 56.82423699168127,
+      "rgb_dynamic_range": 252,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 3.7100000381469727,
+      "finite_depth_max_m": 5.8000006675720215,
+      "observation": {
+        "history": [],
+        "forklift_state": "parked",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.2,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667627022236155,
+        "pallet_position": [
+          -1.0,
+          -0.9000009382756519,
+          0.7233814391699062
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "index": 1,
+      "label": "drive_to_pallet",
+      "rgb": "output/screenshots/sequence/01_drive_to_pallet/rgb.png",
+      "depth": "output/screenshots/sequence/01_drive_to_pallet/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 56.65677563009338,
+      "rgb_dynamic_range": 252,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 3.7100000381469727,
+      "finite_depth_max_m": 5.8000006675720215,
+      "observation": {
+        "history": [
+          "drive_to_pallet"
+        ],
+        "forklift_state": "aligned",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -2.0253167985185176,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.00036676544387110325,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746133218,
+          0.7233237577888529
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "index": 2,
+      "label": "raise_forks",
+      "rgb": "output/screenshots/sequence/02_raise_forks/rgb.png",
+      "depth": "output/screenshots/sequence/02_raise_forks/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 56.42752678903584,
+      "rgb_dynamic_range": 252,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 3.7100000381469727,
+      "finite_depth_max_m": 5.8000006675720215,
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "loaded",
+        "forklift_position": [
+          -1.8785726661642732,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.18,
+        "pallet_position": [
+          -1.0,
+          -0.9000009746135809,
+          0.7233237576690386
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "index": 3,
+      "label": "engage_pallet",
+      "rgb": "output/screenshots/sequence/03_engage_pallet/rgb.png",
+      "depth": "output/screenshots/sequence/03_engage_pallet/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 56.17772535745774,
+      "rgb_dynamic_range": 252,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 3.7100000381469727,
+      "finite_depth_max_m": 5.8000006675720215,
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet"
+        ],
+        "forklift_state": "raised",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          -1.8785726661642732,
+          -0.9,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.18,
+        "pallet_position": [
+          -0.9385726661642733,
+          -0.9,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "index": 4,
+      "label": "carry_to_drop_zone",
+      "rgb": "output/screenshots/sequence/04_carry_to_drop_zone/rgb.png",
+      "depth": "output/screenshots/sequence/04_carry_to_drop_zone/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 55.65447831437144,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 3.7100000381469727,
+      "finite_depth_max_m": 5.8000006675720215,
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone"
+        ],
+        "forklift_state": "at_delivery",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.5594887149990697,
+          0.2705879760225999,
+          0.25
+        ],
+        "fork_lift_qpos_m": 0.18,
+        "pallet_position": [
+          1.4994774996852134,
+          0.2706210603716609,
+          0.98
+        ],
+        "pallet_inside_delivery": false,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "index": 5,
+      "label": "lower_forks_release",
+      "rgb": "output/screenshots/sequence/05_lower_forks_release/rgb.png",
+      "depth": "output/screenshots/sequence/05_lower_forks_release/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 55.570485086848024,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 3.7100000381469727,
+      "finite_depth_max_m": 5.8000006675720215,
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone",
+          "lower_forks_release"
+        ],
+        "forklift_state": "released",
+        "pallet_state": "delivered",
+        "forklift_position": [
+          0.562426323161112,
+          0.2649198583177782,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667645047826841,
+        "pallet_position": [
+          1.55,
+          0.3500008620762097,
+          0.8139902402025115
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "index": 6,
+      "label": "settled_after_lower_forks_release",
+      "rgb": "output/screenshots/sequence/06_settled_after_lower_forks_release/rgb.png",
+      "depth": "output/screenshots/sequence/06_settled_after_lower_forks_release/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 55.537363142842004,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 3.7100000381469727,
+      "finite_depth_max_m": 5.8000006675720215,
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone",
+          "lower_forks_release"
+        ],
+        "forklift_state": "released",
+        "pallet_state": "delivered",
+        "forklift_position": [
+          0.5695161730318894,
+          0.2615158676861301,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667654438685311,
+        "pallet_position": [
+          1.55,
+          0.35000086628768645,
+          0.8139942536065415
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "index": 7,
+      "label": "inspect_forklift_delivery",
+      "rgb": "output/screenshots/sequence/07_inspect_forklift_delivery/rgb.png",
+      "depth": "output/screenshots/sequence/07_inspect_forklift_delivery/depth.npy",
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "rgb_std": 55.537363142842004,
+      "rgb_dynamic_range": 250,
+      "depth_shape": [
+        480,
+        640
+      ],
+      "finite_depth_pixels": 307200,
+      "finite_depth_min_m": 3.7100000381469727,
+      "finite_depth_max_m": 5.8000006675720215,
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone",
+          "lower_forks_release",
+          "inspect_forklift_delivery"
+        ],
+        "forklift_state": "released",
+        "pallet_state": "delivered",
+        "forklift_position": [
+          0.5695161730318894,
+          0.2615158676861301,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.0003667654438685311,
+        "pallet_position": [
+          1.55,
+          0.35000086628768645,
+          0.8139942536065415
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    }
+  ],
+  "contact_sheet": "output/screenshots/sequence.png",
+  "tiff": "output/screenshots/sequence.tif",
+  "gif": "output/screenshots/sequence.gif",
+  "sequence_kind": "discrete interaction keyframes",
+  "gif_frame_duration_ms": 1600,
+  "gif_final_frame_duration_ms": 2600,
+  "tiff_playback_timing": "unspecified; TIFF is a keyframe archive, not a timed animation",
+  "before": "output/screenshots/before.png",
+  "after": "output/screenshots/after.png",
+  "before_depth": "output/screenshots/before_depth.npy",
+  "after_depth": "output/screenshots/after_depth.npy",
+  "task_success": true
+}

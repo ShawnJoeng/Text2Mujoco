@@ -1,0 +1,117 @@
+<mujoco model="forklift_pallet_delivery">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton" cone="elliptic"/>
+  <size nconmax="600" njmax="1200"/>
+  <statistic center="0 0 0.78" extent="2.8"/>
+  <visual>
+    <global offwidth="640" offheight="480"/>
+    <quality shadowsize="2048"/>
+    <map znear="0.01" zfar="12"/>
+    <headlight ambient="0.34 0.34 0.38" diffuse="0.74 0.74 0.72" specular="0.2 0.2 0.2"/>
+  </visual>
+
+  <asset>
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.11 0.14 0.17" rgb2="0.22 0.25 0.28" width="512" height="512"/>
+    <material name="floor_mat" texture="floor_tex" texrepeat="7 7" reflectance="0.08"/>
+    <material name="pad_mat" rgba="0.32 0.35 0.38 1" specular="0.12" roughness="0.76"/>
+    <material name="forklift_orange" rgba="0.95 0.39 0.03 1" specular="0.35" roughness="0.32"/>
+    <material name="forklift_dark" rgba="0.08 0.10 0.12 1" specular="0.28" roughness="0.46"/>
+    <material name="mast_mat" rgba="0.17 0.20 0.23 1" specular="0.28" roughness="0.48"/>
+    <material name="fork_mat" rgba="0.72 0.75 0.78 1" specular="0.42" roughness="0.26"/>
+    <material name="pallet_mat" rgba="0.68 0.34 0.09 1" specular="0.16" roughness="0.72"/>
+    <material name="crate_mat" rgba="0.12 0.55 0.88 1" specular="0.28" roughness="0.40"/>
+    <material name="zone_mat" rgba="0.06 0.55 0.34 1" specular="0.2" roughness="0.54"/>
+    <material name="rack_mat" rgba="0.45 0.48 0.52 1" specular="0.18" roughness="0.62"/>
+    <material name="marker_yellow" rgba="1 0.9 0.02 1" emission="0.35"/>
+    <material name="marker_cyan" rgba="0.02 1 0.95 1" emission="0.35"/>
+    <material name="marker_magenta" rgba="1 0.04 0.68 1" emission="0.35"/>
+    <material name="marker_green" rgba="0.08 1 0.24 1" emission="0.35"/>
+    <material name="marker_orange" rgba="1 0.28 0.02 1" emission="0.35"/>
+  </asset>
+
+  <default>
+    <joint damping="1.0" armature="0.02"/>
+    <geom friction="0.78 0.01 0.002" condim="6" solref="0.008 1" solimp="0.9 0.95 0.001"/>
+  </default>
+
+  <worldbody>
+    <light name="key_light" pos="-2.0 -2.5 4.6" dir="0.2 0.25 -1" directional="true" castshadow="true"/>
+    <light name="fill_light" pos="2.5 1.6 3.3" dir="-0.6 -0.2 -1" directional="true" diffuse="0.42 0.45 0.5" specular="0.08 0.08 0.08"/>
+    <camera name="delivery_camera" pos="0 0 5.8" quat="1 0 0 0" fovy="50"/>
+    <geom name="ground_geom" type="plane" size="4.0 3.0 0.1" material="floor_mat"/>
+
+    <body name="loading_pad" pos="-1.0 -0.9 0.67">
+      <geom name="loading_pad_geom" type="box" size="0.72 0.58 0.03" material="pad_mat"/>
+    </body>
+    <body name="delivery_pad" pos="1.55 0.35 0.67">
+      <geom name="delivery_pad_geom" type="box" size="0.72 0.58 0.03" material="pad_mat"/>
+    </body>
+
+    <body name="forklift_base" pos="-2.2 -0.9 0.25">
+      <joint name="forklift_x" type="slide" axis="1 0 0" range="-0.3 4.8" damping="3.2" armature="0.04"/>
+      <joint name="forklift_y" type="slide" axis="0 1 0" range="-0.4 2.5" damping="3.2" armature="0.04"/>
+      <joint name="forklift_yaw" type="hinge" axis="0 0 1" range="-0.35 0.35" damping="2.0" armature="0.02"/>
+      <geom name="forklift_base_geom" type="box" pos="0 0 0.18" size="0.42 0.34 0.18" mass="5.8" material="forklift_orange" contype="0" conaffinity="0"/>
+      <geom name="forklift_counterweight" type="box" pos="-0.29 0 0.42" size="0.19 0.31 0.22" mass="3.0" material="forklift_dark" contype="0" conaffinity="0"/>
+      <geom name="front_wheel_left" type="cylinder" pos="0.22 0.31 0.10" quat="0.7071068 0.7071068 0 0" size="0.13 0.075" mass="0.25" material="forklift_dark" contype="0" conaffinity="0"/>
+      <geom name="front_wheel_right" type="cylinder" pos="0.22 -0.31 0.10" quat="0.7071068 0.7071068 0 0" size="0.13 0.075" mass="0.25" material="forklift_dark" contype="0" conaffinity="0"/>
+      <geom name="rear_wheel_left" type="cylinder" pos="-0.27 0.29 0.10" quat="0.7071068 0.7071068 0 0" size="0.10 0.065" mass="0.2" material="forklift_dark" contype="0" conaffinity="0"/>
+      <geom name="rear_wheel_right" type="cylinder" pos="-0.27 -0.29 0.10" quat="0.7071068 0.7071068 0 0" size="0.10 0.065" mass="0.2" material="forklift_dark" contype="0" conaffinity="0"/>
+      <body name="forklift_mast" pos="0.42 0 0.20">
+        <geom name="forklift_mast_left" type="box" pos="0 0.26 0.82" size="0.09 0.07 0.82" material="mast_mat" contype="0" conaffinity="0"/>
+        <geom name="forklift_mast_right" type="box" pos="0 -0.26 0.82" size="0.09 0.07 0.82" material="mast_mat" contype="0" conaffinity="0"/>
+        <body name="fork_carriage" pos="0 0 0.25">
+          <joint name="fork_lift" type="slide" axis="0 0 1" range="0 0.35" damping="4.5" armature="0.03"/>
+          <geom name="fork_carriage_geom" type="box" pos="0 0 0" size="0.10 0.32 0.10" material="forklift_dark" contype="0" conaffinity="0"/>
+          <body name="left_fork" pos="0.52 0.18 -0.12">
+            <geom name="left_fork" type="box" size="0.55 0.055 0.035" mass="0.45" material="fork_mat" contype="0" conaffinity="0"/>
+          </body>
+          <body name="right_fork" pos="0.52 -0.18 -0.12">
+            <geom name="right_fork" type="box" size="0.55 0.055 0.035" mass="0.45" material="fork_mat" contype="0" conaffinity="0"/>
+          </body>
+          <site name="fork_tip_site" type="sphere" pos="0.98 0 -0.12" size="0.025" rgba="0.98 0.84 0.05 1" group="2"/>
+        </body>
+      </body>
+    </body>
+
+    <body name="pallet" pos="-1.0 -0.9 0.78">
+      <freejoint name="pallet_free"/>
+      <geom name="pallet_deck" type="box" size="0.50 0.40 0.07" mass="1.5" material="pallet_mat" friction="0.85 0.01 0.003"/>
+      <geom name="pallet_runner_left" type="box" pos="-0.32 0 -0.12" size="0.07 0.36 0.06" mass="0.45" material="pallet_mat"/>
+      <geom name="pallet_runner_right" type="box" pos="0.32 0 -0.12" size="0.07 0.36 0.06" mass="0.45" material="pallet_mat"/>
+      <body name="payload_crate" pos="0 0 0.27">
+        <geom name="payload_crate_geom" type="box" size="0.32 0.28 0.20" mass="0.8" material="crate_mat"/>
+        <geom name="payload_crate_band" type="box" pos="0 0.285 0" size="0.33 0.012 0.21" material="forklift_dark" contype="0" conaffinity="0"/>
+      </body>
+    </body>
+
+    <body name="delivery_zone" pos="1.55 0.35 0.68">
+      <geom name="delivery_zone_bottom" type="box" pos="0 0 0.04" size="0.62 0.52 0.04" material="zone_mat"/>
+      <geom name="delivery_zone_left" type="box" pos="0 0.53 0.16" size="0.62 0.025 0.12" material="zone_mat"/>
+      <geom name="delivery_zone_right" type="box" pos="0 -0.53 0.16" size="0.62 0.025 0.12" material="zone_mat"/>
+      <geom name="delivery_zone_front" type="box" pos="0.63 0 0.16" size="0.025 0.52 0.12" material="zone_mat"/>
+      <geom name="delivery_zone_back" type="box" pos="-0.63 0 0.16" size="0.025 0.52 0.12" material="zone_mat"/>
+    </body>
+
+    <body name="storage_rack" pos="0.10 1.15 0.72">
+      <geom name="storage_rack_post_a" type="box" pos="-0.62 0 0.65" size="0.05 0.05 0.65" material="rack_mat"/>
+      <geom name="storage_rack_post_b" type="box" pos="0.62 0 0.65" size="0.05 0.05 0.65" material="rack_mat"/>
+      <geom name="storage_rack_shelf" type="box" pos="0 0 0.50" size="0.68 0.30 0.045" material="rack_mat"/>
+      <geom name="storage_rack_top" type="box" pos="0 0 1.26" size="0.68 0.30 0.045" material="rack_mat"/>
+    </body>
+
+    <site name="drive_to_pallet_marker" type="sphere" pos="-0.98 -0.9 0.98" size="0.055" material="marker_yellow" group="2"/>
+    <site name="raise_forks_marker" type="cylinder" pos="-0.02 -0.9 0.78" size="0.09 0.014" material="marker_cyan" group="2"/>
+    <site name="engage_pallet_marker" type="ellipsoid" pos="-0.15 -0.9 0.92" size="0.08 0.04 0.025" material="marker_magenta" group="2"/>
+    <site name="carry_to_drop_zone_marker" type="sphere" pos="1.55 0.35 1.15" size="0.06" material="marker_green" group="2"/>
+    <site name="lower_forks_release_marker" type="cylinder" pos="1.55 0.35 0.98" size="0.10 0.014" material="marker_orange" group="2"/>
+    <site name="inspect_forklift_delivery_marker" type="sphere" pos="2.35 -0.95 0.90" size="0.06" material="marker_magenta" group="2"/>
+  </worldbody>
+
+  <actuator>
+    <position name="forklift_x_motor" joint="forklift_x" kp="240" kv="24" ctrlrange="-0.3 4.8" forcerange="-180 180"/>
+    <position name="forklift_y_motor" joint="forklift_y" kp="240" kv="24" ctrlrange="-0.4 2.5" forcerange="-180 180"/>
+    <position name="forklift_yaw_motor" joint="forklift_yaw" kp="80" kv="12" ctrlrange="-0.35 0.35" forcerange="-60 60"/>
+    <position name="fork_lift_motor" joint="fork_lift" kp="300" kv="28" ctrlrange="0 0.35" forcerange="-180 180"/>
+  </actuator>
+</mujoco>

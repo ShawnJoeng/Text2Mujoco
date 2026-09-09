@@ -1,0 +1,130 @@
+<mujoco model="robot_arm_sorting">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton" cone="elliptic"/>
+  <size nconmax="500" njmax="1000"/>
+  <statistic center="0 0 0.78" extent="2.3"/>
+  <visual>
+    <global offwidth="640" offheight="480"/>
+    <quality shadowsize="2048"/>
+    <map znear="0.01" zfar="10"/>
+    <headlight ambient="0.35 0.35 0.38" diffuse="0.72 0.72 0.70" specular="0.2 0.2 0.2"/>
+  </visual>
+
+  <asset>
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.12 0.14 0.17" rgb2="0.22 0.24 0.28" width="512" height="512"/>
+    <material name="floor_mat" texture="floor_tex" texrepeat="6 6" reflectance="0.08"/>
+    <material name="table_mat" rgba="0.42 0.46 0.50 1" specular="0.15" roughness="0.68"/>
+    <material name="frame_mat" rgba="0.08 0.10 0.13 1" specular="0.2" roughness="0.5"/>
+    <material name="arm_base_mat" rgba="0.15 0.18 0.22 1" specular="0.32" roughness="0.34"/>
+    <material name="arm_link_mat" rgba="0.92 0.48 0.06 1" specular="0.38" roughness="0.28"/>
+    <material name="joint_mat" rgba="0.06 0.08 0.10 1" specular="0.42" roughness="0.25"/>
+    <material name="gripper_mat" rgba="0.14 0.55 0.82 1" specular="0.35" roughness="0.28"/>
+    <material name="blue_mat" rgba="0.02 0.32 0.95 1" specular="0.42" roughness="0.24"/>
+    <material name="red_mat" rgba="0.92 0.08 0.07 1" specular="0.42" roughness="0.24"/>
+    <material name="blue_bin_mat" rgba="0.02 0.43 0.88 1" specular="0.24" roughness="0.42"/>
+    <material name="red_bin_mat" rgba="0.80 0.12 0.08 1" specular="0.24" roughness="0.42"/>
+    <material name="belt_mat" rgba="0.06 0.07 0.08 1" specular="0.12" roughness="0.82"/>
+    <material name="marker_yellow" rgba="1 0.9 0.02 1" emission="0.35"/>
+    <material name="marker_cyan" rgba="0.02 1 0.95 1" emission="0.35"/>
+    <material name="marker_magenta" rgba="1 0.04 0.68 1" emission="0.35"/>
+    <material name="marker_green" rgba="0.08 1 0.24 1" emission="0.35"/>
+  </asset>
+
+  <default>
+    <joint damping="1.2" armature="0.015"/>
+    <geom friction="0.72 0.01 0.002" condim="6" solref="0.008 1" solimp="0.9 0.95 0.001"/>
+  </default>
+
+  <worldbody>
+    <light name="key_light" pos="-1.5 -2.2 4.2" dir="0.2 0.3 -1" directional="true" castshadow="true"/>
+    <light name="fill_light" pos="2.0 1.2 3.0" dir="-0.5 -0.25 -1" directional="true" diffuse="0.42 0.45 0.5" specular="0.08 0.08 0.08"/>
+    <camera name="sorting_camera" pos="0 0 4.8" quat="1 0 0 0" fovy="48"/>
+    <geom name="ground_geom" type="plane" size="3.5 3.0 0.1" material="floor_mat"/>
+
+    <body name="worktable" pos="0 0 0.62">
+      <geom name="worktable_top_geom" type="box" size="1.35 0.82 0.06" material="table_mat" friction="0.9 0.01 0.001"/>
+      <geom name="worktable_leg_fl" type="box" pos="-1.18 -0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
+      <geom name="worktable_leg_fr" type="box" pos="1.18 -0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
+      <geom name="worktable_leg_bl" type="box" pos="-1.18 0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
+      <geom name="worktable_leg_br" type="box" pos="1.18 0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
+    </body>
+
+    <body name="conveyor_frame" pos="0.26 0 0.76">
+      <geom name="conveyor_belt_geom" type="box" size="0.72 0.23 0.025" material="belt_mat" contype="1" conaffinity="1"/>
+      <geom name="conveyor_rail_left" type="box" pos="0 0.245 0.04" size="0.72 0.018 0.045" material="frame_mat"/>
+      <geom name="conveyor_rail_right" type="box" pos="0 -0.245 0.04" size="0.72 0.018 0.045" material="frame_mat"/>
+      <geom name="conveyor_roller_a" type="cylinder" pos="-0.58 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
+      <geom name="conveyor_roller_b" type="cylinder" pos="0.58 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
+    </body>
+
+    <body name="arm_base" pos="-0.35 0 0.70">
+      <geom name="arm_base_geom" type="cylinder" size="0.24 0.35" material="arm_base_mat"/>
+      <geom name="arm_base_ring" type="cylinder" pos="0 0 0.37" size="0.28 0.035" material="joint_mat"/>
+      <body name="arm_upper_link" pos="0 0 0.82">
+        <joint name="arm_shoulder" type="hinge" axis="0 1 0" range="-2.8 1.8" damping="3.0" armature="0.02"/>
+        <geom name="arm_upper_geom" type="capsule" fromto="0 0 0 0.72 0 0" size="0.075" mass="1.2" material="arm_link_mat" contype="0" conaffinity="0"/>
+        <geom name="arm_shoulder_hub" type="cylinder" quat="0.7071068 0 0.7071068 0" size="0.115 0.09" material="joint_mat" contype="0" conaffinity="0"/>
+        <body name="arm_forearm_link" pos="0.72 0 0">
+          <joint name="arm_elbow" type="hinge" axis="0 1 0" range="-2.8 2.8" damping="2.4" armature="0.018"/>
+          <geom name="arm_forearm_geom" type="capsule" fromto="0 0 0 0.62 0 0" size="0.065" mass="0.9" material="arm_link_mat" contype="0" conaffinity="0"/>
+          <geom name="arm_elbow_hub" type="cylinder" quat="0.7071068 0 0.7071068 0" size="0.095 0.075" material="joint_mat" contype="0" conaffinity="0"/>
+          <body name="arm_wrist_link" pos="0.62 0 0">
+            <joint name="arm_wrist" type="hinge" axis="0 1 0" range="-2.4 2.4" damping="1.4" armature="0.012"/>
+            <geom name="arm_wrist_geom" type="capsule" fromto="0 0 0 0.13 0 0" size="0.05" mass="0.25" material="gripper_mat" contype="0" conaffinity="0"/>
+            <body name="gripper" pos="0.13 0 0">
+              <geom name="gripper_palm_geom" type="box" pos="0 0 -0.025" size="0.09 0.11 0.035" material="gripper_mat" contype="0" conaffinity="0"/>
+              <site name="arm_tcp" type="sphere" pos="-0.13 0 0" size="0.025" rgba="0.02 1 0.95 1" group="2"/>
+              <body name="left_finger" pos="0 0.105 -0.075">
+                <joint name="gripper_left_slide" type="slide" axis="0 1 0" range="-0.055 0" damping="1.5"/>
+                <geom name="left_finger_geom" type="box" pos="0 0 -0.07" size="0.035 0.025 0.07" material="gripper_mat" contype="0" conaffinity="0"/>
+              </body>
+              <body name="right_finger" pos="0 -0.105 -0.075">
+                <joint name="gripper_right_slide" type="slide" axis="0 1 0" range="0 0.055" damping="1.5"/>
+                <geom name="right_finger_geom" type="box" pos="0 0 -0.07" size="0.035 0.025 0.07" material="gripper_mat" contype="0" conaffinity="0"/>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+
+    <body name="blue_part" pos="0.18 0 0.86">
+      <freejoint name="blue_part_free"/>
+      <geom name="blue_part_geom" type="cylinder" size="0.07 0.07" mass="0.16" material="blue_mat" friction="0.72 0.01 0.003"/>
+      <site name="blue_part_top_site" type="sphere" pos="0 0 0.075" size="0.018" rgba="0.02 0.55 1 1" group="2"/>
+    </body>
+    <body name="red_part" pos="0.43 0.45 0.84">
+      <freejoint name="red_part_free"/>
+      <geom name="red_part_geom" type="cylinder" size="0.07 0.07" mass="0.16" material="red_mat" friction="0.72 0.01 0.003"/>
+    </body>
+
+    <body name="blue_bin" pos="0.78 0 0.70">
+      <geom name="blue_bin_bottom" type="box" pos="0 0 0.045" size="0.23 0.22 0.045" material="blue_bin_mat"/>
+      <geom name="blue_bin_left" type="box" pos="0 0.235 0.16" size="0.23 0.015 0.115" material="blue_bin_mat"/>
+      <geom name="blue_bin_right" type="box" pos="0 -0.235 0.16" size="0.23 0.015 0.115" material="blue_bin_mat"/>
+      <geom name="blue_bin_front" type="box" pos="0.215 0 0.16" size="0.015 0.22 0.115" material="blue_bin_mat"/>
+      <geom name="blue_bin_back" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="blue_bin_mat"/>
+    </body>
+    <body name="red_bin" pos="0.78 0.48 0.70">
+      <geom name="red_bin_bottom" type="box" pos="0 0 0.045" size="0.23 0.22 0.045" material="red_bin_mat"/>
+      <geom name="red_bin_left" type="box" pos="0 0.235 0.16" size="0.23 0.015 0.115" material="red_bin_mat"/>
+      <geom name="red_bin_right" type="box" pos="0 -0.235 0.16" size="0.23 0.015 0.115" material="red_bin_mat"/>
+      <geom name="red_bin_front" type="box" pos="0.215 0 0.16" size="0.015 0.22 0.115" material="red_bin_mat"/>
+      <geom name="red_bin_back" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="red_bin_mat"/>
+    </body>
+
+    <site name="approach_blue_part_marker" type="sphere" pos="0.18 0 0.98" size="0.045" material="marker_yellow" group="2"/>
+    <site name="grasp_blue_part_marker" type="cylinder" pos="0.18 0 0.91" size="0.075 0.012" material="marker_cyan" group="2"/>
+    <site name="transfer_blue_bin_marker" type="cylinder" pos="0.78 0 0.84" size="0.09 0.012" material="marker_magenta" group="2"/>
+    <site name="release_blue_part_marker" type="sphere" pos="0.78 -0.34 1.22" size="0.055" material="marker_green" group="2"/>
+    <site name="inspect_sorting_marker" type="ellipsoid" pos="1.12 -0.62 0.86" size="0.055 0.035 0.018" material="marker_magenta" group="2"/>
+  </worldbody>
+
+  <actuator>
+    <position name="arm_shoulder_motor" joint="arm_shoulder" kp="180" kv="20" ctrlrange="-2.8 1.8" forcerange="-180 180"/>
+    <position name="arm_elbow_motor" joint="arm_elbow" kp="180" kv="18" ctrlrange="-2.8 2.8" forcerange="-150 150"/>
+    <position name="arm_wrist_motor" joint="arm_wrist" kp="100" kv="12" ctrlrange="-2.4 2.4" forcerange="-80 80"/>
+    <position name="gripper_left_motor" joint="gripper_left_slide" kp="220" kv="22" ctrlrange="-0.055 0" forcerange="-30 30"/>
+    <position name="gripper_right_motor" joint="gripper_right_slide" kp="220" kv="22" ctrlrange="0 0.055" forcerange="-30 30"/>
+  </actuator>
+</mujoco>

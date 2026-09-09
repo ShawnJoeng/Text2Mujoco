@@ -1,0 +1,318 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source_prompt": "生成一个桌面机器人装配单元。橙色机械臂先移动到红色定位销，闭合夹爪抓取定位销，再把它移动到蓝色装配座并垂直插入，最后用固定相机检查装配结果。每个操作步骤都要有可见交互点，并且机械臂和物体都是真实 MuJoCo 动力学对象。",
+  "assumptions": [
+    "使用 SI 米制、Z 轴向上、重力 [0, 0, -9.81] 和确定性种子 107。",
+    "机械臂是内嵌在 MJCF 中的三关节平面机械臂，带工具升降关节和单侧夹爪滑动关节；几何体使用 primitive。",
+    "抓取阶段使用可复现的任务级夹持约束，将定位销保持在工具中心；机械臂关节和夹爪执行器仍然实际驱动物理模型。",
+    "装配座由底座、四个导向柱和插入底面组成，定位销释放后由重力和碰撞接触决定最终姿态。",
+    "固定相机输出 640 x 480 RGB-D；黄色、青色、绿色、品红色和橙色 site 是无碰撞可见交互标记。",
+    "场景只使用 MJCF primitive，不依赖下载的网格或机器人资产。"
+  ],
+  "open_questions": [],
+  "scene": {
+    "name": "robot_peg_insertion_assembly",
+    "description": "三关节机械臂抓取定位销并将其插入装配座的桌面单元。",
+    "runtime": {
+      "mujoco_version": "3.2.7",
+      "mode": "python",
+      "headless": true,
+      "gl_backend": "auto"
+    },
+    "world": {
+      "units": "m",
+      "up_axis": "Z",
+      "gravity": [0, 0, -9.81],
+      "ground": true,
+      "seed": 107
+    }
+  },
+  "assets": [
+    {
+      "id": "assembly_arm",
+      "kind": "robot",
+      "source": "./model.xml",
+      "body_name": "arm_base",
+      "pose": {
+        "position": [-0.55, 0.0, 0.95],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 0,
+        "conaffinity": 0
+      },
+      "exports": {
+        "body": ["arm_tool"],
+        "joint": ["arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "gripper_slide"],
+        "actuator": ["shoulder_motor", "elbow_motor", "wrist_motor", "tool_lift_motor", "gripper_motor"]
+      },
+      "semantic": "planar_assembly_robot"
+    },
+    {
+      "id": "workbench",
+      "kind": "primitive",
+      "body_name": "workbench",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [1.6, 1.0, 0.08],
+        "geom_name": "workbench_top_geom"
+      },
+      "pose": {
+        "position": [0, 0, 0.74],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.9, 0.01, 0.001]
+      },
+      "semantic": "support_surface"
+    },
+    {
+      "id": "red_peg",
+      "kind": "primitive",
+      "body_name": "red_peg",
+      "geometry": {
+        "shape": "cylinder",
+        "dimensions": [0.06, 0.06, 0.14],
+        "geom_name": "red_peg_geom"
+      },
+      "pose": {
+        "position": [0.20, 0.0, 0.84],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": true,
+        "joint_name": "peg_free",
+        "mass_kg": 0.16,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.7, 0.01, 0.002]
+      },
+      "semantic": "assembly_peg"
+    },
+    {
+      "id": "insertion_fixture",
+      "kind": "primitive",
+      "body_name": "insertion_fixture",
+      "geometry": {
+        "shape": "box",
+        "dimensions": [0.34, 0.30, 0.10],
+        "geom_name": "fixture_base_geom"
+      },
+      "pose": {
+        "position": [0.17, 0.21, 0.80],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.8, 0.01, 0.001]
+      },
+      "semantic": "assembly_fixture"
+    },
+    {
+      "id": "socket_floor",
+      "kind": "primitive",
+      "body_name": "socket_floor",
+      "geometry": {
+        "shape": "cylinder",
+        "dimensions": [0.11, 0.11, 0.02],
+        "geom_name": "socket_floor_geom"
+      },
+      "pose": {
+        "position": [0.17, 0.21, 0.86],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "physics": {
+        "dynamic": false,
+        "contype": 1,
+        "conaffinity": 1,
+        "friction": [0.8, 0.01, 0.001]
+      },
+      "semantic": "insertion_socket_bottom"
+    }
+  ],
+  "interaction_points": [
+    {
+      "id": "move_arm_to_peg",
+      "affordance": "reach",
+      "target": {"type": "joint", "name": "arm_shoulder"},
+      "marker_site": "peg_approach_marker",
+      "pose": {
+        "position": [0.20, 0.0, 1.01],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "move_arm_to_peg",
+        "schema": {
+          "type": "object",
+          "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "preconditions": ["arm_state == 'home'"],
+      "success_conditions": ["tool is above the red peg", "arm_state == 'at_peg'"],
+      "depends_on": [],
+      "effects": ["arm_state = 'at_peg'"],
+      "reset": {"arm_state": "home"}
+    },
+    {
+      "id": "grasp_peg_with_arm",
+      "affordance": "grasp",
+      "target": {"type": "joint", "name": "gripper_slide"},
+      "marker_site": "grasp_peg_marker",
+      "pose": {
+        "position": [0.20, 0.0, 0.94],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "grasp_peg_with_arm",
+        "schema": {
+          "type": "object",
+          "properties": {"close": {"type": "boolean"}},
+          "required": ["close"],
+          "additionalProperties": false
+        }
+      },
+      "preconditions": ["arm_state == 'at_peg'", "peg_state == 'free'"],
+      "success_conditions": ["gripper_state == 'closed'", "peg_state == 'grasped'"],
+      "depends_on": ["move_arm_to_peg"],
+      "effects": ["gripper_state = 'closed'", "peg_state = 'grasped'"],
+      "reset": {"gripper_state": "open", "peg_state": "free"}
+    },
+    {
+      "id": "move_arm_to_socket",
+      "affordance": "transport",
+      "target": {"type": "joint", "name": "arm_elbow"},
+      "marker_site": "socket_approach_marker",
+      "pose": {
+        "position": [0.17, 0.21, 1.26],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "move_arm_to_socket",
+        "schema": {
+          "type": "object",
+          "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "preconditions": ["peg_state == 'grasped'", "arm_state == 'at_peg'"],
+      "success_conditions": ["tool is above the socket", "arm_state == 'at_socket'"],
+      "depends_on": ["grasp_peg_with_arm"],
+      "effects": ["arm_state = 'at_socket'"],
+      "reset": {"arm_state": "home"}
+    },
+    {
+      "id": "insert_peg_into_socket",
+      "affordance": "insert",
+      "target": {"type": "joint", "name": "tool_z"},
+      "marker_site": "insertion_marker",
+      "pose": {
+        "position": [0.17, 0.21, 1.14],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "insert_peg_into_socket",
+        "schema": {
+          "type": "object",
+          "properties": {"depth_m": {"type": "number", "minimum": 0.06, "maximum": 0.10}},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "preconditions": ["arm_state == 'at_socket'", "peg_state == 'grasped'"],
+      "success_conditions": ["tool_z <= -0.06", "peg_state == 'inserted'"],
+      "depends_on": ["move_arm_to_socket"],
+      "effects": ["peg_state = 'inserted'", "tool_state = 'lowered'"],
+      "reset": {"peg_state": "free", "tool_state": "raised"}
+    },
+    {
+      "id": "release_assembled_peg",
+      "affordance": "release",
+      "target": {"type": "joint", "name": "gripper_slide"},
+      "marker_site": "release_marker",
+      "pose": {
+        "position": [0.17, 0.21, 1.08],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "release_assembled_peg",
+        "schema": {
+          "type": "object",
+          "properties": {"open": {"type": "boolean"}},
+          "required": ["open"],
+          "additionalProperties": false
+        }
+      },
+      "preconditions": ["peg_state == 'inserted'", "tool_state == 'lowered'"],
+      "success_conditions": ["gripper_state == 'open'", "peg_state == 'seated'"],
+      "depends_on": ["insert_peg_into_socket"],
+      "effects": ["gripper_state = 'open'", "peg_state = 'seated'"],
+      "reset": {"gripper_state": "open"}
+    },
+    {
+      "id": "inspect_assembly",
+      "affordance": "inspect",
+      "target": {"type": "camera", "name": "assembly_camera"},
+      "marker_site": "inspection_marker",
+      "pose": {
+        "position": [0.48, 0.36, 1.02],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "action": {
+        "mode": "direct",
+        "command": "inspect_assembly",
+        "schema": {
+          "type": "object",
+          "properties": {"output_dir": {"type": "string"}},
+          "required": ["output_dir"],
+          "additionalProperties": false
+        }
+      },
+      "preconditions": ["peg_state == 'seated'"],
+      "success_conditions": ["assembly RGB-D capture is valid", "task_state == 'verified'"],
+      "depends_on": ["release_assembled_peg"],
+      "effects": ["task_state = 'verified'"],
+      "reset": {"task_state": "pending"}
+    }
+  ],
+  "sensors": [
+    {
+      "id": "assembly_rgbd_sensor",
+      "type": "camera",
+      "camera_name": "assembly_camera",
+      "pose": {
+        "position": [0, 0, 2.8],
+        "orientation_xyzw": [0, 0, 0, 1]
+      },
+      "frequency_hz": 30,
+      "data": ["rgb", "depth", "camera_pose", "arm_joint_qpos", "peg_position"]
+    }
+  ],
+  "task": {
+    "goal": "机械臂抓取红色定位销，将其插入蓝色装配座并由固定相机确认。",
+    "success_conditions": ["arm_state == 'at_socket'", "peg_state == 'seated'", "task_state == 'verified'", "all interactions completed in dependency order"],
+    "failure_conditions": ["non_finite_state == true", "peg_position outside workbench bounds"],
+    "reset_policy": "mj_resetData_and_task_state"
+  },
+  "outputs": {
+    "save_mjcf": true,
+    "mjcf_path": "./output/model.xml",
+    "save_mjb": true,
+    "mjb_path": "./output/model.mjb",
+    "resolution": [640, 480]
+  }
+}

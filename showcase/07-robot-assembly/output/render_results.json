@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "mujoco_executed": true,
+  "mujoco_version": "3.2.7",
+  "python_version": "3.13.5",
+  "render_backend_requested": "osmesa",
+  "renderer_context": "mujoco.osmesa.GLContext",
+  "path_base": "package_root",
+  "resolution": [
+    640,
+    480
+  ],
+  "task_success": true,
+  "interaction_sequence": [
+    "move_arm_to_peg",
+    "grasp_peg_with_arm",
+    "move_arm_to_socket",
+    "insert_peg_into_socket",
+    "release_assembled_peg",
+    "inspect_assembly"
+  ],
+  "visible_interaction_markers": {
+    "status": "PASS",
+    "pixels": {
+      "yellow": 4334,
+      "cyan": 6013,
+      "green": 706,
+      "magenta": 323,
+      "orange": 4423
+    }
+  },
+  "tool_movement_m": 0.37768560501688697,
+  "screenshots": {
+    "initial": {
+      "path": "output/screenshots/initial/rgb.png"
+    },
+    "final": {
+      "path": "output/screenshots/final/rgb.png"
+    },
+    "reset": {
+      "path": "output/screenshots/reset/rgb.png"
+    }
+  },
+  "depth": {
+    "initial": {
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 307200,
+      "min_m": 1.4950597286224365,
+      "max_m": 2.799999952316284
+    },
+    "final": {
+      "shape": [
+        480,
+        640
+      ],
+      "finite_geometry_pixels": 307200,
+      "min_m": 1.4950597286224365,
+      "max_m": 2.799999952316284
+    }
+  }
+}

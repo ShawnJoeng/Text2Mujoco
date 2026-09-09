@@ -11,12 +11,15 @@ import unittest
 from pathlib import Path
 
 
-SCENE_FILES = (
-    Path("01-button-cube-box/environment.py"),
-    Path("02-smart-drawer/environment.py"),
-    Path("03-warehouse-navigation/environment.py"),
-    Path("04-lever-ball-ramp/environment.py"),
-)
+def discover_scene_files(showcase_root: Path) -> tuple[Path, ...]:
+    """Discover every numbered showcase environment without a manual allowlist."""
+    return tuple(
+        sorted(
+            path.relative_to(showcase_root)
+            for path in showcase_root.glob("0*/environment.py")
+            if path.parent.is_dir()
+        )
+    )
 
 
 def load_environment_module(path: Path, index: int) -> types.ModuleType:
@@ -51,7 +54,9 @@ def load_environment_module(path: Path, index: int) -> types.ModuleType:
 class ArtifactPathTests(unittest.TestCase):
     def test_all_environment_helpers_reject_escape_and_symlink_paths(self) -> None:
         showcase_root = Path(__file__).resolve().parent
-        for index, relative_path in enumerate(SCENE_FILES):
+        scene_files = discover_scene_files(showcase_root)
+        self.assertGreaterEqual(len(scene_files), 1)
+        for index, relative_path in enumerate(scene_files):
             with self.subTest(scene=relative_path.parent.name):
                 module = load_environment_module(showcase_root / relative_path, index)
                 environment_error = module.EnvironmentError
@@ -104,7 +109,9 @@ class ArtifactPathTests(unittest.TestCase):
 
     def test_save_artifacts_validates_all_targets_before_writing(self) -> None:
         showcase_root = Path(__file__).resolve().parent
-        for index, relative_path in enumerate(SCENE_FILES):
+        scene_files = discover_scene_files(showcase_root)
+        self.assertGreaterEqual(len(scene_files), 1)
+        for index, relative_path in enumerate(scene_files):
             with self.subTest(scene=relative_path.parent.name):
                 module = load_environment_module(showcase_root / relative_path, index)
                 environment_error = module.EnvironmentError

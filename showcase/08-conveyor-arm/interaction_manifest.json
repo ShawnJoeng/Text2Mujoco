@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "backend": "mujoco",
+  "source": "scene_spec.json",
+  "scene": "conveyor_robot_handoff_cell",
+  "action_envelope": {
+    "type": "object",
+    "properties": {"id": {"type": "string"}, "payload": {"type": "object"}},
+    "required": ["id", "payload"],
+    "additionalProperties": false
+  },
+  "dependency_order": [
+    "start_conveyor_to_pickup",
+    "move_arm_to_parcel",
+    "grasp_parcel_with_arm",
+    "move_arm_to_target_bin",
+    "release_parcel_in_target_bin",
+    "inspect_handoff"
+  ],
+  "interaction_points": [
+    {
+      "id": "start_conveyor_to_pickup",
+      "target": {"type": "actuator", "name": "conveyor_motor"},
+      "marker_site": "conveyor_start_marker",
+      "pose": {"position": [-0.55, 0.0, 0.99], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "convey",
+      "action": {"mode": "direct", "command": "start_conveyor_to_pickup", "schema": {"type": "object", "properties": {"speed_mps": {"type": "number", "minimum": 0.2, "maximum": 1.0}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["parcel_state == 'on_belt'", "conveyor_state == 'stopped'"],
+      "success_conditions": ["parcel_x >= -0.10", "parcel_state == 'at_pickup'"],
+      "depends_on": [],
+      "effects": ["conveyor_state = 'stopped'", "parcel_state = 'at_pickup'"],
+      "reset": {"conveyor_state": "stopped", "parcel_state": "on_belt"}
+    },
+    {
+      "id": "move_arm_to_parcel",
+      "target": {"type": "joint", "name": "arm_shoulder"},
+      "marker_site": "parcel_approach_marker",
+      "pose": {"position": [-0.08, 0.0, 1.04], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "reach",
+      "action": {"mode": "direct", "command": "move_arm_to_parcel", "schema": {"type": "object", "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["parcel_state == 'at_pickup'", "arm_state == 'home'"],
+      "success_conditions": ["arm_state == 'at_parcel'", "distance(tool, parcel) <= 0.10 m"],
+      "depends_on": ["start_conveyor_to_pickup"],
+      "effects": ["arm_state = 'at_parcel'"],
+      "reset": {"arm_state": "home"}
+    },
+    {
+      "id": "grasp_parcel_with_arm",
+      "target": {"type": "actuator", "name": "gripper_left_motor"},
+      "marker_site": "parcel_grasp_marker",
+      "pose": {"position": [-0.08, 0.0, 1.12], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "grasp",
+      "action": {"mode": "direct", "command": "grasp_parcel_with_arm", "schema": {"type": "object", "properties": {"close": {"type": "boolean"}}, "required": ["close"], "additionalProperties": false}},
+      "preconditions": ["arm_state == 'at_parcel'", "parcel_state == 'at_pickup'"],
+      "success_conditions": ["gripper_state == 'closed'", "parcel_state == 'grasped'"],
+      "depends_on": ["move_arm_to_parcel"],
+      "effects": ["gripper_state = 'closed'", "parcel_state = 'grasped'"],
+      "reset": {"gripper_state": "open", "parcel_state": "on_belt"}
+    },
+    {
+      "id": "move_arm_to_target_bin",
+      "target": {"type": "joint", "name": "arm_elbow"},
+      "marker_site": "target_bin_approach_marker",
+      "pose": {"position": [0.25, 0.18, 1.25], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "transport",
+      "action": {"mode": "direct", "command": "move_arm_to_target_bin", "schema": {"type": "object", "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}}, "required": [], "additionalProperties": false}},
+      "preconditions": ["parcel_state == 'grasped'", "gripper_state == 'closed'"],
+      "success_conditions": ["arm_state == 'over_target_bin'", "parcel_state == 'grasped'"],
+      "depends_on": ["grasp_parcel_with_arm"],
+      "effects": ["arm_state = 'over_target_bin'"],
+      "reset": {"arm_state": "home"}
+    },
+    {
+      "id": "release_parcel_in_target_bin",
+      "target": {"type": "actuator", "name": "gripper_left_motor"},
+      "marker_site": "parcel_release_marker",
+      "pose": {"position": [0.25, 0.18, 1.14], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "release",
+      "action": {"mode": "direct", "command": "release_parcel_in_target_bin", "schema": {"type": "object", "properties": {"open": {"type": "boolean"}}, "required": ["open"], "additionalProperties": false}},
+      "preconditions": ["arm_state == 'over_target_bin'", "parcel_state == 'grasped'"],
+      "success_conditions": ["gripper_state == 'open'", "parcel_state == 'inside_target_bin'", "parcel_speed_mps < 0.15"],
+      "depends_on": ["move_arm_to_target_bin"],
+      "effects": ["gripper_state = 'open'", "parcel_state = 'inside_target_bin'"],
+      "reset": {"gripper_state": "open", "parcel_state": "on_belt"}
+    },
+    {
+      "id": "inspect_handoff",
+      "target": {"type": "camera", "name": "handoff_camera"},
+      "marker_site": "handoff_inspection_marker",
+      "pose": {"position": [0.52, 0.40, 1.02], "orientation_xyzw": [0, 0, 0, 1]},
+      "affordance": "inspect",
+      "action": {"mode": "direct", "command": "inspect_handoff", "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"], "additionalProperties": false}},
+      "preconditions": ["parcel_state == 'inside_target_bin'"],
+      "success_conditions": ["handoff RGB-D capture is valid", "task_state == 'verified'"],
+      "depends_on": ["release_parcel_in_target_bin"],
+      "effects": ["task_state = 'verified'"],
+      "reset": {"task_state": "pending"}
+    }
+  ]
+}
