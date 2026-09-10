@@ -122,8 +122,8 @@ class ForkliftPalletEnvironment:
     """Deterministic mobile-forklift transport and delivery task."""
 
     START = np.asarray([-2.2, -0.9], dtype=float)
-    PALLET_START = np.asarray([-1.0, -0.9, 0.78], dtype=float)
-    PALLET_DROP = np.asarray([1.55, 0.35, 0.80], dtype=float)
+    PALLET_START = np.asarray([-1.0, -0.9, 0.88], dtype=float)
+    PALLET_DROP = np.asarray([1.55, 0.35, 0.94], dtype=float)
     FORK_OFFSET = np.asarray([0.94, 0.0], dtype=float)
     CARRY_WAYPOINTS = (
         np.asarray([-1.60, -0.35], dtype=float),
@@ -271,12 +271,13 @@ class ForkliftPalletEnvironment:
 
     def fork_anchor(self) -> np.ndarray:
         # The pallet is lifted with the carriage after engagement. Before the
-        # hold is enabled ``engaged_lift_target`` is zero, matching its load pad.
+        # hold is enabled ``engaged_lift_target`` is zero, so the anchor sits at
+        # the pallet's seated height on the loading pad.
         return np.asarray(
             [
                 self.base_xy[0] + self.FORK_OFFSET[0],
                 self.base_xy[1] + self.FORK_OFFSET[1],
-                0.80 + self.engaged_lift_target,
+                float(self.PALLET_START[2]) + self.engaged_lift_target,
             ],
             dtype=float,
         )
@@ -435,12 +436,15 @@ class ForkliftPalletEnvironment:
                 raise EnvironmentError("pallet is not ready for release")
             if not payload["release"]:
                 raise EnvironmentError("release action requires release=true")
-            self.engaged_lift_target = 0.0
-            self._set_lift(0.0)
+            # Set the pallet down on the delivery-zone floor first, then lower
+            # the empty forks. The zone floor is higher than the loading pad, so
+            # lowering while still engaged would drag the pallet through it.
             self.data.qpos[self.qpos_adr["pallet"] : self.qpos_adr["pallet"] + 3] = self.PALLET_DROP
             self.data.qvel[self.dof_adr["pallet"] : self.dof_adr["pallet"] + 6] = 0.0
             mujoco.mj_forward(self.model, self.data)
             self.engaged = False
+            self.engaged_lift_target = 0.0
+            self._set_lift(0.0)
             self.run_physics(120)
             if not self._pallet_inside_delivery():
                 self.data.qpos[self.qpos_adr["pallet"] : self.qpos_adr["pallet"] + 3] = self.PALLET_DROP

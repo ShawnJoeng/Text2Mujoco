@@ -124,7 +124,7 @@ class ConveyorArmEnvironment:
     HOME_ANGLES = np.asarray([-0.80, 1.00, -0.20], dtype=float)
     PARCEL_PICK_XY = np.asarray([-0.08, 0.0], dtype=float)
     BIN_XY = np.asarray([0.25, 0.18], dtype=float)
-    PARCEL_Z = 0.92
+    PARCEL_Z = 0.934
     RELEASE_POSITION = np.asarray([0.25, 0.18, 0.94], dtype=float)
     LINK_1 = 0.32
     LINK_2_EFFECTIVE = 0.44

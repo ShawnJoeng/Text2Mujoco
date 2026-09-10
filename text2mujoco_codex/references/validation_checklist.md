@@ -13,6 +13,8 @@ Report each layer independently as generated, executed, verified, failed, or ski
 
 Run with `MUJOCO_GL=disable`. Compile the actual MJCF, construct `MjData`, locate all required objects by name, step the model, and reject non-finite state. Exercise invalid actions, the physical portion of a valid sequence, contact/settling predicates, and deterministic reset. Save and reopen requested XML/MJB artifacts.
 
+Audit initial contact after the first `mj_forward` and before any `mj_step`, for the compiled `qpos0` and again for the post-`reset()` state: reject the scene when a contact reports `dist < -1e-4` unless the spec declares that overlap as intentional pre-loaded contact. A reset that assigns positions from constants can reintroduce overlap the MJCF does not have. A penetrating start pose usually settles during warmup, so every later physics, render, and task assertion still passes; this is the only layer that catches it.
+
 ## Render Process
 
 Run in a new process with `MUJOCO_GL=egl` on Linux. If it fails because EGL/graphics is unavailable, record that failure and retry `MUJOCO_GL=osmesa` in another process. On macOS use MuJoCo's `mjpython` with `MUJOCO_GL=glfw` and an active graphics session; this selects the native CGL context. Capture before/after RGB and depth. Open the files/arrays and check dimensions, dynamic range, task-relevant pixels, finite geometry depth, and visible movement caused by the action sequence.

@@ -25,11 +25,35 @@ def expect_error(callback: Callable[[], Any], label: str) -> None:
     raise AssertionError(f"expected EnvironmentError: {label}")
 
 
+def initial_contact_audit(env) -> str:
+    """Reject a start pose whose geoms already interpenetrate at t=0.
+
+    A penetrating start pose settles during warmup, so every later physics,
+    render, and task assertion still passes; this is the only check that sees it.
+    Both the compiled ``qpos0`` and the post-reset state are audited because a
+    reset that assigns positions can reintroduce overlap the MJCF does not have.
+    """
+    for label, data in (("model_qpos0", mujoco.MjData(env.model)), ("post_reset", env.data)):
+        mujoco.mj_forward(env.model, data)
+        for index in range(data.ncon):
+            contact = data.contact[index]
+            if contact.dist >= -1e-4:
+                continue
+            first = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1)
+            second = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2)
+            raise AssertionError(
+                f"{label}: {first} and {second} interpenetrate by "
+                f"{-contact.dist * 1000:.3f} mm before the first step"
+            )
+    return "PASS"
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run with MUJOCO_GL=disable")
     ET.parse(args.model)
     env: RobotAssemblyEnvironment = build_environment(args.model, args.spec)
+    initial_contact_audit(env)
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
         raise AssertionError("quaternion conversion failed")
     for name in ("arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "gripper_slide", "peg_free"):
@@ -99,7 +123,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "explicit_actuators": 5,
             "visible_markers": len(env.points),
         },
-        "physics": {"mj_step": "PASS", "finite_state": "PASS", "held_peg_transport": "PASS", "socket_release_tolerance_m": peg_error},
+        "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS", "held_peg_transport": "PASS", "socket_release_tolerance_m": peg_error},
         "dependency_enforcement": "PASS",
         "deterministic_reset": "PASS",
         "interaction_sequence": [

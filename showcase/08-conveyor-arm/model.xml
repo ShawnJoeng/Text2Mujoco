@@ -97,7 +97,7 @@
       </body>
     </body>
 
-    <body name="blue_parcel" pos="-0.55 0 0.92">
+    <body name="blue_parcel" pos="-0.55 0 0.934">
       <freejoint name="parcel_free"/>
       <geom name="blue_parcel_geom" type="box" size="0.06 0.06 0.06" mass="0.22" material="parcel_mat" friction="0.76 0.01 0.002"/>
       <site name="parcel_top_site" type="sphere" pos="0 0 0.075" size="0.010" rgba="0.04 0.45 1 1" group="2"/>

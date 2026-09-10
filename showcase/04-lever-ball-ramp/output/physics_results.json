@@ -1,7 +1,7 @@
 {
   "status": "PASS",
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "path_base": "package_root",
   "mujoco_gl": "disable",
   "model_compile": "PASS",
@@ -10,17 +10,18 @@
   "xyzw_to_wxyz": "PASS",
   "invalid_action_checks": 3,
   "physics": {
+    "initial_contact": "PASS",
     "lever_actuator": "PASS",
     "gate_lift_m": 0.11656407732540523,
     "release_zone": "PASS",
     "tray_settling": "PASS",
     "tray_contact": "PASS",
     "ball_position": [
-      0.5496575061965692,
+      0.5496834200530977,
       0.0,
-      0.8099304591698587
+      0.8096458860177458
     ],
-    "ball_speed_mps": 0.0002767681449783004,
+    "ball_speed_mps": 0.10485479238938078,
     "finite_state": "PASS"
   },
   "interaction_sequence": [

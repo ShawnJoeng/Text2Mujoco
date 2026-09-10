@@ -98,7 +98,7 @@
       "kind": "primitive",
       "body_name": "pallet",
       "geometry": {"shape": "box", "dimensions": [1.0, 0.80, 0.14], "geom_name": "pallet_deck"},
-      "pose": {"position": [-1.0, -0.9, 0.78], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [-1.0, -0.9, 0.88], "orientation_xyzw": [0, 0, 0, 1]},
       "physics": {"dynamic": true, "joint_name": "pallet_free", "mass_kg": 1.5, "contype": 1, "conaffinity": 1, "friction": [0.85, 0.01, 0.003]},
       "semantic": "loaded_pallet"
     },
@@ -107,7 +107,7 @@
       "kind": "primitive",
       "body_name": "payload_crate",
       "geometry": {"shape": "box", "dimensions": [0.64, 0.56, 0.40], "geom_name": "payload_crate_geom"},
-      "pose": {"position": [-1.0, -0.9, 1.05], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [-1.0, -0.9, 1.15], "orientation_xyzw": [0, 0, 0, 1]},
       "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.65, 0.01, 0.002]},
       "semantic": "pallet_load"
     },
@@ -118,7 +118,7 @@
       "geometry": {
         "shape": "open_box",
         "dimensions": [1.26, 1.06, 0.24],
-        "interior_bounds": {"min": [-0.55, -0.45, 0.07], "max": [0.55, 0.45, 0.22]},
+        "interior_bounds": {"min": [-0.55, -0.45, 0.07], "max": [0.55, 0.45, 0.30]},
         "part_geom_names": ["delivery_zone_bottom", "delivery_zone_left", "delivery_zone_right", "delivery_zone_front", "delivery_zone_back"]
       },
       "pose": {"position": [1.55, 0.35, 0.68], "orientation_xyzw": [0, 0, 0, 1]},

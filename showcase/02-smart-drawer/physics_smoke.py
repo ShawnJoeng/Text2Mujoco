@@ -25,11 +25,35 @@ def expect_error(call, label: str) -> None:
     raise AssertionError(f"expected EnvironmentError for {label}")
 
 
+def initial_contact_audit(env) -> str:
+    """Reject a start pose whose geoms already interpenetrate at t=0.
+
+    A penetrating start pose settles during warmup, so every later physics,
+    render, and task assertion still passes; this is the only check that sees it.
+    Both the compiled ``qpos0`` and the post-reset state are audited because a
+    reset that assigns positions can reintroduce overlap the MJCF does not have.
+    """
+    for label, data in (("model_qpos0", mujoco.MjData(env.model)), ("post_reset", env.data)):
+        mujoco.mj_forward(env.model, data)
+        for index in range(data.ncon):
+            contact = data.contact[index]
+            if contact.dist >= -1e-4:
+                continue
+            first = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1)
+            second = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2)
+            raise AssertionError(
+                f"{label}: {first} and {second} interpenetrate by "
+                f"{-contact.dist * 1000:.3f} mm before the first step"
+            )
+    return "PASS"
+
+
 def run(args: argparse.Namespace) -> dict:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics smoke must run with MUJOCO_GL=disable")
     ET.parse(args.model)
     environment = build_environment(args.model, args.spec)
+    initial_contact_audit(environment)
     if mujoco.__version__ != "3.2.7":
         raise AssertionError(f"expected MuJoCo 3.2.7, got {mujoco.__version__}")
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
@@ -116,6 +140,7 @@ def run(args: argparse.Namespace) -> dict:
         "path_base": "package_root",
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "mjcf_compile": "PASS",
+        "initial_contact": "PASS",
         "finite_state": "PASS",
         "unlock_actuator": "PASS",
         "drawer_actuator": "PASS",

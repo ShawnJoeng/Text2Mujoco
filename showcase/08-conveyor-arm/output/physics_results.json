@@ -12,6 +12,7 @@
     "visible_markers": 6
   },
   "physics": {
+    "initial_contact": "PASS",
     "mj_step": "PASS",
     "finite_state": "PASS",
     "conveyor_delivery": "PASS",

@@ -89,7 +89,7 @@
       </body>
     </body>
 
-    <body name="blue_part" pos="0.18 0 0.86">
+    <body name="blue_part" pos="0.23 0 0.855">
       <freejoint name="blue_part_free"/>
       <geom name="blue_part_geom" type="cylinder" size="0.07 0.07" mass="0.16" material="blue_mat" friction="0.72 0.01 0.003"/>
       <site name="blue_part_top_site" type="sphere" pos="0 0 0.075" size="0.018" rgba="0.02 0.55 1 1" group="2"/>
@@ -114,8 +114,8 @@
       <geom name="red_bin_back" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="red_bin_mat"/>
     </body>
 
-    <site name="approach_blue_part_marker" type="sphere" pos="0.18 0 0.98" size="0.045" material="marker_yellow" group="2"/>
-    <site name="grasp_blue_part_marker" type="cylinder" pos="0.18 0 0.91" size="0.075 0.012" material="marker_cyan" group="2"/>
+    <site name="approach_blue_part_marker" type="sphere" pos="0.23 0 0.98" size="0.045" material="marker_yellow" group="2"/>
+    <site name="grasp_blue_part_marker" type="cylinder" pos="0.23 0 0.91" size="0.075 0.012" material="marker_cyan" group="2"/>
     <site name="transfer_blue_bin_marker" type="cylinder" pos="0.78 0 0.84" size="0.09 0.012" material="marker_magenta" group="2"/>
     <site name="release_blue_part_marker" type="sphere" pos="0.78 -0.34 1.22" size="0.055" material="marker_green" group="2"/>
     <site name="inspect_sorting_marker" type="ellipsoid" pos="1.12 -0.62 0.86" size="0.055 0.035 0.018" material="marker_magenta" group="2"/>

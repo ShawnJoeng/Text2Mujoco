@@ -48,8 +48,8 @@
         ],
         "parcel_position": [
           -0.55,
-          9.454419207374893e-18,
-          0.9339459383603561
+          8.621620221651294e-18,
+          0.9339650942173529
         ],
         "parcel_inside_target_bin": false
       }
@@ -64,7 +64,7 @@
         640,
         3
       ],
-      "rgb_std": 60.602327371601746,
+      "rgb_std": 60.60827145987587,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -89,7 +89,7 @@
         "parcel_position": [
           -0.08,
           0.0,
-          0.92
+          0.934
         ],
         "parcel_inside_target_bin": false
       }
@@ -129,8 +129,8 @@
         ],
         "parcel_position": [
           -0.08,
-          8.409275093689383e-17,
-          0.933965036175258
+          8.354233555675223e-17,
+          0.9339650361752595
         ],
         "parcel_inside_target_bin": false
       }

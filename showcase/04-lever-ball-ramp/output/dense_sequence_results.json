@@ -3,7 +3,7 @@
   "scene": "04-lever-ball-ramp",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via glfw",
   "sequence_kind": "dense simulation frames",
@@ -16,7 +16,7 @@
   "frame_count": 13,
   "regular_frame_count": 9,
   "event_frame_count": 4,
-  "simulation_time_span_s": 1.64,
+  "simulation_time_span_s": 1.686,
   "gif": "output/screenshots/dense_sequence.gif",
   "tiff": "output/screenshots/dense_sequence.tif",
   "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
@@ -46,7 +46,7 @@
         "ball_position": [
           -0.44,
           0.0,
-          1.02
+          1.0239
         ],
         "ball_speed_mps": 0.0,
         "ball_inside_target": false
@@ -75,11 +75,11 @@
         "lever_angle_rad": -0.6324384556399861,
         "gate_lift_m": 0.10634270277668936,
         "ball_position": [
-          -0.41525896760324216,
+          -0.417621132949351,
           0.0,
-          1.0176671332683123
+          1.0182764225515233
         ],
-        "ball_speed_mps": 0.23854004825592853,
+        "ball_speed_mps": 0.2323652981071187,
         "ball_inside_target": false
       }
     },
@@ -108,11 +108,11 @@
         "lever_angle_rad": -0.7500922811271031,
         "gate_lift_m": 0.11656385066363964,
         "ball_position": [
-          -0.3999619378041093,
+          -0.40281061596414874,
           0.0,
-          1.0137985678255228
+          1.0145737236749095
         ],
-        "ball_speed_mps": 0.30522598294175046,
+        "ball_speed_mps": 0.29871864294983297,
         "ball_inside_target": false
       }
     },
@@ -141,11 +141,11 @@
         "lever_angle_rad": -0.8864770134222467,
         "gate_lift_m": 0.12288555296593201,
         "ball_position": [
-          -0.3467066502112992,
+          -0.3507718860142911,
           0.0,
-          1.0005713511728076
+          1.001519219551894
         ],
-        "ball_speed_mps": 0.4668982683346787,
+        "ball_speed_mps": 0.4605042249194179,
         "ball_inside_target": false
       }
     },
@@ -153,9 +153,9 @@
       "archive_frame": 5,
       "index": 4,
       "target_time_s": null,
-      "actual_time_s": 0.576,
-      "absolute_sim_time_s": 0.576,
-      "physics_step": 288,
+      "actual_time_s": 0.584,
+      "absolute_sim_time_s": 0.584,
+      "physics_step": 292,
       "phase": "check_release_zone",
       "event_frame": true,
       "rgb_shape": [
@@ -172,14 +172,14 @@
         "gate_state": "open",
         "target_state": "empty",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.9358690023059729,
-        "gate_lift_m": 0.12363920304179792,
+        "lever_angle_rad": -0.9368705234097389,
+        "gate_lift_m": 0.12364547970769889,
         "ball_position": [
-          -0.24959237993784042,
+          -0.24997925851650835,
           0.0,
-          0.9763889056571854
+          0.9764859519891785
         ],
-        "ball_speed_mps": 0.6693421541598792,
+        "ball_speed_mps": 0.6697526394668439,
         "ball_inside_target": false
       }
     },
@@ -209,11 +209,11 @@
         "lever_angle_rad": -0.9386930526144645,
         "gate_lift_m": 0.12365594282861933,
         "ball_position": [
-          -0.23368013975198546,
+          -0.2394404935330489,
           0.0,
-          0.9724442776258185
+          0.973832201141336
         ],
-        "ball_speed_mps": 0.6957112147117094,
+        "ball_speed_mps": 0.6969428148756914,
         "ball_inside_target": false
       }
     },
@@ -243,11 +243,11 @@
         "lever_angle_rad": -0.9494229077384345,
         "gate_lift_m": 0.12369181910285139,
         "ball_position": [
-          -0.07620078114971131,
+          -0.08366711434941482,
           0.0,
-          0.933234713135044
+          0.9349825031661176
         ],
-        "ball_speed_mps": 0.9321526501882037,
+        "ball_speed_mps": 0.9139544361128081,
         "ball_inside_target": false
       }
     },
@@ -277,11 +277,11 @@
         "lever_angle_rad": -0.9516276560127381,
         "gate_lift_m": 0.12369348982454066,
         "ball_position": [
-          0.12571367806875183,
+          0.11657892910609978,
           0.0,
-          0.8827491079049083
+          0.8851727854366107
         ],
-        "ball_speed_mps": 1.1539443183204539,
+        "ball_speed_mps": 1.146156409121529,
         "ball_inside_target": false
       }
     },
@@ -311,11 +311,11 @@
         "lever_angle_rad": -0.9520806777306595,
         "gate_lift_m": 0.12369356762835451,
         "ball_position": [
-          0.3613152603297533,
+          0.3526835798487206,
           0.0,
-          0.8104041561114754
+          0.8107326986228874
         ],
-        "ball_speed_mps": 1.1248061457699188,
+        "ball_speed_mps": 1.1242300852900453,
         "ball_inside_target": true
       }
     },
@@ -345,11 +345,11 @@
         "lever_angle_rad": -0.9521737623603361,
         "gate_lift_m": 0.12369357125159919,
         "ball_position": [
-          0.5558329544974634,
+          0.5575006568989558,
           0.0,
-          0.8126840719123649
+          0.8118078422443399
         ],
-        "ball_speed_mps": 0.14820210756120322,
+        "ball_speed_mps": 0.23359238040901972,
         "ball_inside_target": true
       }
     },
@@ -357,9 +357,9 @@
       "archive_frame": 11,
       "index": 10,
       "target_time_s": null,
-      "actual_time_s": 1.4,
-      "absolute_sim_time_s": 1.4,
-      "physics_step": 700,
+      "actual_time_s": 1.446,
+      "absolute_sim_time_s": 1.446,
+      "physics_step": 723,
       "phase": "confirm_target_tray",
       "event_frame": true,
       "rgb_shape": [
@@ -377,14 +377,14 @@
         "gate_state": "open",
         "target_state": "occupied",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.9521737623603361,
-        "gate_lift_m": 0.12369357125159919,
+        "lever_angle_rad": -0.9521811065437117,
+        "gate_lift_m": 0.12369357134116017,
         "ball_position": [
-          0.5558329544974634,
+          0.5496834200530695,
           0.0,
-          0.8126840719123649
+          0.8096458860177519
         ],
-        "ball_speed_mps": 0.14820210756120322,
+        "ball_speed_mps": 0.10485479239003818,
         "ball_inside_target": true
       }
     },
@@ -415,11 +415,11 @@
         "lever_angle_rad": -0.9521928889134301,
         "gate_lift_m": 0.12369357142033001,
         "ball_position": [
-          0.5496763905487948,
+          0.5462989420546633,
           0.0,
-          0.8099304568935901
+          0.8099304614543044
         ],
-        "ball_speed_mps": 0.0007133279731430491,
+        "ball_speed_mps": 0.002413029549485471,
         "ball_inside_target": true
       }
     },
@@ -427,9 +427,9 @@
       "archive_frame": 13,
       "index": 12,
       "target_time_s": null,
-      "actual_time_s": 1.64,
-      "absolute_sim_time_s": 1.64,
-      "physics_step": 820,
+      "actual_time_s": 1.686,
+      "absolute_sim_time_s": 1.686,
+      "physics_step": 843,
       "phase": "inspect_with_camera",
       "event_frame": true,
       "rgb_shape": [
@@ -448,14 +448,14 @@
         "gate_state": "open",
         "target_state": "occupied",
         "inspection_state": "captured",
-        "lever_angle_rad": -0.9521942308425543,
-        "gate_lift_m": 0.12369357142410849,
+        "lever_angle_rad": -0.9521953304912009,
+        "gate_lift_m": 0.12369357142636705,
         "ball_position": [
-          0.5496575061968766,
+          0.5462081943849248,
           0.0,
-          0.8099304591698587
+          0.8099304592666787
         ],
-        "ball_speed_mps": 0.0002767681449457293,
+        "ball_speed_mps": 0.00031516683585397086,
         "ball_inside_target": true
       }
     }

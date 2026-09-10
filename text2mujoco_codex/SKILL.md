@@ -34,7 +34,7 @@ render_smoke.py
 README.md
 ```
 
-`environment.py` must load a caller-supplied model/spec path, validate manifest/spec parity, avoid global mutable simulator state, and keep task logic independent of viewer keyboard timing. `model.xml` must compile with `mujoco.MjModel.from_xml_path`. Save `.mjb` only after a real model compile succeeds. Keep persisted reports package-relative and free of hostnames, credentials, user paths, and raw tracebacks. Resolve capture output directories under the package root and reject escapes; artifact files must be written beneath a package subdirectory (typically `output/`), with symlink traversal rejected.
+`environment.py` must load a caller-supplied model/spec path, validate manifest/spec parity, avoid global mutable simulator state, and keep task logic independent of viewer keyboard timing. `model.xml` must compile with `mujoco.MjModel.from_xml_path`. `physics_smoke.py` must audit initial contact for both the compiled `qpos0` and the post-`reset()` state and fail when a contact reports `dist < -1e-4`; a reset that assigns positions can reintroduce overlap the MJCF does not have. Save `.mjb` only after a real model compile succeeds. Keep persisted reports package-relative and free of hostnames, credentials, user paths, and raw tracebacks. Resolve capture output directories under the package root and reject escapes; artifact files must be written beneath a package subdirectory (typically `output/`), with symlink traversal rejected.
 
 Before writing `source_prompt`, assumptions, or reports, remove credential-like values and machine-local paths from user text. Never persist API keys, access tokens, cookies, private keys, or full command lines; keep failure reports limited to an error type and a redacted diagnostic.
 
@@ -45,6 +45,7 @@ Before writing `source_prompt`, assumptions, or reports, remove credential-like 
 - Keep `scene_spec.json` poses as `orientation_xyzw`; convert explicitly to MJCF `quat="w x y z"` and test the conversion.
 - Scene dimensions are full metric dimensions. Convert boxes to MJCF half-sizes; convert cylinders/capsules to radius and half-length. Do not copy full dimensions directly into `geom size`.
 - Use at least five colliders for an open box. A single box geom is solid and cannot represent a placement volume.
+- Resting bodies must be seated on their supports by half-size arithmetic, with no geom interpenetration at `t=0`. A penetrating start pose usually settles during warmup and then passes every later check.
 - A direct qpos change is acceptable only when the requested task uses a documented task-level abstraction. Use joints, actuators, contacts, tendons, or constraints when physical force/control behavior is required.
 
 ## Response

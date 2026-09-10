@@ -25,11 +25,35 @@ def expect_error(callback: Callable[[], Any], label: str) -> None:
     raise AssertionError(f"expected EnvironmentError: {label}")
 
 
+def initial_contact_audit(env) -> str:
+    """Reject a start pose whose geoms already interpenetrate at t=0.
+
+    A penetrating start pose settles during warmup, so every later physics,
+    render, and task assertion still passes; this is the only check that sees it.
+    Both the compiled ``qpos0`` and the post-reset state are audited because a
+    reset that assigns positions can reintroduce overlap the MJCF does not have.
+    """
+    for label, data in (("model_qpos0", mujoco.MjData(env.model)), ("post_reset", env.data)):
+        mujoco.mj_forward(env.model, data)
+        for index in range(data.ncon):
+            contact = data.contact[index]
+            if contact.dist >= -1e-4:
+                continue
+            first = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1)
+            second = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2)
+            raise AssertionError(
+                f"{label}: {first} and {second} interpenetrate by "
+                f"{-contact.dist * 1000:.3f} mm before the first step"
+            )
+    return "PASS"
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run with MUJOCO_GL=disable")
     ET.parse(args.model)
     env: ConveyorArmEnvironment = build_environment(args.model, args.spec)
+    initial_contact_audit(env)
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
         raise AssertionError("quaternion conversion failed")
     for name in ("arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "gripper_left_slide", "gripper_right_slide", "conveyor_drive_hinge", "parcel_free"):
@@ -71,7 +95,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if env.observe()["seed"] != 808 or env.observe()["state"]["history"]:
         raise AssertionError("custom reset failed")
     env.reset()
-    return {"status": "PASS", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "path_base": "package_root", "static_checks": {"xml_parse": "PASS", "mjcf_compile": "PASS", "conveyor_hinge": "PASS", "parcel_free_joint": "PASS", "explicit_actuators": 7, "visible_markers": len(env.points)}, "physics": {"mj_step": "PASS", "finite_state": "PASS", "conveyor_delivery": "PASS", "held_parcel_transport": "PASS", "target_bin_settle": "PASS"}, "dependency_enforcement": "PASS", "deterministic_reset": "PASS", "interaction_sequence": ["start_conveyor_to_pickup", "move_arm_to_parcel", "grasp_parcel_with_arm", "move_arm_to_target_bin", "release_parcel_in_target_bin"]}
+    return {"status": "PASS", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "path_base": "package_root", "static_checks": {"xml_parse": "PASS", "mjcf_compile": "PASS", "conveyor_hinge": "PASS", "parcel_free_joint": "PASS", "explicit_actuators": 7, "visible_markers": len(env.points)}, "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS", "conveyor_delivery": "PASS", "held_parcel_transport": "PASS", "target_bin_settle": "PASS"}, "dependency_enforcement": "PASS", "deterministic_reset": "PASS", "interaction_sequence": ["start_conveyor_to_pickup", "move_arm_to_parcel", "grasp_parcel_with_arm", "move_arm_to_target_bin", "release_parcel_in_target_bin"]}
 
 
 def main() -> int:

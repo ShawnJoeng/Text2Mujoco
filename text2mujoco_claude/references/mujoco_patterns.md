@@ -60,6 +60,27 @@ mujoco.mj_forward(model, data)
 
 Keep an open receptacle as separate bottom and wall geoms. Collision filtering is determined by `contype` and `conaffinity`; debug sites should not be collision geoms.
 
+## Resting Poses and Initial Contact
+
+Seat a resting body by half-size rather than by eye: `z_center = support_top_z + half_height`, where `support_top_z` is the support body's world z plus its own half-height. Reusing a support's center z, or copying a neighbor's z that sits on a different support, is the usual cause of a body starting inside its table, pad, or belt.
+
+Audit initial contact after the first `mj_forward` and before stepping:
+
+```python
+mujoco.mj_forward(model, data)
+overlaps = [
+    (
+        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, data.contact[index].geom1),
+        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, data.contact[index].geom2),
+        float(data.contact[index].dist),
+    )
+    for index in range(data.ncon)
+    if data.contact[index].dist < -1e-4
+]
+```
+
+`contact.dist` is the signed gap, so a negative value means the geoms interpenetrate. A body resting exactly on its support reports about `0.0`. Small negative values after stepping are normal solver softness; at `t=0` they are a modeling error and must be fixed in the pose, not absorbed by the solver.
+
 ## Offscreen RGB-D
 
 ```python

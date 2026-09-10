@@ -128,9 +128,12 @@ class RobotArmSortingEnvironment:
     LINK_1 = 0.72
     LINK_2 = 0.62
     HOME_ANGLES = np.asarray([-0.95, 1.35, 0.0], dtype=float)
-    BLUE_PICK = np.asarray([0.18, 0.0, 0.86], dtype=float)
+    BLUE_PICK = np.asarray([0.23, 0.0, 0.855], dtype=float)
     BLUE_BIN_TCP = np.asarray([0.78, 0.0, 0.91], dtype=float)
     BLUE_RELEASE = np.asarray([0.78, 0.0, 0.86], dtype=float)
+    # Seated on the worktable (top 0.68 m + 0.07 m half-length), clear of the
+    # conveyor rails; this mirrors the ``red_part`` body pose in the MJCF.
+    RED_PART_START = np.asarray([0.43, 0.45, 0.75], dtype=float)
 
     def __init__(self, model_path: Path, spec_path: Path):
         self.model_path = Path(model_path).resolve()
@@ -243,7 +246,7 @@ class RobotArmSortingEnvironment:
         self.data.qpos[self.blue_part_qpos : self.blue_part_qpos + 3] = self.BLUE_PICK
         self.data.qpos[self.blue_part_qpos + 3 : self.blue_part_qpos + 7] = [1.0, 0.0, 0.0, 0.0]
         red_qpos = int(self.model.jnt_qposadr[self.require_id("joint", "red_part_free")])
-        self.data.qpos[red_qpos : red_qpos + 3] = [0.43, 0.30, 0.84]
+        self.data.qpos[red_qpos : red_qpos + 3] = self.RED_PART_START
         self.data.qpos[red_qpos + 3 : red_qpos + 7] = [1.0, 0.0, 0.0, 0.0]
         for actuator_id, value in (
             (self.shoulder_actuator_id, self.HOME_ANGLES[0]),

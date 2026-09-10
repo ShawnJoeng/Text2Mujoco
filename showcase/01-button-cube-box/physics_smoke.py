@@ -111,10 +111,34 @@ def check_model(environment) -> dict[str, Any]:
     }
 
 
+def initial_contact_audit(env) -> str:
+    """Reject a start pose whose geoms already interpenetrate at t=0.
+
+    A penetrating start pose settles during warmup, so every later physics,
+    render, and task assertion still passes; this is the only check that sees it.
+    Both the compiled ``qpos0`` and the post-reset state are audited because a
+    reset that assigns positions can reintroduce overlap the MJCF does not have.
+    """
+    for label, data in (("model_qpos0", mujoco.MjData(env.model)), ("post_reset", env.data)):
+        mujoco.mj_forward(env.model, data)
+        for index in range(data.ncon):
+            contact = data.contact[index]
+            if contact.dist >= -1e-4:
+                continue
+            first = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1)
+            second = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2)
+            raise AssertionError(
+                f"{label}: {first} and {second} interpenetrate by "
+                f"{-contact.dist * 1000:.3f} mm before the first step"
+            )
+    return "PASS"
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run in a MUJOCO_GL=disable process")
     environment = build_environment(args.model, args.spec)
+    initial_contact_audit(environment)
     model_checks = check_model(environment)
     for invalid_steps in (True, 1.5, "2", -1):
         expect_environment_error(
@@ -280,6 +304,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "model_checks": model_checks,
         "physics": {
+            "initial_contact": "PASS",
             "mj_step": "PASS",
             "button_actuator": "PASS",
             "gravity_release": "PASS",

@@ -62,10 +62,34 @@ def static_checks(env) -> dict[str, Any]:
     }
 
 
+def initial_contact_audit(env) -> str:
+    """Reject a start pose whose geoms already interpenetrate at t=0.
+
+    A penetrating start pose settles during warmup, so every later physics,
+    render, and task assertion still passes; this is the only check that sees it.
+    Both the compiled ``qpos0`` and the post-reset state are audited because a
+    reset that assigns positions can reintroduce overlap the MJCF does not have.
+    """
+    for label, data in (("model_qpos0", mujoco.MjData(env.model)), ("post_reset", env.data)):
+        mujoco.mj_forward(env.model, data)
+        for index in range(data.ncon):
+            contact = data.contact[index]
+            if contact.dist >= -1e-4:
+                continue
+            first = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1)
+            second = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2)
+            raise AssertionError(
+                f"{label}: {first} and {second} interpenetrate by "
+                f"{-contact.dist * 1000:.3f} mm before the first step"
+            )
+    return "PASS"
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run with MUJOCO_GL=disable")
     env = build_environment(args.model, args.spec)
+    initial_contact_audit(env)
     checks = static_checks(env)
     initial = env.observe()
     if initial["state"]["forklift_state"] != "parked" or initial["state"]["pallet_state"] != "loaded":
@@ -134,7 +158,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "path_base": "package_root",
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "static_checks": checks,
-        "physics": {"mj_step": "PASS", "finite_state": "PASS"},
+        "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS"},
         "interaction_sequence": ["drive_to_pallet", "raise_forks", "engage_pallet", "carry_to_drop_zone", "lower_forks_release"],
         "pallet_sync": "PASS",
         "route_collision_count": env.rack_collision_count,

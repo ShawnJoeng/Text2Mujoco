@@ -15,6 +15,7 @@
     "quaternion_conversion": "PASS"
   },
   "physics": {
+    "initial_contact": "PASS",
     "mj_step": "PASS",
     "finite_state": "PASS"
   },

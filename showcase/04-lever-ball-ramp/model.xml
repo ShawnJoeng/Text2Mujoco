@@ -66,7 +66,7 @@
       <geom name="release_gate_geom" type="box" size="0.0125 0.135 0.065" mass="0.18" material="gate_mat" contype="2" conaffinity="2"/>
     </body>
 
-    <body name="purple_ball" pos="-0.44 0 1.02">
+    <body name="purple_ball" pos="-0.44 0 1.0239">
       <freejoint name="purple_ball_free"/>
       <geom name="purple_ball_geom" type="sphere" size="0.035" mass="0.09" material="ball_purple_mat" friction="0.45 0.01 0.003" contype="3" conaffinity="3"/>
     </body>

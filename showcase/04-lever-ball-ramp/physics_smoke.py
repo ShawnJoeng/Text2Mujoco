@@ -23,9 +23,33 @@ def expect_error(fn, label: str) -> None:
     raise AssertionError(f"expected EnvironmentError: {label}")
 
 
+def initial_contact_audit(env) -> str:
+    """Reject a start pose whose geoms already interpenetrate at t=0.
+
+    A penetrating start pose settles during warmup, so every later physics,
+    render, and task assertion still passes; this is the only check that sees it.
+    Both the compiled ``qpos0`` and the post-reset state are audited because a
+    reset that assigns positions can reintroduce overlap the MJCF does not have.
+    """
+    for label, data in (("model_qpos0", mujoco.MjData(env.model)), ("post_reset", env.data)):
+        mujoco.mj_forward(env.model, data)
+        for index in range(data.ncon):
+            contact = data.contact[index]
+            if contact.dist >= -1e-4:
+                continue
+            first = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1)
+            second = mujoco.mj_id2name(env.model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2)
+            raise AssertionError(
+                f"{label}: {first} and {second} interpenetrate by "
+                f"{-contact.dist * 1000:.3f} mm before the first step"
+            )
+    return "PASS"
+
+
 def run(args: argparse.Namespace) -> dict:
     base = Path(__file__).resolve().parent
     env = build_environment(args.model, args.spec)
+    initial_contact_audit(env)
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
         raise AssertionError("xyzw to wxyz conversion failed")
     expect_error(lambda: env.step({"id": "unknown", "payload": {}}), "unknown id")
@@ -61,7 +85,7 @@ def run(args: argparse.Namespace) -> dict:
         raise AssertionError("custom reset did not clear state")
     env.reset()
     reset = env.observe()
-    if reset["seed"] != 17 or reset["ball_position"] != [-0.44, 0.0, 1.02]:
+    if reset["seed"] != 17 or reset["ball_position"] != [-0.44, 0.0, 1.0239]:
         raise AssertionError(f"deterministic reset failed: {reset}")
     model = mujoco.MjModel.from_xml_path(str(args.model))
     if model.nq != env.model.nq:
@@ -83,6 +107,7 @@ def run(args: argparse.Namespace) -> dict:
         "xyzw_to_wxyz": "PASS",
         "invalid_action_checks": 3,
         "physics": {
+            "initial_contact": "PASS",
             "lever_actuator": "PASS",
             "gate_lift_m": float(pulled["gate_lift_m"]),
             "release_zone": "PASS",

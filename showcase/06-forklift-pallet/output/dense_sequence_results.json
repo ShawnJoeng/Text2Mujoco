@@ -13,10 +13,10 @@
   "gif_frame_duration_ms": 200,
   "gif_final_frame_duration_ms": 800,
   "depth_capture": "keyframes_only; dense pass stores RGB frames",
-  "frame_count": 43,
-  "regular_frame_count": 37,
+  "frame_count": 44,
+  "regular_frame_count": 38,
   "event_frame_count": 6,
-  "simulation_time_span_s": 7.27,
+  "simulation_time_span_s": 7.448,
   "gif": "output/screenshots/dense_sequence.gif",
   "tiff": "output/screenshots/dense_sequence.tif",
   "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
@@ -48,7 +48,7 @@
         "pallet_position": [
           -1.0,
           -0.9,
-          0.78
+          0.88
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -77,11 +77,11 @@
           -0.9,
           0.25
         ],
-        "fork_lift_qpos_m": -0.0003667627022236155,
+        "fork_lift_qpos_m": -0.0003667627022236152,
         "pallet_position": [
           -1.0,
-          -0.9000009382756519,
-          0.7233814391699062
+          -0.8999914672305904,
+          0.8799680636020606
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -110,11 +110,11 @@
           -0.9,
           0.25
         ],
-        "fork_lift_qpos_m": -0.0003667654440011403,
+        "fork_lift_qpos_m": -0.0003667654440011401,
         "pallet_position": [
           -1.0,
-          -0.900000974531796,
-          0.7233238144762486
+          -0.8999914535832667,
+          0.8799680109274348
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -145,11 +145,11 @@
           -0.9,
           0.25
         ],
-        "fork_lift_qpos_m": -0.00036676544387110325,
+        "fork_lift_qpos_m": -0.0003667654438711033,
         "pallet_position": [
           -1.0,
-          -0.9000009746133218,
-          0.7233237577888529
+          -0.899991453564718,
+          0.8799680108522774
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -183,8 +183,8 @@
         "fork_lift_qpos_m": -0.0003433769120813032,
         "pallet_position": [
           -1.0,
-          -0.9000009746134553,
-          0.7233237577249859
+          -0.8999914535646909,
+          0.8799680108521637
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -218,8 +218,8 @@
         "fork_lift_qpos_m": -0.0003068324760038541,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690936
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -253,8 +253,8 @@
         "fork_lift_qpos_m": -0.00030683370884093816,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690389
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -288,8 +288,8 @@
         "fork_lift_qpos_m": -0.000306833708814985,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690388
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -323,8 +323,8 @@
         "fork_lift_qpos_m": -0.0003068337088149852,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690387
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -358,8 +358,8 @@
         "fork_lift_qpos_m": -0.0003068337088149852,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690386
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -393,8 +393,8 @@
         "fork_lift_qpos_m": -0.0003068337088149852,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690386
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -428,8 +428,8 @@
         "fork_lift_qpos_m": -0.0003068337088149852,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690386
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -463,8 +463,8 @@
         "fork_lift_qpos_m": -0.0003068337088149852,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690386
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -499,8 +499,8 @@
         "fork_lift_qpos_m": 0.18,
         "pallet_position": [
           -1.0,
-          -0.9000009746135809,
-          0.7233237576690386
+          -0.899991453564666,
+          0.8799680108520566
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -537,7 +537,7 @@
         "pallet_position": [
           -0.9385726661642733,
           -0.9,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -574,7 +574,7 @@
         "pallet_position": [
           -0.9378417167867095,
           -0.8999257046068876,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -611,7 +611,7 @@
         "pallet_position": [
           -0.9279521774240831,
           -0.8895686637114543,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -648,7 +648,7 @@
         "pallet_position": [
           -0.8575658889675557,
           -0.7395229729432737,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -685,7 +685,7 @@
         "pallet_position": [
           -0.778761526637674,
           -0.5854501912687647,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -722,7 +722,7 @@
         "pallet_position": [
           -0.699670935292622,
           -0.4287659572141566,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -759,7 +759,7 @@
         "pallet_position": [
           -0.6972208547601801,
           -0.4352077970755726,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -796,7 +796,7 @@
         "pallet_position": [
           -0.49992569559290523,
           -0.42225683479375553,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -833,7 +833,7 @@
         "pallet_position": [
           -0.3014629433312703,
           -0.4127666604873337,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -870,7 +870,7 @@
         "pallet_position": [
           -0.2947636028505163,
           -0.4153711332045927,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -907,7 +907,7 @@
         "pallet_position": [
           -0.09869169268562517,
           -0.40346907443336893,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -944,7 +944,7 @@
         "pallet_position": [
           0.0979428291170985,
           -0.39463014454174883,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -981,7 +981,7 @@
         "pallet_position": [
           0.2956295481402178,
           -0.3870068385130925,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1018,7 +1018,7 @@
         "pallet_position": [
           0.49399225934767754,
           -0.3791916534603391,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1055,7 +1055,7 @@
         "pallet_position": [
           0.4996470526591945,
           -0.3753747311264479,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1092,7 +1092,7 @@
         "pallet_position": [
           0.6959750050697429,
           -0.36957914936616576,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1129,7 +1129,7 @@
         "pallet_position": [
           0.893176048537748,
           -0.3624422764210221,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1166,7 +1166,7 @@
         "pallet_position": [
           1.091045825942965,
           -0.3542933248700828,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1203,7 +1203,7 @@
         "pallet_position": [
           1.0968060050361483,
           -0.352466260159611,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1240,7 +1240,7 @@
         "pallet_position": [
           1.1944166086511254,
           -0.19745330807679518,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1277,7 +1277,7 @@
         "pallet_position": [
           1.2957399641285217,
           -0.04145227328156187,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1314,7 +1314,7 @@
         "pallet_position": [
           1.2991844254687468,
           -0.03992155296452482,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1351,7 +1351,7 @@
         "pallet_position": [
           1.398753682908438,
           0.11383665941407817,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1389,7 +1389,7 @@
         "pallet_position": [
           1.4994774996852134,
           0.2706210603716609,
-          0.98
+          1.06
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -1423,11 +1423,11 @@
           0.2704164228135876,
           0.25
         ],
-        "fork_lift_qpos_m": -0.00016070788870693972,
+        "fork_lift_qpos_m": 0.17901252333200776,
         "pallet_position": [
           1.55,
-          0.35000098359153087,
-          0.8026038846162287
+          0.35000185104097664,
+          0.9399928204679119
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -1461,11 +1461,11 @@
           0.265677611657415,
           0.25
         ],
-        "fork_lift_qpos_m": -0.0003667627496568531,
+        "fork_lift_qpos_m": -0.011199752474266819,
         "pallet_position": [
-          1.55,
-          0.35000085621410465,
-          0.8139829206751746
+          1.5500004285209414,
+          0.3499891205195473,
+          0.9399679681934892
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -1474,10 +1474,48 @@
     {
       "archive_frame": 41,
       "index": 40,
+      "target_time_s": 7.2,
+      "actual_time_s": 7.2,
+      "absolute_sim_time_s": 7.2,
+      "physics_step": 3600,
+      "phase": "lower_forks_release",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "drive_to_pallet",
+          "raise_forks",
+          "engage_pallet",
+          "carry_to_drop_zone"
+        ],
+        "forklift_state": "at_delivery",
+        "pallet_state": "engaged",
+        "forklift_position": [
+          0.566955058722217,
+          0.2617994773889437,
+          0.25
+        ],
+        "fork_lift_qpos_m": -0.00036563170837045365,
+        "pallet_position": [
+          1.5500004293168779,
+          0.34998910801157435,
+          0.939968010791176
+        ],
+        "pallet_inside_delivery": true,
+        "rack_collision_count": 0
+      }
+    },
+    {
+      "archive_frame": 42,
+      "index": 41,
       "target_time_s": null,
-      "actual_time_s": 7.03,
-      "absolute_sim_time_s": 7.03,
-      "physics_step": 3515,
+      "actual_time_s": 7.208,
+      "absolute_sim_time_s": 7.208,
+      "physics_step": 3604,
       "phase": "lower_forks_release",
       "event_frame": true,
       "rgb_shape": [
@@ -1496,27 +1534,27 @@
         "forklift_state": "released",
         "pallet_state": "delivered",
         "forklift_position": [
-          0.562426323161112,
-          0.2649198583177782,
+          0.5672268221469525,
+          0.2617300761062561,
           0.25
         ],
-        "fork_lift_qpos_m": -0.00036676450478268413,
+        "fork_lift_qpos_m": -0.0003660133899093755,
         "pallet_position": [
-          1.55,
-          0.35000086207620973,
-          0.8139902402025113
+          1.5500004293171366,
+          0.3499891080076032,
+          0.9399680108052115
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
       }
     },
     {
-      "archive_frame": 42,
-      "index": 41,
-      "target_time_s": 7.2,
-      "actual_time_s": 7.2,
-      "absolute_sim_time_s": 7.2,
-      "physics_step": 3600,
+      "archive_frame": 43,
+      "index": 42,
+      "target_time_s": 7.4,
+      "actual_time_s": 7.4,
+      "absolute_sim_time_s": 7.4,
+      "physics_step": 3700,
       "phase": "settled_after_lower_forks_release",
       "event_frame": false,
       "rgb_shape": [
@@ -1535,27 +1573,27 @@
         "forklift_state": "released",
         "pallet_state": "delivered",
         "forklift_position": [
-          0.566955058722217,
-          0.2617994773889437,
+          0.5753422958002727,
+          0.2632435969677652,
           0.25
         ],
-        "fork_lift_qpos_m": -0.00036676544392431177,
+        "fork_lift_qpos_m": -0.0003667654363452482,
         "pallet_position": [
-          1.55,
-          0.350000866266961,
-          0.8139942433983696
+          1.5500004293179972,
+          0.34998910799447264,
+          0.9399680108519689
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
       }
     },
     {
-      "archive_frame": 43,
-      "index": 42,
+      "archive_frame": 44,
+      "index": 43,
       "target_time_s": null,
-      "actual_time_s": 7.27,
-      "absolute_sim_time_s": 7.27,
-      "physics_step": 3635,
+      "actual_time_s": 7.448,
+      "absolute_sim_time_s": 7.448,
+      "physics_step": 3724,
       "phase": "inspect_forklift_delivery",
       "event_frame": true,
       "rgb_shape": [
@@ -1575,15 +1613,15 @@
         "forklift_state": "released",
         "pallet_state": "delivered",
         "forklift_position": [
-          0.5695161730318894,
-          0.2615158676861301,
+          0.577820915779248,
+          0.26472231973816707,
           0.25
         ],
-        "fork_lift_qpos_m": -0.00036676544386853103,
+        "fork_lift_qpos_m": -0.0003667654417863678,
         "pallet_position": [
-          1.55,
-          0.3500008662876882,
-          0.8139942536065403
+          1.5500004293179972,
+          0.34998910799445404,
+          0.9399680108520376
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -1592,8 +1630,8 @@
   ],
   "archive_verification": {
     "status": "PASS",
-    "gif_frame_count": 43,
-    "tiff_page_count": 43,
+    "gif_frame_count": 44,
+    "tiff_page_count": 44,
     "gif_frame_durations_ms": [
       200,
       800
