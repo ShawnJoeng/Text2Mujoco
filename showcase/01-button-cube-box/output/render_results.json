@@ -2,7 +2,7 @@
   "status": "PASS",
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "path_base": "package_root",
   "render_backend_requested": "glfw",
   "renderer_context": "mujoco.cgl.GLContext",
@@ -37,8 +37,8 @@
         640,
         3
       ],
-      "mean": 49.28672634548611,
-      "std": 65.48309808982803,
+      "mean": 48.78623806423611,
+      "std": 64.85533349731817,
       "dynamic_range": 255
     },
     "final": {
@@ -48,8 +48,8 @@
         640,
         3
       ],
-      "mean": 49.83035807291667,
-      "std": 65.91660070518121,
+      "mean": 49.25150824652778,
+      "std": 65.19890957017704,
       "dynamic_range": 255
     }
   },
@@ -76,6 +76,6 @@
       "max_m": 3.6283583641052246,
       "far_plane_m": 16.0
     },
-    "changed_geometry_pixels": 1815
+    "changed_geometry_pixels": 1801
   }
 }

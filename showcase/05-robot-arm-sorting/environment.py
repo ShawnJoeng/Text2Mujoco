@@ -127,10 +127,39 @@ class RobotArmSortingEnvironment:
     SHOULDER_ORIGIN = np.asarray([-0.35, 0.0, 1.52], dtype=float)
     LINK_1 = 0.72
     LINK_2 = 0.62
-    HOME_ANGLES = np.asarray([-0.95, 1.35, 0.0], dtype=float)
+    # Offset from the wrist origin to the tool centre point while the tool hangs
+    # vertically: 0.13 m along the wrist axis to the palm mount, then 0.16 m
+    # down to the grasp centre between the finger pads. The TCP is not the wrist
+    # origin, so a waypoint chosen for the wrist buries the gripper in whatever
+    # the wrist is hovering over.
+    WRIST_TO_TCP = np.asarray([0.13, 0.0, -0.16], dtype=float)
+    # Cartesian resolution of a commanded move, and the simulated seconds spent
+    # on one segment at unit speed.
+    PATH_STEP_M = 0.01
+    SEGMENT_SECONDS = 0.028
+    # Per-waypoint joint tracking error the path follower waits for. The whole
+    # tool hangs below the wrist, so a standing error here is a palm that flies
+    # lower than the commanded line.
+    PATH_TRACK_RAD = 0.02
+    # Finger pads mounted at +/-0.135 m with 0.025 m half-thickness close to an
+    # inner face of 0.135 - 0.0385 - 0.025 = 0.0715 m, which is 1.5 mm outside
+    # the 0.07 m part radius: firm-looking, and not through the part.
+    GRIPPER_CLOSED = 0.0385
+    RELEASE_SPEED_RAD_S = 0.9
+    HOME_ANGLES = np.asarray([-0.95, 1.35, -0.40], dtype=float)
     BLUE_PICK = np.asarray([0.23, 0.0, 0.855], dtype=float)
-    BLUE_BIN_TCP = np.asarray([0.78, 0.0, 0.91], dtype=float)
-    BLUE_RELEASE = np.asarray([0.78, 0.0, 0.86], dtype=float)
+    # Lift the payload's lowest surface (0.07 m below the TCP) to 1.03 m before
+    # any travel over the bin, whose rim is at 0.975 m.
+    PICK_HOVER = np.asarray([0.23, 0.0, 1.10], dtype=float)
+    BLUE_BIN_HOVER = np.asarray([0.78, 0.0, 1.10], dtype=float)
+    # Descend until the carried part's lowest surface is about 12 mm above the
+    # bin floor (top 0.79 m), then set it down. Driving the tool all the way to
+    # the resting height presses the part into the floor by whatever the servos
+    # are lagging by.
+    BLUE_SET_DOWN = np.asarray([0.78, 0.0, 0.872], dtype=float)
+    # Resting centre inside the bin: floor top 0.79 m + the part's 0.07 m
+    # half-length.
+    BLUE_REST = np.asarray([0.78, 0.0, 0.86], dtype=float)
     # Seated on the worktable (top 0.68 m + 0.07 m half-length), clear of the
     # conveyor rails; this mirrors the ``red_part`` body pose in the MJCF.
     RED_PART_START = np.asarray([0.43, 0.45, 0.75], dtype=float)
@@ -265,6 +294,7 @@ class RobotArmSortingEnvironment:
             "inspection_state": "pending",
         }
         self.grasped = False
+        self.grasp_offset = np.zeros(3, dtype=float)
         self.last_capture: dict[str, Any] | None = None
         return self.observe()
 
@@ -284,13 +314,20 @@ class RobotArmSortingEnvironment:
         return np.asarray(self.data.xpos[self.blue_part_body_id], dtype=float).copy()
 
     def _ik(self, target: np.ndarray) -> np.ndarray:
+        """Joint angles that put the tool centre point at ``target``.
+
+        The two-link solve is for the wrist origin, so the tool offset is
+        removed first; the wrist joint then cancels the shoulder and elbow so the
+        finger pads keep pointing straight down.
+        """
         target = np.asarray(target, dtype=float)
         if target.shape != (3,) or not np.all(np.isfinite(target)):
             raise EnvironmentError("arm target must be three finite coordinates")
         if abs(float(target[1] - self.SHOULDER_ORIGIN[1])) > 0.15:
             raise EnvironmentError("target is outside the planar arm workspace")
-        dx = float(target[0] - self.SHOULDER_ORIGIN[0])
-        dz = float(target[2] - self.SHOULDER_ORIGIN[2])
+        wrist_origin = target - self.WRIST_TO_TCP
+        dx = float(wrist_origin[0] - self.SHOULDER_ORIGIN[0])
+        dz = float(wrist_origin[2] - self.SHOULDER_ORIGIN[2])
         radius = math.hypot(dx, dz)
         if radius > self.LINK_1 + self.LINK_2 - 1e-5 or radius < abs(self.LINK_1 - self.LINK_2) + 1e-5:
             raise EnvironmentError("target is outside the arm workspace")
@@ -298,27 +335,38 @@ class RobotArmSortingEnvironment:
         elbow = math.acos(float(np.clip(cos_elbow, -1.0, 1.0)))
         direction = math.atan2(-dz, dx)
         shoulder = direction - math.atan2(self.LINK_2 * math.sin(elbow), self.LINK_1 + self.LINK_2 * math.cos(elbow))
-        result = np.asarray([shoulder, elbow, 0.0], dtype=float)
-        if not (-2.8 <= result[0] <= 1.8 and -2.8 <= result[1] <= 2.8):
+        result = np.asarray([shoulder, elbow, -(shoulder + elbow)], dtype=float)
+        if not (-2.8 <= result[0] <= 1.8 and -2.8 <= result[1] <= 2.8 and -2.4 <= result[2] <= 2.4):
             raise EnvironmentError("IK solution exceeds the declared joint limits")
         return result
 
     def _sync_grasped_object(self) -> None:
+        """Carry the grasped part with the tool at the offset it was grasped at.
+
+        Snapping the part's centre onto the tool centre point instead would move
+        it by whatever the servos are lagging by at the instant of the grasp: on
+        this cell that put the part 7 mm inside the conveyor belt it was still
+        resting on. Holding the measured offset keeps the grasp rigid without
+        inventing a translation the gripper never made.
+        """
         if not self.grasped:
             return
-        self.data.qpos[self.blue_part_qpos : self.blue_part_qpos + 3] = self.tcp_position
+        self.data.qpos[self.blue_part_qpos : self.blue_part_qpos + 3] = self.tcp_position + self.grasp_offset
         self.data.qpos[self.blue_part_qpos + 3 : self.blue_part_qpos + 7] = [1.0, 0.0, 0.0, 0.0]
         self.data.qvel[self.blue_part_dof : self.blue_part_dof + 6] = 0.0
         mujoco.mj_forward(self.model, self.data)
 
-    def _move_arm_to(self, target: np.ndarray, speed_rad_s: float) -> None:
-        desired = self._ik(target)
+    def _command(self, angles: np.ndarray) -> None:
         for actuator_id, value in zip(
-            (self.shoulder_actuator_id, self.elbow_actuator_id, self.wrist_actuator_id), desired
+            (self.shoulder_actuator_id, self.elbow_actuator_id, self.wrist_actuator_id), angles
         ):
             self.data.ctrl[actuator_id] = float(value)
-        max_steps = max(300, min(2600, int(math.ceil(2.0 / max(speed_rad_s, 0.1) / self.model.opt.timestep))))
-        for _ in range(max_steps):
+
+    def _settle_at(self, target: np.ndarray, speed_rad_s: float) -> None:
+        desired = self._ik(target)
+        self._command(desired)
+        budget = max(200, min(1400, int(math.ceil(0.8 / max(speed_rad_s, 0.1) / self.model.opt.timestep))))
+        for _ in range(budget):
             mujoco.mj_step(self.model, self.data)
             self._sync_grasped_object()
             if float(np.max(np.abs(self.arm_angles - desired))) < 0.018:
@@ -334,8 +382,41 @@ class RobotArmSortingEnvironment:
         if float(np.max(np.abs(self.arm_angles - desired))) >= 0.09:
             raise EnvironmentError("arm controller did not reach its target")
 
+    def _follow_path(self, waypoints: list[np.ndarray], speed_rad_s: float) -> None:
+        """Drive the TCP along straight Cartesian segments through ``waypoints``.
+
+        Commanding only the endpoint lets the joints interpolate freely, and the
+        arc they choose dips well below both ends of the move: on this cell it
+        dragged the held part down through the worktable while the start pose,
+        the end pose, and the endpoint tolerance all stayed satisfied. Solving
+        each intermediate point instead keeps the tool on the declared straight
+        line, so a lift-traverse-lower path is the path the arm actually flies.
+
+        Each segment is also held until the joints have caught up. Open-loop
+        holds leave a standing tracking error, and because the whole tool hangs
+        below the wrist that error shows up as the palm sitting lower than the
+        commanded path.
+        """
+        pace = max(3, int(round(self.SEGMENT_SECONDS / max(speed_rad_s, 0.1) / self.model.opt.timestep)))
+        for waypoint in waypoints:
+            target = np.asarray(waypoint, dtype=float)
+            self._ik(target)  # reject an unreachable waypoint before moving
+            start = self.tcp_position
+            segments = max(1, int(math.ceil(float(np.linalg.norm(target - start)) / self.PATH_STEP_M)))
+            for index in range(1, segments + 1):
+                desired = self._ik(start + (target - start) * (index / segments))
+                self._command(desired)
+                for held in range(4 * pace):
+                    mujoco.mj_step(self.model, self.data)
+                    self._sync_grasped_object()
+                    if held >= pace and float(np.max(np.abs(self.arm_angles - desired))) < self.PATH_TRACK_RAD:
+                        break
+            self._settle_at(target, speed_rad_s)
+
     def _set_gripper(self, closed: bool) -> None:
-        left_target, right_target = (-0.042, 0.042) if closed else (0.0, 0.0)
+        left_target, right_target = (
+            (-self.GRIPPER_CLOSED, self.GRIPPER_CLOSED) if closed else (0.0, 0.0)
+        )
         self.data.ctrl[self.left_gripper_actuator_id] = left_target
         self.data.ctrl[self.right_gripper_actuator_id] = right_target
         for _ in range(260):
@@ -394,7 +475,9 @@ class RobotArmSortingEnvironment:
         if point_id == "approach_blue_part":
             if self.state["arm_state"] != "home":
                 raise EnvironmentError("arm is not at home")
-            self._move_arm_to(self.BLUE_PICK, float(payload.get("speed_rad_s", 0.9)))
+            # Hover above the part first, then descend: the finger pads reach
+            # 0.025 m below the TCP and would otherwise enter from the side.
+            self._follow_path([self.PICK_HOVER, self.BLUE_PICK], float(payload.get("speed_rad_s", 0.9)))
             if float(np.linalg.norm(self.tcp_position - self.BLUE_PICK)) > 0.10:
                 raise EnvironmentError("arm TCP did not reach the blue part")
             self.state["arm_state"] = "at_pick_pose"
@@ -407,13 +490,16 @@ class RobotArmSortingEnvironment:
             if float(np.linalg.norm(self.tcp_position - self.blue_part_position)) > 0.10:
                 raise EnvironmentError("gripper did not align with the blue part")
             self.grasped = True
+            self.grasp_offset = self.blue_part_position - self.tcp_position
             self._sync_grasped_object()
             self.state["blue_part_state"] = "grasped"
         elif point_id == "transfer_to_blue_bin":
             if self.state["blue_part_state"] != "grasped" or self.state["gripper_state"] != "closed":
                 raise EnvironmentError("blue part must be grasped before transfer")
-            self._move_arm_to(self.BLUE_BIN_TCP, float(payload.get("speed_rad_s", 0.9)))
-            if float(np.linalg.norm(self.tcp_position - self.BLUE_BIN_TCP)) > 0.12:
+            # Straight up clear of the conveyor rails, then across above the bin
+            # rim. Travelling at pick height would drag the part into the wall.
+            self._follow_path([self.PICK_HOVER, self.BLUE_BIN_HOVER], float(payload.get("speed_rad_s", 0.9)))
+            if float(np.linalg.norm(self.tcp_position - self.BLUE_BIN_HOVER)) > 0.12:
                 raise EnvironmentError("arm TCP did not reach the blue bin")
             self.state["arm_state"] = "over_blue_bin"
         elif point_id == "release_blue_part":
@@ -421,7 +507,10 @@ class RobotArmSortingEnvironment:
                 raise EnvironmentError("blue part is not over the target bin")
             if not payload["open"]:
                 raise EnvironmentError("release action requires open=true")
-            self.data.qpos[self.blue_part_qpos : self.blue_part_qpos + 3] = self.BLUE_RELEASE
+            # Lower into the bin before letting go, so the part is set down
+            # rather than dropped through the rim.
+            self._follow_path([self.BLUE_SET_DOWN], self.RELEASE_SPEED_RAD_S)
+            self.data.qpos[self.blue_part_qpos : self.blue_part_qpos + 3] = self.BLUE_REST
             self.data.qvel[self.blue_part_dof : self.blue_part_dof + 6] = 0.0
             mujoco.mj_forward(self.model, self.data)
             self.grasped = False
@@ -430,9 +519,12 @@ class RobotArmSortingEnvironment:
             # the deterministic center if a platform solver nudges the part.
             self.run_physics(120)
             if not self._blue_inside_bin():
-                self.data.qpos[self.blue_part_qpos : self.blue_part_qpos + 3] = self.BLUE_RELEASE
+                self.data.qpos[self.blue_part_qpos : self.blue_part_qpos + 3] = self.BLUE_REST
                 self.data.qvel[self.blue_part_dof : self.blue_part_dof + 6] = 0.0
                 mujoco.mj_forward(self.model, self.data)
+            # Withdraw so the evidence frame shows the sorted part, not a
+            # gripper parked inside the bin.
+            self._follow_path([self.BLUE_BIN_HOVER], self.RELEASE_SPEED_RAD_S)
             self.state["blue_part_state"] = "inside_blue_bin"
         elif point_id == "inspect_sorting_result":
             if self.state["blue_part_state"] != "inside_blue_bin":

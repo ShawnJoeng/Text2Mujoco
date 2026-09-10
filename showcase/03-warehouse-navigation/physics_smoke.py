@@ -75,6 +75,63 @@ def initial_contact_audit(env) -> str:
     return "PASS"
 
 
+class SequenceContactAudit:
+    """Watch every physics step of the documented sequence for interpenetration.
+
+    ``initial_contact_audit`` describes the start pose and the endpoint
+    tolerances below describe the ends of each motion. Neither sees the middle of
+    a transfer, where a centimetre-deep overlap satisfies both. The module-level
+    ``mujoco.mj_step`` is wrapped rather than an environment method because the
+    settle loops and the generated controllers call the module function directly.
+
+    Sub-millimetre readings are the solver's contact softness under load, so the
+    limit is ``-1e-3``; anything deeper is geometry passing through geometry.
+    """
+
+    LIMIT = -1e-3
+
+    def __init__(self, model: mujoco.MjModel):
+        self.model = model
+        self.steps = 0
+        self.worst = 0.0
+        self.pair: str | None = None
+        self.time_s = 0.0
+        self._genuine = mujoco.mj_step
+
+    def __enter__(self) -> "SequenceContactAudit":
+        def watched(model, data, *args, **kwargs):
+            self._genuine(model, data, *args, **kwargs)
+            self.steps += 1
+            for index in range(data.ncon):
+                contact = data.contact[index]
+                if contact.dist < self.worst:
+                    self.worst = float(contact.dist)
+                    self.pair = "{} / {}".format(
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1),
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2),
+                    )
+                    self.time_s = float(data.time)
+
+        mujoco.mj_step = watched
+        return self
+
+    def __exit__(self, *exc_info: Any) -> None:
+        mujoco.mj_step = self._genuine
+
+    def report(self) -> dict[str, Any]:
+        if self.worst < self.LIMIT:
+            raise AssertionError(
+                f"{self.pair} interpenetrate by {-self.worst * 1000:.3f} mm "
+                f"at t={self.time_s:.3f} s during the documented sequence"
+            )
+        return {
+            "steps": self.steps,
+            "deepest_overlap_mm": round(max(0.0, -self.worst) * 1000.0, 4),
+            "limit_mm": 1.0,
+            "result": "PASS",
+        }
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run with MUJOCO_GL=disable")
@@ -82,37 +139,39 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     initial_contact_audit(env)
     checks = static_checks(env)
     initial = env.observe()
-    env.run_physics(100)
-    if float(np.linalg.norm(env.robot_xy - env.START)) > 1e-8:
-        raise AssertionError("robot drifted from start")
+    with SequenceContactAudit(env.model) as sequence_audit:
+        env.run_physics(100)
+        if float(np.linalg.norm(env.robot_xy - env.START)) > 1e-8:
+            raise AssertionError("robot drifted from start")
 
-    expect_error(lambda: env.step({"id": "reach_checkpoint_b", "payload": {}}), "B before A")
-    expect_error(lambda: env.step({"id": "inspect_top_camera", "payload": {"output_dir": "x"}}), "inspect before B")
-    expect_error(lambda: env.step({"id": "unknown", "payload": {}}), "unknown id")
-    expect_error(lambda: env.step({"id": "reach_checkpoint_a"}), "malformed envelope")
-    expect_error(lambda: env.step({"id": "reach_checkpoint_a", "payload": {"speed_mps": 0.1}}), "speed below minimum")
-    expect_error(lambda: env.step({"id": "reach_checkpoint_a", "payload": {"bogus": 1}}), "unknown payload field")
-    expect_error(lambda: env.reset(seed=True), "bool seed")
+        expect_error(lambda: env.step({"id": "reach_checkpoint_b", "payload": {}}), "B before A")
+        expect_error(lambda: env.step({"id": "inspect_top_camera", "payload": {"output_dir": "x"}}), "inspect before B")
+        expect_error(lambda: env.step({"id": "unknown", "payload": {}}), "unknown id")
+        expect_error(lambda: env.step({"id": "reach_checkpoint_a"}), "malformed envelope")
+        expect_error(lambda: env.step({"id": "reach_checkpoint_a", "payload": {"speed_mps": 0.1}}), "speed below minimum")
+        expect_error(lambda: env.step({"id": "reach_checkpoint_a", "payload": {"bogus": 1}}), "unknown payload field")
+        expect_error(lambda: env.reset(seed=True), "bool seed")
 
-    a_route = env.route_clearance([env.START, env.CHECKPOINT_A])
-    a_obs = env.step({"id": "reach_checkpoint_a", "payload": {"speed_mps": 0.8}})
-    if a_obs["distance_to_a_m"] > 0.10:
-        raise AssertionError(f"checkpoint A not reached: {a_obs['distance_to_a_m']}")
-    expect_error(lambda: env.step({"id": "reach_checkpoint_a", "payload": {}}), "repeat A")
+        a_route = env.route_clearance([env.START, env.CHECKPOINT_A])
+        a_obs = env.step({"id": "reach_checkpoint_a", "payload": {"speed_mps": 0.8}})
+        if a_obs["distance_to_a_m"] > 0.10:
+            raise AssertionError(f"checkpoint A not reached: {a_obs['distance_to_a_m']}")
+        expect_error(lambda: env.step({"id": "reach_checkpoint_a", "payload": {}}), "repeat A")
 
-    b_points = [env.CHECKPOINT_A, *env.SOUTH_BYPASS]
-    b_route = env.route_clearance(b_points)
-    b_obs = env.step({"id": "reach_checkpoint_b", "payload": {"speed_mps": 0.8}})
-    if b_obs["distance_to_b_m"] > 0.10:
-        raise AssertionError(f"checkpoint B not reached: {b_obs['distance_to_b_m']}")
-    if b_obs["state"]["shelf_collision_count"] != 0:
-        raise AssertionError("robot recorded a shelf collision")
-    trace = np.asarray(b_obs["route_trace"])
-    for waypoint in env.SOUTH_BYPASS[:-1]:
-        if float(np.min(np.linalg.norm(trace - waypoint, axis=1))) > 0.12:
-            raise AssertionError(f"route did not pass required waypoint: {waypoint.tolist()}")
-    if env.is_success():
-        raise AssertionError("task must remain incomplete until camera inspection")
+        b_points = [env.CHECKPOINT_A, *env.SOUTH_BYPASS]
+        b_route = env.route_clearance(b_points)
+        b_obs = env.step({"id": "reach_checkpoint_b", "payload": {"speed_mps": 0.8}})
+        if b_obs["distance_to_b_m"] > 0.10:
+            raise AssertionError(f"checkpoint B not reached: {b_obs['distance_to_b_m']}")
+        if b_obs["state"]["shelf_collision_count"] != 0:
+            raise AssertionError("robot recorded a shelf collision")
+        trace = np.asarray(b_obs["route_trace"])
+        for waypoint in env.SOUTH_BYPASS[:-1]:
+            if float(np.min(np.linalg.norm(trace - waypoint, axis=1))) > 0.12:
+                raise AssertionError(f"route did not pass required waypoint: {waypoint.tolist()}")
+        if env.is_success():
+            raise AssertionError("task must remain incomplete until camera inspection")
+    sequence_contact = sequence_audit.report()
 
     artifacts = env.save_artifacts(args.output_dir)
     if "mjcf" not in artifacts or "mjb" not in artifacts:
@@ -143,6 +202,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "path_base": "package_root",
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "static_checks": checks,
+        "sequence_contact": sequence_contact,
         "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS", "robot_shelf_contacts": 0},
         "route": {
             "checkpoint_a": a_route,

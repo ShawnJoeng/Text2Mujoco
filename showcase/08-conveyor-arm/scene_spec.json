@@ -8,6 +8,9 @@
     "机械臂是三关节平面机械臂，带工具升降关节和左右两个独立夹爪滑动关节；机械臂和包裹都保留真实 MuJoCo 关节。",
     "夹取后启用确定性的 task-level hold，使自由包裹跟随工具中心；释放阶段关闭 hold，让重力和箱体碰撞完成沉降。",
     "蓝色目标箱和红色干扰箱均使用五片式开放容器，固定相机输出 640 x 480 RGB-D。",
+    "碰撞过滤由三个 MJCF default 类给出：world_part (contype 1 / conaffinity 6)、robot_part (2 / 5)、payload_part (4 / 7)；世界-机器人、世界-载荷、机器人-载荷与载荷-载荷都参与碰撞，只过滤机械臂自身连杆之间的碰撞。驱动滚筒的轴承座按结构嵌在输送带机架内，因此唯一显式排除的碰撞对是 conveyor_drive 与 conveyor_frame。",
+    "两个箱体的底板顶面位于本体局部 z = 0.08，与 interior_bounds.min[2] 一致；0.12 m 的包裹静止在箱底时中心位于世界 0.94 m。",
+    "机械臂基座平面抬高到 1.26 m，搬运按抬升 → 平移 → 下降三段执行：先把被夹持包裹的底面抬到 1.086 m（高出 1.06 m 箱沿 26 mm），再以 30 mm 笛卡尔步长逐点求解 IK 平移，最后在箱内下降到距箱底 10 mm 处释放；关节空间直接插值会把包裹拖过箱壁。",
     "场景只使用 MJCF primitive，不依赖下载的网格或外部机器人文件。"
   ],
   "open_questions": [],
@@ -34,8 +37,8 @@
       "kind": "robot",
       "source": "./model.xml",
       "body_name": "arm_base",
-      "pose": {"position": [0.40, -0.30, 1.08], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 0, "conaffinity": 0},
+      "pose": {"position": [0.40, -0.30, 1.26], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 2, "conaffinity": 5},
       "exports": {
         "body": ["arm_tool"],
         "joint": ["arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "gripper_left_slide", "gripper_right_slide"],
@@ -49,7 +52,7 @@
       "body_name": "workbench",
       "geometry": {"shape": "box", "dimensions": [1.8, 1.15, 0.08], "geom_name": "workbench_top_geom"},
       "pose": {"position": [0, 0, 0.74], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.90, 0.01, 0.001]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.90, 0.01, 0.001]},
       "semantic": "support_surface"
     },
     {
@@ -58,16 +61,16 @@
       "body_name": "conveyor_frame",
       "geometry": {"shape": "box", "dimensions": [1.35, 0.52, 0.08], "geom_name": "conveyor_frame_geom"},
       "pose": {"position": [-0.30, 0.0, 0.81], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.72, 0.01, 0.001]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.72, 0.01, 0.001]},
       "semantic": "conveyor_support"
     },
     {
       "id": "conveyor_drive",
       "kind": "primitive",
       "body_name": "conveyor_drive",
-      "geometry": {"shape": "cylinder", "dimensions": [0.38, 0.38, 0.12], "geom_name": "conveyor_drive_geom"},
+      "geometry": {"shape": "cylinder", "dimensions": [0.11, 0.11, 0.12], "geom_name": "conveyor_drive_geom"},
       "pose": {"position": [-0.94, 0.0, 0.89], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "conveyor_drive_hinge", "actuator_name": "conveyor_motor", "mass_kg": 0.35, "contype": 0, "conaffinity": 0, "friction": [0.50, 0.01, 0.001]},
+      "physics": {"dynamic": true, "joint_name": "conveyor_drive_hinge", "actuator_name": "conveyor_motor", "mass_kg": 0.35, "contype": 2, "conaffinity": 5, "friction": [0.50, 0.01, 0.001]},
       "semantic": "powered_conveyor_roller"
     },
     {
@@ -76,7 +79,7 @@
       "body_name": "blue_parcel",
       "geometry": {"shape": "box", "dimensions": [0.12, 0.12, 0.12], "geom_name": "blue_parcel_geom"},
       "pose": {"position": [-0.55, 0.0, 0.934], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "parcel_free", "mass_kg": 0.22, "contype": 1, "conaffinity": 1, "friction": [0.76, 0.01, 0.002]},
+      "physics": {"dynamic": true, "joint_name": "parcel_free", "mass_kg": 0.22, "contype": 4, "conaffinity": 7, "friction": [0.76, 0.01, 0.002]},
       "semantic": "conveyor_payload"
     },
     {
@@ -90,7 +93,7 @@
         "part_geom_names": ["blue_bin_bottom", "blue_bin_left", "blue_bin_right", "blue_bin_front", "blue_bin_back"]
       },
       "pose": {"position": [0.25, 0.18, 0.80], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.78, 0.01, 0.002]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.78, 0.01, 0.002]},
       "semantic": "target_receptacle"
     },
     {
@@ -104,7 +107,7 @@
         "part_geom_names": ["red_bin_bottom", "red_bin_left", "red_bin_right", "red_bin_front", "red_bin_back"]
       },
       "pose": {"position": [0.25, 0.68, 0.80], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.78, 0.01, 0.002]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.78, 0.01, 0.002]},
       "semantic": "distractor_receptacle"
     }
   ],

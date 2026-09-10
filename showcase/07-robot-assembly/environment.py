@@ -126,7 +126,15 @@ class RobotAssemblyEnvironment:
     HOME = np.asarray([-0.80, 1.10, -0.30], dtype=float)
     AT_PEG = np.asarray([0.0, 0.0, 0.0], dtype=float)
     AT_SOCKET = np.asarray([0.20, 0.30, -0.40], dtype=float)
-    SOCKET_POSITION = np.asarray([0.17, 0.21, 0.94], dtype=float)
+    # Socket floor top (0.900) + peg half-height (0.070): the seated peg rests on
+    # the socket floor instead of sinking into it.
+    SOCKET_POSITION = np.asarray([0.17, 0.21, 0.97], dtype=float)
+    # tool_z that puts tool_center_site (0.125 below the tool frame) on the resting
+    # peg center, bench top 0.780 + 0.070 = 0.850, with the arm plane at 1.175.
+    GRASP_TOOL_Z = -0.20
+    # Parked lift: the carried peg's lowest surface sits at 1.050 - 0.070 = 0.980,
+    # 40 mm above the 0.940 fixture guide rims it has to cross.
+    TRANSPORT_TOOL_Z = 0.0
 
     def __init__(self, model_path: Path, spec: Mapping[str, Any]):
         self.model_path = Path(model_path).resolve()
@@ -341,11 +349,14 @@ class RobotAssemblyEnvironment:
                 raise EnvironmentError("arm must be at peg and peg must be free")
             if payload.get("close") is not True:
                 raise EnvironmentError("grasp requires close=true")
-            self._set_tool_target(-0.035)
+            self._set_tool_target(self.GRASP_TOOL_Z)
             self._set_gripper_target(-0.040)
             # The attachment is a documented task-level grasp abstraction. It
             # is updated at every physics step, so subsequent arm motion and
-            # the physical peg share one deterministic state trajectory.
+            # the physical peg share one deterministic state trajectory. The
+            # lift is commanded to the pose where tool_center_site already
+            # coincides with the resting peg center, so the hold does not
+            # teleport the peg and does not press it into the bench.
             self.held_peg = True
             self._pin_peg_to_tool()
             self.state["gripper_state"] = "closed"
@@ -353,6 +364,13 @@ class RobotAssemblyEnvironment:
         elif point_id == "move_arm_to_socket":
             if self.state["arm_state"] != "at_peg" or self.state["peg_state"] != "grasped":
                 raise EnvironmentError("peg must be grasped before transport")
+            # Lift before traversing. The hinge targets are interpolated in joint
+            # space, so the tool bows through an arbitrary arc between the two
+            # valid end poses; at the grasp depth the peg's lowest surface
+            # (0.780) is below the fixture guide rims (0.940) and the arc drives
+            # it through the front guide. Parking the lift first raises that
+            # surface to 0.980 for the whole arc.
+            self._set_tool_target(self.TRANSPORT_TOOL_Z)
             self._set_arm_targets(self.AT_SOCKET, float(payload.get("speed_rad_s", 1.0)))
             self.state["arm_state"] = "at_socket"
         elif point_id == "insert_peg_into_socket":

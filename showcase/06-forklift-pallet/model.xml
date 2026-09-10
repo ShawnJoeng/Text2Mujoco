@@ -32,70 +32,102 @@
   <default>
     <joint damping="1.0" armature="0.02"/>
     <geom friction="0.78 0.01 0.002" condim="6" solref="0.008 1" solimp="0.9 0.95 0.001"/>
+    <default class="world_part">
+      <geom contype="1" conaffinity="6"/>
+    </default>
+    <default class="robot_part">
+      <geom contype="2" conaffinity="5"/>
+    </default>
+    <default class="payload_part">
+      <geom contype="4" conaffinity="7"/>
+    </default>
   </default>
 
   <worldbody>
     <light name="key_light" pos="-2.0 -2.5 4.6" dir="0.2 0.25 -1" directional="true" castshadow="true"/>
     <light name="fill_light" pos="2.5 1.6 3.3" dir="-0.6 -0.2 -1" directional="true" diffuse="0.42 0.45 0.5" specular="0.08 0.08 0.08"/>
     <camera name="delivery_camera" pos="3.6723 -4.6358 5.2237" quat="0.8296993376 0.4411589632 0.1605687312 0.3019858623" fovy="45"/>
-    <geom name="ground_geom" type="plane" size="4.0 3.0 0.1" material="floor_mat"/>
+    <geom name="ground_geom" type="plane" size="4.0 3.0 0.1" material="floor_mat" class="world_part"/>
 
-    <body name="loading_pad" pos="-1.0 -0.9 0.67">
-      <geom name="loading_pad_geom" type="box" size="0.72 0.58 0.03" material="pad_mat"/>
-    </body>
-    <body name="delivery_pad" pos="1.55 0.35 0.67">
-      <geom name="delivery_pad_geom" type="box" size="0.72 0.58 0.03" material="pad_mat"/>
+    <!-- The loading stand carries the pallet at fork height. Its deck stops
+         short of the pallet's near edge so the mast has somewhere to stand, and
+         it is held up by four legs instead of floating: two world-welded bodies
+         never report contact, so a hovering slab passes every contact audit. -->
+    <body name="loading_pad" pos="-0.89 -0.9 0.63" childclass="world_part">
+      <geom name="loading_pad_geom" type="box" size="0.47 0.46 0.03" material="pad_mat"/>
+      <geom name="loading_pad_leg_a" type="box" pos="-0.41 -0.40 -0.33" size="0.05 0.05 0.30" material="pad_mat"/>
+      <geom name="loading_pad_leg_b" type="box" pos="-0.41 0.40 -0.33" size="0.05 0.05 0.30" material="pad_mat"/>
+      <geom name="loading_pad_leg_c" type="box" pos="0.41 -0.40 -0.33" size="0.05 0.05 0.30" material="pad_mat"/>
+      <geom name="loading_pad_leg_d" type="box" pos="0.41 0.40 -0.33" size="0.05 0.05 0.30" material="pad_mat"/>
     </body>
 
-    <body name="forklift_base" pos="-2.2 -0.9 0.25">
+    <!-- Every part of the truck collides. The chassis sits at z=0.03 so the
+         drive wheels reach the floor instead of hovering 0.22 m above it, and
+         the mast is raised by the same 0.22 m so the carriage, tines and lift
+         stroke keep the world heights the interaction contract measures. -->
+    <body name="forklift_base" pos="-2.6 -0.9 0.03" childclass="robot_part">
       <joint name="forklift_x" type="slide" axis="1 0 0" range="-0.3 4.8" damping="3.2" armature="0.04"/>
       <joint name="forklift_y" type="slide" axis="0 1 0" range="-0.4 2.5" damping="3.2" armature="0.04"/>
       <joint name="forklift_yaw" type="hinge" axis="0 0 1" range="-0.35 0.35" damping="2.0" armature="0.02"/>
-      <geom name="forklift_base_geom" type="box" pos="0 0 0.18" size="0.42 0.34 0.18" mass="5.8" material="forklift_orange" contype="0" conaffinity="0"/>
-      <geom name="forklift_counterweight" type="box" pos="-0.29 0 0.42" size="0.19 0.31 0.22" mass="3.0" material="forklift_dark" contype="0" conaffinity="0"/>
-      <geom name="front_wheel_left" type="cylinder" pos="0.22 0.31 0.10" quat="0.7071068 0.7071068 0 0" size="0.13 0.075" mass="0.25" material="forklift_dark" contype="0" conaffinity="0"/>
-      <geom name="front_wheel_right" type="cylinder" pos="0.22 -0.31 0.10" quat="0.7071068 0.7071068 0 0" size="0.13 0.075" mass="0.25" material="forklift_dark" contype="0" conaffinity="0"/>
-      <geom name="rear_wheel_left" type="cylinder" pos="-0.27 0.29 0.10" quat="0.7071068 0.7071068 0 0" size="0.10 0.065" mass="0.2" material="forklift_dark" contype="0" conaffinity="0"/>
-      <geom name="rear_wheel_right" type="cylinder" pos="-0.27 -0.29 0.10" quat="0.7071068 0.7071068 0 0" size="0.10 0.065" mass="0.2" material="forklift_dark" contype="0" conaffinity="0"/>
-      <body name="forklift_mast" pos="0.42 0 0.20">
-        <geom name="forklift_mast_left" type="box" pos="0 0.26 0.82" size="0.09 0.07 0.82" material="mast_mat" contype="0" conaffinity="0"/>
-        <geom name="forklift_mast_right" type="box" pos="0 -0.26 0.82" size="0.09 0.07 0.82" material="mast_mat" contype="0" conaffinity="0"/>
+      <geom name="forklift_base_geom" type="box" pos="0 0 0.18" size="0.42 0.34 0.18" mass="5.8" material="forklift_orange"/>
+      <geom name="forklift_counterweight" type="box" pos="-0.29 0 0.42" size="0.19 0.31 0.22" mass="3.0" material="forklift_dark"/>
+      <geom name="front_wheel_left" type="cylinder" pos="0.22 0.31 0.10" quat="0.7071068 0.7071068 0 0" size="0.13 0.075" mass="0.25" material="forklift_dark"/>
+      <geom name="front_wheel_right" type="cylinder" pos="0.22 -0.31 0.10" quat="0.7071068 0.7071068 0 0" size="0.13 0.075" mass="0.25" material="forklift_dark"/>
+      <geom name="rear_wheel_left" type="cylinder" pos="-0.27 0.29 0.07" quat="0.7071068 0.7071068 0 0" size="0.10 0.065" mass="0.2" material="forklift_dark"/>
+      <geom name="rear_wheel_right" type="cylinder" pos="-0.27 -0.29 0.07" quat="0.7071068 0.7071068 0 0" size="0.10 0.065" mass="0.2" material="forklift_dark"/>
+      <body name="forklift_mast" pos="0.42 0 0.42">
+        <geom name="forklift_mast_left" type="box" pos="0 0.26 0.82" size="0.09 0.07 0.82" mass="2.4" material="mast_mat"/>
+        <geom name="forklift_mast_right" type="box" pos="0 -0.26 0.82" size="0.09 0.07 0.82" mass="2.4" material="mast_mat"/>
         <body name="fork_carriage" pos="0 0 0.25">
           <joint name="fork_lift" type="slide" axis="0 0 1" range="0 0.35" damping="4.5" armature="0.03"/>
-          <geom name="fork_carriage_geom" type="box" pos="0 0 0" size="0.10 0.32 0.10" material="forklift_dark" contype="0" conaffinity="0"/>
-          <body name="left_fork" pos="0.52 0.18 -0.12">
-            <geom name="left_fork" type="box" size="0.55 0.055 0.035" mass="0.45" material="fork_mat" contype="0" conaffinity="0"/>
+          <geom name="fork_carriage_geom" type="box" pos="0 0 0" size="0.14 0.32 0.10" mass="1.6" material="forklift_dark"/>
+          <!-- The tines ride in the pallet's fork channel: 0.715-0.785 m at zero
+               lift, between the stand deck at 0.66 and the pallet deck at 0.81. -->
+          <body name="left_fork" pos="0.68 0.18 0.05">
+            <geom name="left_fork" type="box" size="0.55 0.055 0.035" mass="0.45" material="fork_mat"/>
           </body>
-          <body name="right_fork" pos="0.52 -0.18 -0.12">
-            <geom name="right_fork" type="box" size="0.55 0.055 0.035" mass="0.45" material="fork_mat" contype="0" conaffinity="0"/>
+          <body name="right_fork" pos="0.68 -0.18 0.05">
+            <geom name="right_fork" type="box" size="0.55 0.055 0.035" mass="0.45" material="fork_mat"/>
           </body>
-          <site name="fork_tip_site" type="sphere" pos="0.98 0 -0.12" size="0.025" rgba="0.98 0.84 0.05 1" group="2"/>
+          <site name="fork_tip_site" type="sphere" pos="1.14 0 0.05" size="0.025" rgba="0.98 0.84 0.05 1" group="2"/>
         </body>
       </body>
     </body>
 
-    <body name="pallet" pos="-1.0 -0.9 0.88">
+    <!-- The runners lie along the fork axis so the tines can enter the channel
+         between them. Across it, as they were before, the tines rammed the near
+         runner head-on and the lift only worked because the pallet was pinned. -->
+    <body name="pallet" pos="-1.0 -0.9 0.88" childclass="payload_part">
       <freejoint name="pallet_free"/>
       <geom name="pallet_deck" type="box" size="0.50 0.40 0.07" mass="1.5" material="pallet_mat" friction="0.85 0.01 0.003"/>
-      <geom name="pallet_runner_left" type="box" pos="-0.32 0 -0.12" size="0.07 0.36 0.06" mass="0.45" material="pallet_mat"/>
-      <geom name="pallet_runner_right" type="box" pos="0.32 0 -0.12" size="0.07 0.36 0.06" mass="0.45" material="pallet_mat"/>
+      <geom name="pallet_runner_left" type="box" pos="0 0.34 -0.145" size="0.44 0.06 0.075" mass="0.30" material="pallet_mat"/>
+      <geom name="pallet_runner_center" type="box" pos="0 0 -0.145" size="0.44 0.06 0.075" mass="0.30" material="pallet_mat"/>
+      <geom name="pallet_runner_right" type="box" pos="0 -0.34 -0.145" size="0.44 0.06 0.075" mass="0.30" material="pallet_mat"/>
       <body name="payload_crate" pos="0 0 0.27">
         <geom name="payload_crate_geom" type="box" size="0.32 0.28 0.20" mass="0.8" material="crate_mat"/>
-        <geom name="payload_crate_band" type="box" pos="0 0.285 0" size="0.33 0.012 0.21" material="forklift_dark" contype="0" conaffinity="0"/>
+        <geom name="payload_crate_band" type="box" pos="0 0.285 0" size="0.33 0.012 0.21" mass="0.15" material="forklift_dark"/>
       </body>
     </body>
 
-    <body name="delivery_zone" pos="1.55 0.35 0.68">
-      <geom name="delivery_zone_bottom" type="box" pos="0 0 0.04" size="0.62 0.52 0.04" material="zone_mat"/>
-      <geom name="delivery_zone_left" type="box" pos="0 0.53 0.16" size="0.62 0.025 0.12" material="zone_mat"/>
-      <geom name="delivery_zone_right" type="box" pos="0 -0.53 0.16" size="0.62 0.025 0.12" material="zone_mat"/>
-      <geom name="delivery_zone_front" type="box" pos="0.63 0 0.16" size="0.025 0.52 0.12" material="zone_mat"/>
-      <geom name="delivery_zone_back" type="box" pos="-0.63 0 0.16" size="0.025 0.52 0.12" material="zone_mat"/>
+    <!-- The delivery target is a stand with corner blocks, not a walled bin. A
+         fork truck has to reverse its tines out at deck height, so a 0.24 m wall
+         on the approach side is geometry the documented sequence cannot clear:
+         the blocks locate the pallet and stay below the loaded tines. -->
+    <body name="delivery_zone" pos="1.55 0.35 0.68" childclass="world_part">
+      <geom name="delivery_zone_bottom" type="box" pos="0.11 0 0.0" size="0.47 0.56 0.04" material="zone_mat"/>
+      <geom name="delivery_zone_leg_a" type="box" pos="-0.30 -0.50 -0.36" size="0.05 0.05 0.32" material="zone_mat"/>
+      <geom name="delivery_zone_leg_b" type="box" pos="-0.30 0.50 -0.36" size="0.05 0.05 0.32" material="zone_mat"/>
+      <geom name="delivery_zone_leg_c" type="box" pos="0.52 -0.50 -0.36" size="0.05 0.05 0.32" material="zone_mat"/>
+      <geom name="delivery_zone_leg_d" type="box" pos="0.52 0.50 -0.36" size="0.05 0.05 0.32" material="zone_mat"/>
+      <geom name="delivery_zone_corner_a" type="box" pos="-0.25 -0.48 0.07" size="0.04 0.04 0.03" material="zone_mat"/>
+      <geom name="delivery_zone_corner_b" type="box" pos="-0.25 0.48 0.07" size="0.04 0.04 0.03" material="zone_mat"/>
+      <geom name="delivery_zone_corner_c" type="box" pos="0.47 -0.48 0.07" size="0.04 0.04 0.03" material="zone_mat"/>
+      <geom name="delivery_zone_corner_d" type="box" pos="0.47 0.48 0.07" size="0.04 0.04 0.03" material="zone_mat"/>
     </body>
 
-    <body name="storage_rack" pos="0.10 1.15 0.72">
-      <geom name="storage_rack_post_a" type="box" pos="-0.62 0 0.65" size="0.05 0.05 0.65" material="rack_mat"/>
-      <geom name="storage_rack_post_b" type="box" pos="0.62 0 0.65" size="0.05 0.05 0.65" material="rack_mat"/>
+    <body name="storage_rack" pos="0.10 1.15 0.72" childclass="world_part">
+      <geom name="storage_rack_post_a" type="box" pos="-0.62 0 0.29" size="0.05 0.05 1.01" material="rack_mat"/>
+      <geom name="storage_rack_post_b" type="box" pos="0.62 0 0.29" size="0.05 0.05 1.01" material="rack_mat"/>
       <geom name="storage_rack_shelf" type="box" pos="0 0 0.50" size="0.68 0.30 0.045" material="rack_mat"/>
       <geom name="storage_rack_top" type="box" pos="0 0 1.26" size="0.68 0.30 0.045" material="rack_mat"/>
     </body>
@@ -112,6 +144,6 @@
     <position name="forklift_x_motor" joint="forklift_x" kp="240" kv="24" ctrlrange="-0.3 4.8" forcerange="-180 180"/>
     <position name="forklift_y_motor" joint="forklift_y" kp="240" kv="24" ctrlrange="-0.4 2.5" forcerange="-180 180"/>
     <position name="forklift_yaw_motor" joint="forklift_yaw" kp="80" kv="12" ctrlrange="-0.35 0.35" forcerange="-60 60"/>
-    <position name="fork_lift_motor" joint="fork_lift" kp="300" kv="28" ctrlrange="0 0.35" forcerange="-180 180"/>
+    <position name="fork_lift_motor" joint="fork_lift" kp="6000" kv="300" ctrlrange="0 0.35" forcerange="-600 600"/>
   </actuator>
 </mujoco>

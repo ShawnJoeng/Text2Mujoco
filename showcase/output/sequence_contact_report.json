@@ -1,0 +1,190 @@
+{
+  "static_limit_mm": 0.1,
+  "run_limit_mm": 1.0,
+  "scenes": [
+    {
+      "scene": "01-button-cube-box",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": 0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": 0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence": {
+        "steps": 1500,
+        "simulated_s": 1.5,
+        "deepest_overlap_mm": 0.4332,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "scene": "02-smart-drawer",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": -0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": -0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence": {
+        "steps": 358,
+        "simulated_s": 0.716,
+        "deepest_overlap_mm": -0.0,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "scene": "03-warehouse-navigation",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": -0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": -0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence": {
+        "steps": 3375,
+        "simulated_s": 13.5,
+        "deepest_overlap_mm": -0.0,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "scene": "04-lever-ball-ramp",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": -0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": -0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence": {
+        "steps": 1519,
+        "simulated_s": 1.519,
+        "deepest_overlap_mm": 0.3121,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "scene": "05-robot-arm-sorting",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": 0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": 0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence": {
+        "steps": 3988,
+        "simulated_s": 7.976,
+        "deepest_overlap_mm": 0.4052,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "scene": "06-forklift-pallet",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": 0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": 0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence": {
+        "steps": 5497,
+        "simulated_s": 10.994,
+        "deepest_overlap_mm": 0.1454,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "scene": "07-robot-assembly",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": -0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": -0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence": {
+        "steps": 2420,
+        "simulated_s": 4.84,
+        "deepest_overlap_mm": 0.1494,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "scene": "08-conveyor-arm",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": 0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": 0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence": {
+        "steps": 2960,
+        "simulated_s": 5.92,
+        "deepest_overlap_mm": 0.0175,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "passed": true
+    }
+  ]
+}

@@ -33,7 +33,11 @@ def portable_sensor(sensor: dict[str, Any], package_root: Path) -> dict[str, Any
         value = result.get(key)
         if isinstance(value, dict) and isinstance(value.get("path"), str):
             item = dict(value)
-            resolved = Path(item["path"]).resolve()
+            # The renderer reports package-relative paths, so resolve them
+            # against the package rather than the process working directory:
+            # run from the repository root, ``Path.resolve`` used to land
+            # outside the package and fail the containment check below.
+            resolved = resolve_package_path(item["path"], package_root).resolve()
             try:
                 item["path"] = str(resolved.relative_to(package_root.resolve()))
             except ValueError as exc:

@@ -21,14 +21,14 @@
   "visible_interaction_markers": {
     "status": "PASS",
     "pixels": {
-      "yellow": 1614,
-      "cyan": 807,
-      "green": 4442,
+      "yellow": 1639,
+      "cyan": 891,
+      "green": 3642,
       "magenta": 210,
-      "orange": 2103
+      "orange": 2467
     }
   },
-  "tool_movement_m": 1.0447074657229072,
+  "tool_movement_m": 1.0571738972939928,
   "screenshots": {
     "initial": {
       "path": "output/screenshots/initial/rgb.png"

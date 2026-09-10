@@ -6,13 +6,15 @@
     "The scene uses SI meters, a Z-up frame, gravity [0, 0, -9.81], and deterministic seed 61.",
     "The forklift has powered planar slide joints for x/y travel, a steering hinge, and a powered vertical fork-lift slide.",
     "The loaded pallet is a dynamic free body. After engagement, a deterministic task controller synchronizes its pose with the fork anchor while MuJoCo advances every physical step.",
-    "A raised pallet follows a collision-free waypoint route around a storage rack; lowering the forks releases it onto the delivery pad for contact settling.",
-    "The fixed top-view camera writes 640 x 480 RGB-D evidence under the package output directory."
+    "A raised pallet follows a collision-free waypoint route around a storage rack; lowering the forks sets it on the delivery stand, which locates it with corner blocks rather than walls so the tines can reverse out at deck height.",
+    "Every geom belongs to one of three collision classes - world_part (contype 1, conaffinity 6), robot_part (contype 2, conaffinity 5) and payload_part (contype 4, conaffinity 7) - so world, truck and payload all collide with one another while the truck's own parts do not self-collide.",
+    "The tines enter the pallet's fork channel and lift it by contact: at zero lift they span 0.715-0.785 m, between the loading stand deck at 0.66 m and the pallet deck bottom at 0.81 m.",
+    "The fixed three-quarter overhead camera writes 640 x 480 RGB-D evidence under the package output directory."
   ],
   "open_questions": [],
   "scene": {
     "name": "forklift_pallet_delivery",
-    "description": "An orange mobile forklift transports a loaded pallet from a loading pad to a marked delivery zone.",
+    "description": "An orange mobile forklift transports a loaded pallet from a loading stand to a marked delivery stand.",
     "runtime": {
       "mujoco_version": "3.2.7",
       "mode": "python",
@@ -32,27 +34,18 @@
       "id": "loading_pad",
       "kind": "primitive",
       "body_name": "loading_pad",
-      "geometry": {"shape": "box", "dimensions": [1.44, 1.16, 0.06], "geom_name": "loading_pad_geom"},
-      "pose": {"position": [-1.0, -0.9, 0.67], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.8, 0.01, 0.002]},
+      "geometry": {"shape": "box", "dimensions": [0.94, 0.92, 0.06], "geom_name": "loading_pad_geom", "part_geom_names": ["loading_pad_geom", "loading_pad_leg_a", "loading_pad_leg_b", "loading_pad_leg_c", "loading_pad_leg_d"]},
+      "pose": {"position": [-0.89, -0.9, 0.63], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.8, 0.01, 0.002]},
       "semantic": "loading_surface"
-    },
-    {
-      "id": "delivery_pad",
-      "kind": "primitive",
-      "body_name": "delivery_pad",
-      "geometry": {"shape": "box", "dimensions": [1.44, 1.16, 0.06], "geom_name": "delivery_pad_geom"},
-      "pose": {"position": [1.55, 0.35, 0.67], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.8, 0.01, 0.002]},
-      "semantic": "delivery_surface"
     },
     {
       "id": "forklift_base",
       "kind": "primitive",
       "body_name": "forklift_base",
       "geometry": {"shape": "box", "dimensions": [0.84, 0.68, 0.36], "geom_name": "forklift_base_geom"},
-      "pose": {"position": [-2.2, -0.9, 0.25], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "forklift_x", "actuator_name": "forklift_x_motor", "mass_kg": 5.8, "contype": 1, "conaffinity": 1, "friction": [0.78, 0.01, 0.002]},
+      "pose": {"position": [-2.6, -0.9, 0.03], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "forklift_x", "actuator_name": "forklift_x_motor", "mass_kg": 5.8, "contype": 2, "conaffinity": 5, "friction": [0.78, 0.01, 0.002]},
       "joint_names": ["forklift_x", "forklift_y", "forklift_yaw"],
       "actuator_names": ["forklift_x_motor", "forklift_y_motor", "forklift_yaw_motor"],
       "semantic": "mobile_forklift"
@@ -61,18 +54,18 @@
       "id": "forklift_mast",
       "kind": "primitive",
       "body_name": "forklift_mast",
-      "geometry": {"shape": "box", "dimensions": [0.18, 0.14, 1.64], "geom_name": "forklift_mast_left"},
-      "pose": {"position": [-1.78, -0.9, 1.25], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.5, 0.01, 0.001]},
+      "geometry": {"shape": "box", "dimensions": [0.18, 0.14, 1.64], "geom_name": "forklift_mast_left", "part_geom_names": ["forklift_mast_left", "forklift_mast_right"]},
+      "pose": {"position": [-2.18, -0.9, 1.27], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "mass_kg": 4.8, "contype": 2, "conaffinity": 5, "friction": [0.5, 0.01, 0.001]},
       "semantic": "forklift_mast"
     },
     {
       "id": "fork_carriage",
       "kind": "primitive",
       "body_name": "fork_carriage",
-      "geometry": {"shape": "box", "dimensions": [0.20, 0.64, 0.20], "geom_name": "fork_carriage_geom"},
-      "pose": {"position": [-1.78, -0.9, 0.70], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "fork_lift", "actuator_name": "fork_lift_motor", "mass_kg": 0.9, "contype": 1, "conaffinity": 1, "friction": [0.55, 0.01, 0.001]},
+      "geometry": {"shape": "box", "dimensions": [0.28, 0.64, 0.20], "geom_name": "fork_carriage_geom"},
+      "pose": {"position": [-2.18, -0.9, 0.70], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "fork_lift", "actuator_name": "fork_lift_motor", "mass_kg": 1.6, "contype": 2, "conaffinity": 5, "friction": [0.55, 0.01, 0.001]},
       "semantic": "powered_fork_carriage"
     },
     {
@@ -80,8 +73,8 @@
       "kind": "primitive",
       "body_name": "left_fork",
       "geometry": {"shape": "box", "dimensions": [1.10, 0.11, 0.07], "geom_name": "left_fork"},
-      "pose": {"position": [-1.26, -0.72, 0.46], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.55, 0.01, 0.001]},
+      "pose": {"position": [-1.50, -0.72, 0.75], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "mass_kg": 0.45, "contype": 2, "conaffinity": 5, "friction": [0.55, 0.01, 0.001]},
       "semantic": "fork_tine"
     },
     {
@@ -89,17 +82,17 @@
       "kind": "primitive",
       "body_name": "right_fork",
       "geometry": {"shape": "box", "dimensions": [1.10, 0.11, 0.07], "geom_name": "right_fork"},
-      "pose": {"position": [-1.26, -1.08, 0.46], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.55, 0.01, 0.001]},
+      "pose": {"position": [-1.50, -1.08, 0.75], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "mass_kg": 0.45, "contype": 2, "conaffinity": 5, "friction": [0.55, 0.01, 0.001]},
       "semantic": "fork_tine"
     },
     {
       "id": "pallet",
       "kind": "primitive",
       "body_name": "pallet",
-      "geometry": {"shape": "box", "dimensions": [1.0, 0.80, 0.14], "geom_name": "pallet_deck"},
+      "geometry": {"shape": "box", "dimensions": [1.0, 0.80, 0.14], "geom_name": "pallet_deck", "part_geom_names": ["pallet_deck", "pallet_runner_left", "pallet_runner_center", "pallet_runner_right"]},
       "pose": {"position": [-1.0, -0.9, 0.88], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "pallet_free", "mass_kg": 1.5, "contype": 1, "conaffinity": 1, "friction": [0.85, 0.01, 0.003]},
+      "physics": {"dynamic": true, "joint_name": "pallet_free", "mass_kg": 1.5, "contype": 4, "conaffinity": 7, "friction": [0.85, 0.01, 0.003]},
       "semantic": "loaded_pallet"
     },
     {
@@ -108,7 +101,7 @@
       "body_name": "payload_crate",
       "geometry": {"shape": "box", "dimensions": [0.64, 0.56, 0.40], "geom_name": "payload_crate_geom"},
       "pose": {"position": [-1.0, -0.9, 1.15], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.65, 0.01, 0.002]},
+      "physics": {"dynamic": false, "mass_kg": 0.8, "contype": 4, "conaffinity": 7, "friction": [0.65, 0.01, 0.002]},
       "semantic": "pallet_load"
     },
     {
@@ -116,13 +109,14 @@
       "kind": "primitive",
       "body_name": "delivery_zone",
       "geometry": {
-        "shape": "open_box",
-        "dimensions": [1.26, 1.06, 0.24],
-        "interior_bounds": {"min": [-0.55, -0.45, 0.07], "max": [0.55, 0.45, 0.30]},
-        "part_geom_names": ["delivery_zone_bottom", "delivery_zone_left", "delivery_zone_right", "delivery_zone_front", "delivery_zone_back"]
+        "shape": "box",
+        "dimensions": [0.94, 1.12, 0.08],
+        "geom_name": "delivery_zone_bottom",
+        "interior_bounds": {"min": [-0.55, -0.45, 0.04], "max": [0.55, 0.45, 0.30]},
+        "part_geom_names": ["delivery_zone_bottom", "delivery_zone_leg_a", "delivery_zone_leg_b", "delivery_zone_leg_c", "delivery_zone_leg_d", "delivery_zone_corner_a", "delivery_zone_corner_b", "delivery_zone_corner_c", "delivery_zone_corner_d"]
       },
       "pose": {"position": [1.55, 0.35, 0.68], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.75, 0.01, 0.002]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.75, 0.01, 0.002]},
       "semantic": "target_receptacle"
     },
     {
@@ -131,7 +125,7 @@
       "body_name": "storage_rack",
       "geometry": {"shape": "box", "dimensions": [1.36, 0.60, 0.09], "geom_name": "storage_rack_shelf"},
       "pose": {"position": [0.10, 1.15, 1.22], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 1, "friction": [0.6, 0.01, 0.001]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.6, 0.01, 0.001]},
       "semantic": "route_obstacle"
     }
   ],

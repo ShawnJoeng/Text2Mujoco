@@ -32,6 +32,12 @@
     "lower_forks_release"
   ],
   "pallet_sync": "PASS",
+  "sequence_contact": {
+    "steps": 5277,
+    "deepest_overlap_mm": 0.1454,
+    "limit_mm": 1.0,
+    "result": "PASS"
+  },
   "route_collision_count": 0,
   "delivery_zone": "PASS",
   "dependency_enforcement": "PASS",

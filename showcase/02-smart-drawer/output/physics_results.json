@@ -7,6 +7,12 @@
   "mujoco_gl": "disable",
   "mjcf_compile": "PASS",
   "initial_contact": "PASS",
+  "sequence_contact": {
+    "steps": 264,
+    "deepest_overlap_mm": 0.0,
+    "limit_mm": 1.0,
+    "result": "PASS"
+  },
   "finite_state": "PASS",
   "unlock_actuator": "PASS",
   "drawer_actuator": "PASS",

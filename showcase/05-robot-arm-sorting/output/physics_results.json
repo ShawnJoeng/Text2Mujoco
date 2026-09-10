@@ -19,6 +19,12 @@
     "mj_step": "PASS",
     "finite_state": "PASS"
   },
+  "sequence_contact": {
+    "steps": 3928,
+    "deepest_overlap_mm": 0.4052,
+    "limit_mm": 1.0,
+    "result": "PASS"
+  },
   "interaction_sequence": [
     "approach_blue_part",
     "grasp_blue_part",

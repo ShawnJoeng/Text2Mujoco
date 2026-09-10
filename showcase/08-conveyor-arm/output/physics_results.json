@@ -17,7 +17,13 @@
     "finite_state": "PASS",
     "conveyor_delivery": "PASS",
     "held_parcel_transport": "PASS",
-    "target_bin_settle": "PASS"
+    "target_bin_settle": "PASS",
+    "sequence_contact": {
+      "steps": 2740,
+      "deepest_overlap_mm": 0.0175,
+      "limit_mm": 1.0,
+      "result": "PASS"
+    }
   },
   "dependency_enforcement": "PASS",
   "deterministic_reset": "PASS",

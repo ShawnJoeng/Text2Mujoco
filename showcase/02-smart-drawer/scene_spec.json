@@ -9,7 +9,10 @@
     "绿色按钮使用 12 mm 行程的 slide joint 和 position actuator；解锁由按钮达到至少 10 mm 压下深度触发。",
     "拉动使用位置执行器驱动真实抽屉 slide joint，不模拟机器人手爪接触。",
     "固定相机输出 640 x 480 RGB-D；检查动作在抽屉达到目标后采集图像。",
-    "黄色、青色和品红色非碰撞 site 分别标记解锁点、把手和相机检查点。"
+    "黄色、青色和品红色非碰撞 site 分别标记解锁点、把手和相机检查点。",
+    "所有会运动的刚体都有真实碰撞体：按钮帽、抽屉把手和抽屉内两件工具都参与碰撞，contype/conaffinity 统一为 1/1（本场景没有需要互相过滤的多连杆机构）。",
+    "按钮座不能是一块实心挡板，否则会占住 12 mm 行程：座改为四片围栏加一块背板，围栏内表面距 0.0275 m 帽半径 3.5 mm，背板前表面在完全按下位置后方 2 mm。",
+    "MuJoCo 的 joint limit 默认偏软，按钮帽会越过自己 0.012 m 的行程终点 3.3 mm 撞上背板；因此把 limit 收紧到 2*timestep 下限（solreflimit 0.004）并把阻尼提到 8，实测越程 0.025 mm，使声明行程等于真实行程。"
   ],
   "open_questions": [],
   "scene": {
@@ -53,8 +56,8 @@
       "kind": "primitive",
       "body_name": "unlock_button",
       "geometry": {"shape": "cylinder", "dimensions": [0.055, 0.055, 0.022], "geom_name": "unlock_button_geom"},
-      "pose": {"position": [-0.20, -0.205, 1.245], "orientation_xyzw": [0.70710678, 0, 0, 0.70710678]},
-      "physics": {"dynamic": true, "joint_name": "unlock_button_slide", "actuator_name": "unlock_button_press", "mass_kg": 0.04, "contype": 0, "conaffinity": 0, "friction": [0.5, 0.01, 0.001]},
+      "pose": {"position": [-0.20, -0.233, 1.245], "orientation_xyzw": [0.70710678, 0, 0, 0.70710678]},
+      "physics": {"dynamic": true, "joint_name": "unlock_button_slide", "actuator_name": "unlock_button_press", "mass_kg": 0.04, "contype": 1, "conaffinity": 1, "friction": [0.5, 0.01, 0.001]},
       "semantic": "green_unlock_button"
     },
     {
@@ -73,7 +76,7 @@
       "affordance": "press",
       "target": {"type": "joint", "name": "unlock_button_slide"},
       "marker_site": "unlock_point_marker",
-      "pose": {"position": [-0.20, -0.24, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [-0.20, -0.268, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
       "action": {
         "mode": "direct",
         "command": "press_unlock_button",
@@ -90,7 +93,7 @@
       "affordance": "open",
       "target": {"type": "joint", "name": "drawer_slide"},
       "marker_site": "drawer_handle_marker",
-      "pose": {"position": [0, -0.255, 0.89], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0, -0.27, 0.89], "orientation_xyzw": [0, 0, 0, 1]},
       "action": {
         "mode": "direct",
         "command": "pull_drawer_22cm",
@@ -107,7 +110,7 @@
       "affordance": "inspect",
       "target": {"type": "camera", "name": "fixed_inspection_camera"},
       "marker_site": "camera_check_marker",
-      "pose": {"position": [0.24, -0.235, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0.24, -0.195, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
       "action": {
         "mode": "direct",
         "command": "inspect_open_drawer",

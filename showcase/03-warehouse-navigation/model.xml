@@ -24,17 +24,23 @@
   </asset>
   <default>
     <geom friction="0.8 0.01 0.001" condim="3" solref="0.01 1"/>
+    <default class="world_part">
+      <geom contype="1" conaffinity="6"/>
+    </default>
+    <default class="robot_part">
+      <geom contype="2" conaffinity="5"/>
+    </default>
   </default>
   <worldbody>
     <light name="warehouse_key" pos="-2 -2 7" dir="0.25 0.25 -1" directional="true" castshadow="true"/>
     <light name="warehouse_fill" pos="2 2 5" dir="-0.25 -0.2 -1" directional="true" diffuse="0.35 0.38 0.42"/>
     <camera name="top_camera" pos="-1.9798 -5.4394 6.4884" quat="0.9098437265 0.3768696111 -0.0664522807 -0.1604299972" fovy="45"/>
 
-    <geom name="ground_geom" type="plane" size="3 2.25 0.1" material="floor_mat"/>
-    <geom name="wall_north" type="box" pos="0 2.23 0.25" size="3.0 0.02 0.25" material="wall_mat"/>
-    <geom name="wall_south" type="box" pos="0 -2.23 0.25" size="3.0 0.02 0.25" material="wall_mat"/>
-    <geom name="wall_west" type="box" pos="-2.98 0 0.25" size="0.02 2.25 0.25" material="wall_mat"/>
-    <geom name="wall_east" type="box" pos="2.98 0 0.25" size="0.02 2.25 0.25" material="wall_mat"/>
+    <geom name="ground_geom" type="plane" size="3 2.25 0.1" material="floor_mat" class="world_part"/>
+    <geom name="wall_north" type="box" pos="0 2.23 0.25" size="3.0 0.02 0.25" material="wall_mat" class="world_part"/>
+    <geom name="wall_south" type="box" pos="0 -2.23 0.25" size="3.0 0.02 0.25" material="wall_mat" class="world_part"/>
+    <geom name="wall_west" type="box" pos="-2.98 0 0.25" size="0.02 2.25 0.25" material="wall_mat" class="world_part"/>
+    <geom name="wall_east" type="box" pos="2.98 0 0.25" size="0.02 2.25 0.25" material="wall_mat" class="world_part"/>
 
     <site name="start_marker" type="cylinder" pos="-2.35 -1.35 0.012" size="0.28 0.012" material="start_mat" group="2"/>
     <site name="checkpoint_a_marker" type="cylinder" pos="-1.55 0.75 0.014" size="0.30 0.014" material="yellow_marker" group="2"/>
@@ -44,26 +50,26 @@
     <site name="bypass_2_marker" type="sphere" pos="0.75 -1.35 0.025" size="0.04" rgba="1 1 1 0.55" group="3"/>
     <site name="bypass_3_marker" type="sphere" pos="1.15 -0.95 0.025" size="0.04" rgba="1 1 1 0.55" group="3"/>
 
-    <body name="central_shelf" pos="0 0.25 0.7">
+    <body name="central_shelf" childclass="world_part" pos="0 0.25 0.7">
       <geom name="central_shelf_geom" type="box" size="0.35 1.10 0.70" material="shelf_mat"/>
-      <geom name="central_shelf_edge_w" type="box" pos="-0.36 0 0" size="0.025 1.13 0.72" material="shelf_edge" contype="0" conaffinity="0"/>
-      <geom name="central_shelf_edge_e" type="box" pos="0.36 0 0" size="0.025 1.13 0.72" material="shelf_edge" contype="0" conaffinity="0"/>
+      <geom name="central_shelf_edge_w" type="box" pos="-0.36 0 0" size="0.025 1.13 0.72" material="shelf_edge"/>
+      <geom name="central_shelf_edge_e" type="box" pos="0.36 0 0" size="0.025 1.13 0.72" material="shelf_edge"/>
     </body>
-    <body name="north_shelf" pos="-1.75 1.72 0.7">
+    <body name="north_shelf" childclass="world_part" pos="-1.75 1.72 0.7">
       <geom name="north_shelf_geom" type="box" size="0.85 0.275 0.70" material="shelf_mat"/>
-      <geom name="north_shelf_edge" type="box" pos="0 -0.285 0" size="0.87 0.025 0.72" material="shelf_edge" contype="0" conaffinity="0"/>
+      <geom name="north_shelf_edge" type="box" pos="0 -0.285 0" size="0.87 0.025 0.72" material="shelf_edge"/>
     </body>
-    <body name="east_shelf" pos="2.35 -0.25 0.7">
+    <body name="east_shelf" childclass="world_part" pos="2.35 -0.25 0.7">
       <geom name="east_shelf_geom" type="box" size="0.275 0.625 0.70" material="shelf_mat"/>
-      <geom name="east_shelf_edge" type="box" pos="-0.285 0 0" size="0.025 0.645 0.72" material="shelf_edge" contype="0" conaffinity="0"/>
+      <geom name="east_shelf_edge" type="box" pos="-0.285 0 0" size="0.025 0.645 0.72" material="shelf_edge"/>
     </body>
 
-    <body name="mobile_robot" pos="-2.35 -1.35 0.14">
+    <body name="mobile_robot" childclass="robot_part" pos="-2.35 -1.35 0.14">
       <joint name="robot_x" type="slide" axis="1 0 0" range="-0.35 5.0" damping="40"/>
       <joint name="robot_y" type="slide" axis="0 1 0" range="-0.45 3.25" damping="40"/>
       <geom name="mobile_robot_geom" type="cylinder" size="0.23 0.12" mass="6" material="orange_mat"/>
-      <geom name="robot_top" type="cylinder" pos="0 0 0.13" size="0.13 0.035" material="robot_dark" contype="0" conaffinity="0"/>
-      <geom name="robot_heading" type="box" pos="0.14 0 0.13" size="0.08 0.025 0.025" material="orange_mat" contype="0" conaffinity="0"/>
+      <geom name="robot_top" type="cylinder" pos="0 0 0.13" size="0.13 0.035" material="robot_dark"/>
+      <geom name="robot_heading" type="box" pos="0.14 0 0.13" size="0.08 0.025 0.025" material="orange_mat"/>
     </body>
   </worldbody>
   <actuator>

@@ -30,58 +30,89 @@
     <material name="marker_green" rgba="0.08 1 0.24 1" emission="0.35"/>
   </asset>
 
+  <!-- Collision classes. A pair is tested when
+       (contype1 & conaffinity2) || (contype2 & conaffinity1), so these masks
+       give world-robot, world-payload, robot-payload, and payload-payload
+       contacts while filtering robot self-collision, which this three-link
+       chain does not need. Every moving body carries a collidable geom: a
+       contype="0" conaffinity="0" arm renders normally and sweeps through the
+       table without generating a single contact to report. -->
   <default>
     <joint damping="1.2" armature="0.015"/>
     <geom friction="0.72 0.01 0.002" condim="6" solref="0.008 1" solimp="0.9 0.95 0.001"/>
+    <default class="world_part">
+      <geom contype="1" conaffinity="6"/>
+    </default>
+    <default class="robot_part">
+      <geom contype="2" conaffinity="5"/>
+    </default>
+    <default class="payload_part">
+      <geom contype="4" conaffinity="7"/>
+    </default>
   </default>
 
   <worldbody>
     <light name="key_light" pos="-1.5 -2.2 4.2" dir="0.2 0.3 -1" directional="true" castshadow="true"/>
     <light name="fill_light" pos="2.0 1.2 3.0" dir="-0.5 -0.25 -1" directional="true" diffuse="0.42 0.45 0.5" specular="0.08 0.08 0.08"/>
     <camera name="sorting_camera" pos="2.2078 -3.1531 3.2472" quat="0.8381427770 0.4550743979 0.1434844065 0.2642654025" fovy="45"/>
-    <geom name="ground_geom" type="plane" size="3.5 3.0 0.1" material="floor_mat"/>
+    <geom name="ground_geom" class="world_part" type="plane" size="3.5 3.0 0.1" material="floor_mat"/>
 
     <body name="worktable" pos="0 0 0.62">
-      <geom name="worktable_top_geom" type="box" size="1.35 0.82 0.06" material="table_mat" friction="0.9 0.01 0.001"/>
-      <geom name="worktable_leg_fl" type="box" pos="-1.18 -0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
-      <geom name="worktable_leg_fr" type="box" pos="1.18 -0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
-      <geom name="worktable_leg_bl" type="box" pos="-1.18 0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
-      <geom name="worktable_leg_br" type="box" pos="1.18 0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
+      <geom name="worktable_top_geom" class="world_part" type="box" size="1.35 0.82 0.06" material="table_mat" friction="0.9 0.01 0.001"/>
+      <geom name="worktable_leg_fl" class="world_part" type="box" pos="-1.18 -0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
+      <geom name="worktable_leg_fr" class="world_part" type="box" pos="1.18 -0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
+      <geom name="worktable_leg_bl" class="world_part" type="box" pos="-1.18 0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
+      <geom name="worktable_leg_br" class="world_part" type="box" pos="1.18 0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
     </body>
 
     <body name="conveyor_frame" pos="0.23 0 0.76">
-      <geom name="conveyor_belt_geom" type="box" size="0.27 0.23 0.025" material="belt_mat" contype="1" conaffinity="1"/>
-      <geom name="conveyor_stand_geom" type="box" pos="0 0 -0.0525" size="0.25 0.21 0.0275" material="frame_mat"/>
-      <geom name="conveyor_rail_left" type="box" pos="0 0.245 0.04" size="0.27 0.018 0.045" material="frame_mat"/>
-      <geom name="conveyor_rail_right" type="box" pos="0 -0.245 0.04" size="0.27 0.018 0.045" material="frame_mat"/>
-      <geom name="conveyor_roller_a" type="cylinder" pos="-0.19 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
-      <geom name="conveyor_roller_b" type="cylinder" pos="0.19 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
+      <geom name="conveyor_belt_geom" class="world_part" type="box" size="0.27 0.23 0.025" material="belt_mat"/>
+      <geom name="conveyor_stand_geom" class="world_part" type="box" pos="0 0 -0.0525" size="0.25 0.21 0.0275" material="frame_mat"/>
+      <geom name="conveyor_rail_left" class="world_part" type="box" pos="0 0.245 0.04" size="0.27 0.018 0.045" material="frame_mat"/>
+      <geom name="conveyor_rail_right" class="world_part" type="box" pos="0 -0.245 0.04" size="0.27 0.018 0.045" material="frame_mat"/>
+      <geom name="conveyor_roller_a" class="world_part" type="cylinder" pos="-0.19 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
+      <geom name="conveyor_roller_b" class="world_part" type="cylinder" pos="0.19 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
     </body>
 
+    <!-- The pedestal stands on the worktable (top 0.68 m) and ends at the
+         shoulder axis (1.52 m): 0.42 m half-length centred at 1.10 m. The
+         earlier 0.525 m half-length ran from the floor straight through the
+         slab, which no contact audit can see because both bodies are welded
+         to the world. -->
     <body name="arm_base" pos="-0.35 0 0.70">
-      <geom name="arm_base_geom" type="cylinder" pos="0 0 -0.175" size="0.24 0.525" material="arm_base_mat"/>
-      <geom name="arm_base_ring" type="cylinder" pos="0 0 0.37" size="0.28 0.035" material="joint_mat"/>
+      <geom name="arm_base_geom" class="world_part" type="cylinder" pos="0 0 0.40" size="0.24 0.42" material="arm_base_mat"/>
+      <geom name="arm_base_ring" class="world_part" type="cylinder" pos="0 0 0.37" size="0.28 0.035" material="joint_mat"/>
       <body name="arm_upper_link" pos="0 0 0.82">
         <joint name="arm_shoulder" type="hinge" axis="0 1 0" range="-2.8 1.8" damping="3.0" armature="0.02"/>
-        <geom name="arm_upper_geom" type="capsule" fromto="0 0 0 0.72 0 0" size="0.075" mass="1.2" material="arm_link_mat" contype="0" conaffinity="0"/>
-        <geom name="arm_shoulder_hub" type="cylinder" quat="0.7071068 0 0.7071068 0" size="0.115 0.09" material="joint_mat" contype="0" conaffinity="0"/>
+        <geom name="arm_upper_geom" class="robot_part" type="capsule" fromto="0 0 0 0.72 0 0" size="0.075" mass="1.2" material="arm_link_mat"/>
+        <geom name="arm_shoulder_hub" class="robot_part" type="cylinder" quat="0.7071068 0 0.7071068 0" size="0.115 0.09" material="joint_mat"/>
         <body name="arm_forearm_link" pos="0.72 0 0">
           <joint name="arm_elbow" type="hinge" axis="0 1 0" range="-2.8 2.8" damping="2.4" armature="0.018"/>
-          <geom name="arm_forearm_geom" type="capsule" fromto="0 0 0 0.62 0 0" size="0.065" mass="0.9" material="arm_link_mat" contype="0" conaffinity="0"/>
-          <geom name="arm_elbow_hub" type="cylinder" quat="0.7071068 0 0.7071068 0" size="0.095 0.075" material="joint_mat" contype="0" conaffinity="0"/>
+          <geom name="arm_forearm_geom" class="robot_part" type="capsule" fromto="0 0 0 0.62 0 0" size="0.065" mass="0.9" material="arm_link_mat"/>
+          <geom name="arm_elbow_hub" class="robot_part" type="cylinder" quat="0.7071068 0 0.7071068 0" size="0.095 0.075" material="joint_mat"/>
           <body name="arm_wrist_link" pos="0.62 0 0">
             <joint name="arm_wrist" type="hinge" axis="0 1 0" range="-2.4 2.4" damping="1.4" armature="0.012"/>
-            <geom name="arm_wrist_geom" type="capsule" fromto="0 0 0 0.13 0 0" size="0.05" mass="0.25" material="gripper_mat" contype="0" conaffinity="0"/>
+            <geom name="arm_wrist_geom" class="robot_part" type="capsule" fromto="0 0 0 0.13 0 0" size="0.05" mass="0.25" material="gripper_mat"/>
             <body name="gripper" pos="0.13 0 0">
-              <geom name="gripper_palm_geom" type="box" pos="0 0 -0.025" size="0.09 0.11 0.035" material="gripper_mat" contype="0" conaffinity="0"/>
-              <site name="arm_tcp" type="sphere" pos="-0.13 0 0" size="0.025" rgba="0.02 1 0.95 1" group="2"/>
-              <body name="left_finger" pos="0 0.105 -0.075">
-                <joint name="gripper_left_slide" type="slide" axis="0 1 0" range="-0.055 0" damping="1.5"/>
-                <geom name="left_finger_geom" type="box" pos="0 0 -0.07" size="0.035 0.025 0.07" material="gripper_mat" contype="0" conaffinity="0"/>
+              <!-- Palm bottom sits 0.13 m above the tool centre point, so with
+                   the TCP at the 0.07 m-radius part's centre the palm clears
+                   the part top by 0.06 m. The earlier 0.03 m margin was inside
+                   the position servos' sag, and the palm pressed the part off
+                   the belt on the way down. -->
+              <geom name="gripper_palm_geom" class="robot_part" type="box" pos="0 0 0.005" size="0.09 0.14 0.035" material="gripper_mat"/>
+              <!-- Tool centre point: the grasp centre between the finger pads,
+                   0.16 m below the palm mount, not the wrist origin. -->
+              <site name="arm_tcp" type="sphere" pos="0 0 -0.16" size="0.025" rgba="0.02 1 0.95 1" group="2"/>
+              <!-- Pads span TCP-0.04 to TCP+0.11: low enough to grip the part's
+                   upper 0.11 m, high enough to stay 0.03 m off the belt and off
+                   the bin floor at the release pose. -->
+              <body name="left_finger" pos="0 0.135 -0.02">
+                <joint name="gripper_left_slide" type="slide" axis="0 1 0" range="-0.075 0" damping="1.5"/>
+                <geom name="left_finger_geom" class="robot_part" type="box" pos="0 0 -0.105" size="0.035 0.025 0.075" material="gripper_mat"/>
               </body>
-              <body name="right_finger" pos="0 -0.105 -0.075">
-                <joint name="gripper_right_slide" type="slide" axis="0 1 0" range="0 0.055" damping="1.5"/>
-                <geom name="right_finger_geom" type="box" pos="0 0 -0.07" size="0.035 0.025 0.07" material="gripper_mat" contype="0" conaffinity="0"/>
+              <body name="right_finger" pos="0 -0.135 -0.02">
+                <joint name="gripper_right_slide" type="slide" axis="0 1 0" range="0 0.075" damping="1.5"/>
+                <geom name="right_finger_geom" class="robot_part" type="box" pos="0 0 -0.105" size="0.035 0.025 0.075" material="gripper_mat"/>
               </body>
             </body>
           </body>
@@ -91,41 +122,57 @@
 
     <body name="blue_part" pos="0.23 0 0.855">
       <freejoint name="blue_part_free"/>
-      <geom name="blue_part_geom" type="cylinder" size="0.07 0.07" mass="0.16" material="blue_mat" friction="0.72 0.01 0.003"/>
+      <geom name="blue_part_geom" class="payload_part" type="cylinder" size="0.07 0.07" mass="0.16" material="blue_mat" friction="0.72 0.01 0.003"/>
       <site name="blue_part_top_site" type="sphere" pos="0 0 0.075" size="0.018" rgba="0.02 0.55 1 1" group="2"/>
     </body>
     <body name="red_part" pos="0.43 0.45 0.75">
       <freejoint name="red_part_free"/>
-      <geom name="red_part_geom" type="cylinder" size="0.07 0.07" mass="0.16" material="red_mat" friction="0.72 0.01 0.003"/>
+      <geom name="red_part_geom" class="payload_part" type="cylinder" size="0.07 0.07" mass="0.16" material="red_mat" friction="0.72 0.01 0.003"/>
     </body>
 
     <body name="blue_bin" pos="0.78 0 0.70">
-      <geom name="blue_bin_bottom" type="box" pos="0 0 0.045" size="0.23 0.22 0.045" material="blue_bin_mat"/>
-      <geom name="blue_bin_left" type="box" pos="0 0.235 0.16" size="0.23 0.015 0.115" material="blue_bin_mat"/>
-      <geom name="blue_bin_right" type="box" pos="0 -0.235 0.16" size="0.23 0.015 0.115" material="blue_bin_mat"/>
-      <geom name="blue_bin_front" type="box" pos="0.215 0 0.16" size="0.015 0.22 0.115" material="blue_bin_mat"/>
-      <geom name="blue_bin_back" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="blue_bin_mat"/>
+      <geom name="blue_bin_bottom" class="world_part" type="box" pos="0 0 0.045" size="0.23 0.22 0.045" material="blue_bin_mat"/>
+      <geom name="blue_bin_left" class="world_part" type="box" pos="0 0.235 0.16" size="0.23 0.015 0.115" material="blue_bin_mat"/>
+      <geom name="blue_bin_right" class="world_part" type="box" pos="0 -0.235 0.16" size="0.23 0.015 0.115" material="blue_bin_mat"/>
+      <geom name="blue_bin_front" class="world_part" type="box" pos="0.215 0 0.16" size="0.015 0.22 0.115" material="blue_bin_mat"/>
+      <geom name="blue_bin_back" class="world_part" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="blue_bin_mat"/>
     </body>
     <body name="red_bin" pos="0.78 0.55 0.70">
-      <geom name="red_bin_bottom" type="box" pos="0 0 0.045" size="0.23 0.22 0.045" material="red_bin_mat"/>
-      <geom name="red_bin_left" type="box" pos="0 0.235 0.16" size="0.23 0.015 0.115" material="red_bin_mat"/>
-      <geom name="red_bin_right" type="box" pos="0 -0.235 0.16" size="0.23 0.015 0.115" material="red_bin_mat"/>
-      <geom name="red_bin_front" type="box" pos="0.215 0 0.16" size="0.015 0.22 0.115" material="red_bin_mat"/>
-      <geom name="red_bin_back" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="red_bin_mat"/>
+      <geom name="red_bin_bottom" class="world_part" type="box" pos="0 0 0.045" size="0.23 0.22 0.045" material="red_bin_mat"/>
+      <geom name="red_bin_left" class="world_part" type="box" pos="0 0.235 0.16" size="0.23 0.015 0.115" material="red_bin_mat"/>
+      <geom name="red_bin_right" class="world_part" type="box" pos="0 -0.235 0.16" size="0.23 0.015 0.115" material="red_bin_mat"/>
+      <geom name="red_bin_front" class="world_part" type="box" pos="0.215 0 0.16" size="0.015 0.22 0.115" material="red_bin_mat"/>
+      <geom name="red_bin_back" class="world_part" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="red_bin_mat"/>
     </body>
 
-    <site name="approach_blue_part_marker" type="sphere" pos="0.23 0 0.98" size="0.045" material="marker_yellow" group="2"/>
+    <site name="approach_blue_part_marker" type="sphere" pos="0.23 0 1.10" size="0.045" material="marker_yellow" group="2"/>
     <site name="grasp_blue_part_marker" type="cylinder" pos="0.23 0 0.91" size="0.075 0.012" material="marker_cyan" group="2"/>
-    <site name="transfer_blue_bin_marker" type="cylinder" pos="0.78 0 0.84" size="0.09 0.012" material="marker_magenta" group="2"/>
+    <site name="transfer_blue_bin_marker" type="cylinder" pos="0.78 0 1.10" size="0.09 0.012" material="marker_magenta" group="2"/>
     <site name="release_blue_part_marker" type="sphere" pos="0.78 -0.34 1.22" size="0.055" material="marker_green" group="2"/>
     <site name="inspect_sorting_marker" type="ellipsoid" pos="1.12 -0.62 0.86" size="0.055 0.035 0.018" material="marker_magenta" group="2"/>
   </worldbody>
 
+  <contact>
+    <!-- The shoulder hub is bolted into the pedestal top, so the mount and the
+         first link overlap by design. MuJoCo's parent-child filter does not
+         remove this pair: the filter is skipped when the parent's weld root is
+         the world, which ``arm_base`` is. Excluding the one mount pair keeps
+         every other pedestal-arm pair live, so a forearm or gripper swung into
+         the column still reports contact. -->
+    <exclude body1="arm_base" body2="arm_upper_link"/>
+  </contact>
+
   <actuator>
-    <position name="arm_shoulder_motor" joint="arm_shoulder" kp="180" kv="20" ctrlrange="-2.8 1.8" forcerange="-180 180"/>
-    <position name="arm_elbow_motor" joint="arm_elbow" kp="180" kv="18" ctrlrange="-2.8 2.8" forcerange="-150 150"/>
-    <position name="arm_wrist_motor" joint="arm_wrist" kp="100" kv="12" ctrlrange="-2.4 2.4" forcerange="-80 80"/>
-    <position name="gripper_left_motor" joint="gripper_left_slide" kp="220" kv="22" ctrlrange="-0.055 0" forcerange="-30 30"/>
-    <position name="gripper_right_motor" joint="gripper_right_slide" kp="220" kv="22" ctrlrange="0 0.055" forcerange="-30 30"/>
+    <!-- Gains sized against the load these joints actually carry. The tool and
+         the last two links weigh about 3.4 kg at up to 1.3 m of reach, so the
+         shoulder holds roughly 30 Nm; at the earlier kp="180" that is 0.17 rad
+         of standing sag. Sag is not cosmetic here: the payload is carried by the
+         tool, so a drooping tool takes the part down with it into the conveyor
+         belt it was just lifted off. -->
+    <position name="arm_shoulder_motor" joint="arm_shoulder" kp="20000" kv="500" ctrlrange="-2.8 1.8" forcerange="-600 600"/>
+    <position name="arm_elbow_motor" joint="arm_elbow" kp="12000" kv="160" ctrlrange="-2.8 2.8" forcerange="-400 400"/>
+    <position name="arm_wrist_motor" joint="arm_wrist" kp="4000" kv="45" ctrlrange="-2.4 2.4" forcerange="-200 200"/>
+    <position name="gripper_left_motor" joint="gripper_left_slide" kp="220" kv="22" ctrlrange="-0.075 0" forcerange="-30 30"/>
+    <position name="gripper_right_motor" joint="gripper_right_slide" kp="220" kv="22" ctrlrange="0 0.075" forcerange="-30 30"/>
   </actuator>
 </mujoco>

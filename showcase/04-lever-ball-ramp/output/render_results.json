@@ -11,20 +11,20 @@
     "status": "PASS",
     "pixels": {
       "yellow": {
-        "before": 1659,
-        "after": 2598
+        "before": 2372,
+        "after": 2654
       },
       "magenta": {
-        "before": 204,
-        "after": 74
+        "before": 0,
+        "after": 97
       },
       "cyan": {
-        "before": 2162,
-        "after": 2088
+        "before": 2129,
+        "after": 2076
       },
       "orange": {
-        "before": 306,
-        "after": 309
+        "before": 300,
+        "after": 315
       }
     }
   },
@@ -47,8 +47,8 @@
     480,
     640
   ],
-  "changed_rgb_pixels": 6412,
-  "changed_depth_pixels": 5287,
+  "changed_rgb_pixels": 7662,
+  "changed_depth_pixels": 6057,
   "screenshots": {
     "before_rgb": "output/screenshots/before.png",
     "after_rgb": "output/screenshots/after.png",
@@ -82,15 +82,15 @@
           640,
           3
         ],
-        "rgb_std": 71.12073047214055,
+        "rgb_std": 70.73034902124952,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 171307,
+        "finite_depth_pixels": 173086,
         "finite_depth_min_m": 1.0819425582885742,
-        "finite_depth_max_m": 4.8791823387146,
+        "finite_depth_max_m": 4.684053897857666,
         "observation": {
           "history": [],
           "lever_state": "ready",
@@ -98,13 +98,13 @@
           "target_state": "empty",
           "inspection_state": "pending",
           "lever_angle_rad": 0.0,
-          "gate_lift_m": -0.00034288657219635273,
+          "gate_lift_m": -0.00022045476605050526,
           "ball_position": [
-            -0.43796534503591544,
+            -0.43952091365757534,
             0.0,
-            1.0233149256742557
+            1.0237177338162171
           ],
-          "ball_speed_mps": 0.07048805707535258,
+          "ball_speed_mps": 0.03587733789980043,
           "ball_inside_target": false
         }
       },
@@ -118,15 +118,15 @@
           640,
           3
         ],
-        "rgb_std": 71.76229629626961,
+        "rgb_std": 71.31917899720824,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 172941,
+        "finite_depth_pixels": 174894,
         "finite_depth_min_m": 1.0819425582885742,
-        "finite_depth_max_m": 4.8791823387146,
+        "finite_depth_max_m": 4.684053897857666,
         "observation": {
           "history": [
             "pull_blue_lever"
@@ -135,14 +135,14 @@
           "gate_state": "open",
           "target_state": "empty",
           "inspection_state": "pending",
-          "lever_angle_rad": -0.7500922811271031,
-          "gate_lift_m": 0.11656385066363964,
+          "lever_angle_rad": -0.7504452949420051,
+          "gate_lift_m": 0.11649791144718623,
           "ball_position": [
-            -0.40281061596414874,
+            -0.41093920569104847,
             0.0,
-            1.0145737236749095
+            1.0166190058708597
           ],
-          "ball_speed_mps": 0.29871864294983297,
+          "ball_speed_mps": 0.2634056690211455,
           "ball_inside_target": false
         }
       },
@@ -156,15 +156,15 @@
           640,
           3
         ],
-        "rgb_std": 71.76720385378134,
+        "rgb_std": 71.27166884536483,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 172983,
+        "finite_depth_pixels": 174764,
         "finite_depth_min_m": 1.0819425582885742,
-        "finite_depth_max_m": 4.8791823387146,
+        "finite_depth_max_m": 4.684053897857666,
         "observation": {
           "history": [
             "pull_blue_lever",
@@ -174,14 +174,14 @@
           "gate_state": "open",
           "target_state": "empty",
           "inspection_state": "pending",
-          "lever_angle_rad": -0.9368705234097389,
-          "gate_lift_m": 0.12364547970769889,
+          "lever_angle_rad": -0.9399907148185729,
+          "gate_lift_m": 0.12366111235962135,
           "ball_position": [
-            -0.24997925851650835,
+            -0.24981708490668786,
             0.0,
-            0.9764859519891785
+            0.9765870658437515
           ],
-          "ball_speed_mps": 0.6697526394668439,
+          "ball_speed_mps": 0.6739606317742453,
           "ball_inside_target": false
         }
       },
@@ -195,15 +195,15 @@
           640,
           3
         ],
-        "rgb_std": 71.95976651223623,
+        "rgb_std": 71.47577195476602,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 172974,
+        "finite_depth_pixels": 174761,
         "finite_depth_min_m": 1.0819425582885742,
-        "finite_depth_max_m": 4.8791823387146,
+        "finite_depth_max_m": 4.684053897857666,
         "observation": {
           "history": [
             "pull_blue_lever",
@@ -214,14 +214,14 @@
           "gate_state": "open",
           "target_state": "occupied",
           "inspection_state": "pending",
-          "lever_angle_rad": -0.9521811065437117,
-          "gate_lift_m": 0.12369357134116017,
+          "lever_angle_rad": -0.9521778384491815,
+          "gate_lift_m": 0.12369357128803972,
           "ball_position": [
-            0.5496834200530695,
+            0.5546104423406932,
             0.0,
-            0.8096458860177519
+            0.8117683576517364
           ],
-          "ball_speed_mps": 0.10485479239003818,
+          "ball_speed_mps": 0.14980159571104587,
           "ball_inside_target": true
         }
       },
@@ -235,15 +235,15 @@
           640,
           3
         ],
-        "rgb_std": 71.96369151120564,
+        "rgb_std": 71.47519754843924,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 172974,
+        "finite_depth_pixels": 174761,
         "finite_depth_min_m": 1.0819425582885742,
-        "finite_depth_max_m": 4.8791823387146,
+        "finite_depth_max_m": 4.684053897857666,
         "observation": {
           "history": [
             "pull_blue_lever",
@@ -254,14 +254,14 @@
           "gate_state": "open",
           "target_state": "occupied",
           "inspection_state": "pending",
-          "lever_angle_rad": -0.9521953304912009,
-          "gate_lift_m": 0.12369357142636705,
+          "lever_angle_rad": -0.9521900674710525,
+          "gate_lift_m": 0.12369357140581637,
           "ball_position": [
-            0.5462081943849248,
-            0.0,
-            0.8099304592666787
+            0.5514455709095996,
+            6.521392762005349e-39,
+            0.8099991844782732
           ],
-          "ball_speed_mps": 0.00031516683585397086,
+          "ball_speed_mps": 5.364832514915792e-13,
           "ball_inside_target": true
         }
       },
@@ -275,15 +275,15 @@
           640,
           3
         ],
-        "rgb_std": 71.96369151120564,
+        "rgb_std": 71.47519754843924,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 172974,
+        "finite_depth_pixels": 174761,
         "finite_depth_min_m": 1.0819425582885742,
-        "finite_depth_max_m": 4.8791823387146,
+        "finite_depth_max_m": 4.684053897857666,
         "observation": {
           "history": [
             "pull_blue_lever",
@@ -295,14 +295,14 @@
           "gate_state": "open",
           "target_state": "occupied",
           "inspection_state": "captured",
-          "lever_angle_rad": -0.9521953304912009,
-          "gate_lift_m": 0.12369357142636705,
+          "lever_angle_rad": -0.9521900674710525,
+          "gate_lift_m": 0.12369357140581637,
           "ball_position": [
-            0.5462081943849248,
-            0.0,
-            0.8099304592666787
+            0.5514455709095996,
+            6.521392762005349e-39,
+            0.8099991844782732
           ],
-          "ball_speed_mps": 0.00031516683585397086,
+          "ball_speed_mps": 5.364832514915792e-13,
           "ball_inside_target": true
         }
       }

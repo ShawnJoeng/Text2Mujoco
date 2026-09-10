@@ -88,6 +88,63 @@ def initial_contact_audit(env) -> str:
     return "PASS"
 
 
+class SequenceContactAudit:
+    """Watch every physics step of the documented sequence for interpenetration.
+
+    ``initial_contact_audit`` describes the start pose and the endpoint
+    tolerances below describe the ends of each motion. Neither sees the middle of
+    a transfer, where a centimetre-deep overlap satisfies both. The module-level
+    ``mujoco.mj_step`` is wrapped rather than an environment method because the
+    settle loops and the generated controllers call the module function directly.
+
+    Sub-millimetre readings are the solver's contact softness under load, so the
+    limit is ``-1e-3``; anything deeper is geometry passing through geometry.
+    """
+
+    LIMIT = -1e-3
+
+    def __init__(self, model: mujoco.MjModel):
+        self.model = model
+        self.steps = 0
+        self.worst = 0.0
+        self.pair: str | None = None
+        self.time_s = 0.0
+        self._genuine = mujoco.mj_step
+
+    def __enter__(self) -> "SequenceContactAudit":
+        def watched(model, data, *args, **kwargs):
+            self._genuine(model, data, *args, **kwargs)
+            self.steps += 1
+            for index in range(data.ncon):
+                contact = data.contact[index]
+                if contact.dist < self.worst:
+                    self.worst = float(contact.dist)
+                    self.pair = "{} / {}".format(
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1),
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2),
+                    )
+                    self.time_s = float(data.time)
+
+        mujoco.mj_step = watched
+        return self
+
+    def __exit__(self, *exc_info: Any) -> None:
+        mujoco.mj_step = self._genuine
+
+    def report(self) -> dict[str, Any]:
+        if self.worst < self.LIMIT:
+            raise AssertionError(
+                f"{self.pair} interpenetrate by {-self.worst * 1000:.3f} mm "
+                f"at t={self.time_s:.3f} s during the documented sequence"
+            )
+        return {
+            "steps": self.steps,
+            "deepest_overlap_mm": round(max(0.0, -self.worst) * 1000.0, 4),
+            "limit_mm": 1.0,
+            "result": "PASS",
+        }
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run with MUJOCO_GL=disable")
@@ -102,34 +159,36 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     expect_error(lambda: env.step({"id": "approach_blue_part", "payload": {"unknown": 1}}), "unknown payload")
     expect_error(lambda: env.step({"id": "missing", "payload": {}}), "unknown interaction")
     expect_error(lambda: env.reset(seed=True), "boolean seed")
-    env.run_physics(40)
-    if not np.all(np.isfinite(env.data.qpos)):
-        raise AssertionError("state became non-finite during free physics")
+    with SequenceContactAudit(env.model) as sequence_audit:
+        env.run_physics(40)
+        if not np.all(np.isfinite(env.data.qpos)):
+            raise AssertionError("state became non-finite during free physics")
 
-    approach = env.step({"id": "approach_blue_part", "payload": {"speed_rad_s": 1.0}})
-    if approach["state"]["arm_state"] != "at_pick_pose":
-        raise AssertionError("arm did not enter pick pose")
-    if float(np.linalg.norm(np.asarray(approach["arm_tcp_position"]) - env.BLUE_PICK)) > 0.11:
-        raise AssertionError("TCP is not aligned with blue part")
+        approach = env.step({"id": "approach_blue_part", "payload": {"speed_rad_s": 1.0}})
+        if approach["state"]["arm_state"] != "at_pick_pose":
+            raise AssertionError("arm did not enter pick pose")
+        if float(np.linalg.norm(np.asarray(approach["arm_tcp_position"]) - env.BLUE_PICK)) > 0.11:
+            raise AssertionError("TCP is not aligned with blue part")
 
-    grasp = env.step({"id": "grasp_blue_part", "payload": {"close": True}})
-    if grasp["state"]["blue_part_state"] != "grasped" or grasp["state"]["gripper_state"] != "closed":
-        raise AssertionError("gripper did not grasp the blue part")
-    held_before = np.asarray(grasp["blue_part_position"], dtype=float)
-    transfer = env.step({"id": "transfer_to_blue_bin", "payload": {"speed_rad_s": 1.0}})
-    if transfer["state"]["arm_state"] != "over_blue_bin":
-        raise AssertionError("arm did not reach blue bin")
-    held_after = np.asarray(transfer["blue_part_position"], dtype=float)
-    if np.linalg.norm(held_after - held_before) < 0.20:
-        raise AssertionError("grasped object did not follow the arm during transfer")
-    if np.linalg.norm(held_after - np.asarray(transfer["arm_tcp_position"], dtype=float)) > 0.08:
-        raise AssertionError("grasped object is not synchronized with arm TCP")
-    expect_error(lambda: env.step({"id": "release_blue_part", "payload": {"open": False}}), "release flag")
-    released = env.step({"id": "release_blue_part", "payload": {"open": True}})
-    if released["state"]["blue_part_state"] != "inside_blue_bin" or not released["blue_part_inside_bin"]:
-        raise AssertionError("released blue part is not inside the target bin")
-    if env.is_success():
-        raise AssertionError("inspection must be required for success")
+        grasp = env.step({"id": "grasp_blue_part", "payload": {"close": True}})
+        if grasp["state"]["blue_part_state"] != "grasped" or grasp["state"]["gripper_state"] != "closed":
+            raise AssertionError("gripper did not grasp the blue part")
+        held_before = np.asarray(grasp["blue_part_position"], dtype=float)
+        transfer = env.step({"id": "transfer_to_blue_bin", "payload": {"speed_rad_s": 1.0}})
+        if transfer["state"]["arm_state"] != "over_blue_bin":
+            raise AssertionError("arm did not reach blue bin")
+        held_after = np.asarray(transfer["blue_part_position"], dtype=float)
+        if np.linalg.norm(held_after - held_before) < 0.20:
+            raise AssertionError("grasped object did not follow the arm during transfer")
+        if np.linalg.norm(held_after - np.asarray(transfer["arm_tcp_position"], dtype=float)) > 0.08:
+            raise AssertionError("grasped object is not synchronized with arm TCP")
+        expect_error(lambda: env.step({"id": "release_blue_part", "payload": {"open": False}}), "release flag")
+        released = env.step({"id": "release_blue_part", "payload": {"open": True}})
+        if released["state"]["blue_part_state"] != "inside_blue_bin" or not released["blue_part_inside_bin"]:
+            raise AssertionError("released blue part is not inside the target bin")
+        if env.is_success():
+            raise AssertionError("inspection must be required for success")
+    sequence_contact = sequence_audit.report()
 
     artifact_root = env.package_root / "output"
     artifact_root.mkdir(parents=True, exist_ok=True)
@@ -161,6 +220,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "static_checks": checks,
         "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS"},
+        "sequence_contact": sequence_contact,
         "interaction_sequence": ["approach_blue_part", "grasp_blue_part", "transfer_to_blue_bin", "release_blue_part"],
         "grasp_sync": "PASS",
         "release_inside_bin": "PASS",

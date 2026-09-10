@@ -8,7 +8,12 @@
     "蓝色杠杆和挡板分别使用 hinge/slide joint 与 position actuator；拉杆动作同时给两者下发位置目标，模拟机械联动。",
     "释放后小球只由 MuJoCo 重力、碰撞和摩擦驱动，不使用传送或直接修改球 qpos。",
     "释放区和目标区动作是可执行的状态确认/等待契约；相机检查会生成 640 x 480 RGB-D 观测。",
-    "固定相机使用 MuJoCo 原生离屏渲染；macOS 上通过 MUJOCO_GL=glfw 选择 CGL 上下文。"
+    "固定相机使用 MuJoCo 原生离屏渲染；macOS 上通过 MUJOCO_GL=glfw 选择 CGL 上下文。",
+    "碰撞分类沿用 world_part(contype 1/conaffinity 6)、robot_part(2/5)、payload_part(4/7) 三类 default：世界-机构、世界-球、机构-球都参与碰撞，只过滤机构自碰撞；每个可动体都带真实碰撞几何，不使用 contype=0 或 contact exclude 隐藏接触。",
+    "积分步长取 0.001 s：接触时间常数下限是 2*timestep，只有这样 solref 0.002 才能把小球约 1.0 m/s 撞上托盘前壁的冲击压在 1 mm 以内（0.002 s 步长下为 3.14 mm）。",
+    "护栏改为坐在斜坡上表面而非埋入板内：轨道局部坐标 (0, ±0.1525, 0.0525)，底面 0.0525-0.0375=0.015 等于轨道上表面，内侧面 0.1525-0.0125=0.14 等于轨道侧面；世界位姿由斜坡 0.244346 rad 绕 Y 旋转推出。",
+    "杠杆支座改为叉架（两片颊板 + 底板）而不是实心圆柱：颊板内表面距胶囊半径 0.03-0.0225=7.5 mm，底板顶面 0.805 低于胶囊全行程最低点 0.8177 共 12.7 mm，因此转轴范围内不与杠杆干涉，支座与相机立柱都落在台面 0.75 上。",
+    "挡板是站在斜坡表面之上的闸门而非穿板插片：竖直行程遇 14° 斜面需要 88 mm 宽的槽口（比 70 mm 小球还宽），因此关闭位抬到 z=1.036，底面 0.971 距其下方斜坡表面 0.95846 留 12.5 mm 竖直间隙（法向 12.2 mm），关闭高度由 joint 下限而非伺服维持，实测越程 0.22 mm。"
   ],
   "open_questions": [],
   "scene": {
@@ -18,7 +23,8 @@
       "mujoco_version": "3.2.7",
       "mode": "python",
       "headless": true,
-      "gl_backend": "auto"
+      "gl_backend": "auto",
+      "timestep_s": 0.001
     },
     "world": {
       "units": "m",
@@ -45,7 +51,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.9, 0.01, 0.001]
       },
       "semantic": "support_surface"
@@ -66,7 +72,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.55, 0.01, 0.002]
       },
       "semantic": "inclined_track"
@@ -81,13 +87,13 @@
         "geom_name": "ramp_left_rail_geom"
       },
       "pose": {
-        "position": [-0.15, 0.14, 0.93],
+        "position": [-0.1372986, 0.1525, 0.9509405],
         "orientation_xyzw": [0, 0.1218693434, 0, 0.9925461516]
       },
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.6, 0.01, 0.002]
       },
       "semantic": "track_guard"
@@ -102,13 +108,13 @@
         "geom_name": "ramp_right_rail_geom"
       },
       "pose": {
-        "position": [-0.15, -0.14, 0.93],
+        "position": [-0.1372986, -0.1525, 0.9509405],
         "orientation_xyzw": [0, 0.1218693434, 0, 0.9925461516]
       },
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.6, 0.01, 0.002]
       },
       "semantic": "track_guard"
@@ -131,8 +137,8 @@
         "joint_name": "lever_hinge",
         "actuator_name": "lever_position",
         "mass_kg": 0.12,
-        "contype": 0,
-        "conaffinity": 0,
+        "contype": 2,
+        "conaffinity": 5,
         "friction": [0.5, 0.01, 0.001]
       },
       "semantic": "lever"
@@ -147,7 +153,7 @@
         "geom_name": "release_gate_geom"
       },
       "pose": {
-        "position": [-0.31, 0, 0.98],
+        "position": [-0.31, 0, 1.036],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "physics": {
@@ -156,7 +162,7 @@
         "actuator_name": "gate_position",
         "mass_kg": 0.18,
         "contype": 2,
-        "conaffinity": 2,
+        "conaffinity": 5,
         "friction": [0.5, 0.01, 0.001]
       },
       "semantic": "release_barrier"
@@ -178,8 +184,8 @@
         "dynamic": true,
         "joint_name": "purple_ball_free",
         "mass_kg": 0.09,
-        "contype": 3,
-        "conaffinity": 3,
+        "contype": 4,
+        "conaffinity": 7,
         "friction": [0.45, 0.01, 0.003]
       },
       "semantic": "rolling_object"
@@ -210,7 +216,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.7, 0.01, 0.002]
       },
       "semantic": "target_receptacle"

@@ -3,7 +3,7 @@
   "scene": "01-button-cube-box",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via glfw",
   "interaction_sequence": [
@@ -24,7 +24,7 @@
         640,
         3
       ],
-      "rgb_std": 65.48309808982803,
+      "rgb_std": 64.85533349731817,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -37,13 +37,13 @@
         "history": [],
         "button_state": "ready",
         "cube_state": "free",
-        "button_joint_qpos": -0.0012333349411505126,
+        "button_joint_qpos": -0.0013261452393505406,
         "cube_position": [
           -0.12,
           -0.03,
-          0.8249714970506437
+          0.8249997860064995
         ],
-        "cube_speed_mps": 4.383795478977281e-06,
+        "cube_speed_mps": 6.211457348699353e-11,
         "cube_contacts_box_bottom": false
       }
     },
@@ -57,7 +57,7 @@
         640,
         3
       ],
-      "rgb_std": 65.577815720031,
+      "rgb_std": 64.85228198055276,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -72,13 +72,13 @@
         ],
         "button_state": "pressed",
         "cube_state": "free",
-        "button_joint_qpos": -0.01922625004410612,
+        "button_joint_qpos": -0.01922576187529882,
         "cube_position": [
           -0.12,
           -0.03,
-          0.8249713261561805
+          0.8249997860059927
         ],
-        "cube_speed_mps": 2.3212708399928007e-14,
+        "cube_speed_mps": 4.7200041955923503e-14,
         "cube_contacts_box_bottom": false
       }
     },
@@ -92,7 +92,7 @@
         640,
         3
       ],
-      "rgb_std": 65.49995955111304,
+      "rgb_std": 64.77432522892892,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -108,7 +108,7 @@
         ],
         "button_state": "pressed",
         "cube_state": "grasped",
-        "button_joint_qpos": -0.01922625004410612,
+        "button_joint_qpos": -0.01922576187529882,
         "cube_position": [
           -0.12,
           -0.03,
@@ -128,7 +128,7 @@
         640,
         3
       ],
-      "rgb_std": 65.91660070518121,
+      "rgb_std": 65.19890957017704,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -145,13 +145,13 @@
         ],
         "button_state": "pressed",
         "cube_state": "inside_box",
-        "button_joint_qpos": -0.019226249999999997,
+        "button_joint_qpos": -0.019226250000007074,
         "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261561786
+          0.3,
+          0.17999999999999997,
+          0.8449997860059927
         ],
-        "cube_speed_mps": 2.1833944732177327e-14,
+        "cube_speed_mps": 4.8802900664467246e-14,
         "cube_contacts_box_bottom": true
       }
     },
@@ -165,7 +165,7 @@
         640,
         3
       ],
-      "rgb_std": 65.91660070518121,
+      "rgb_std": 65.19890957017704,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -183,13 +183,13 @@
         ],
         "button_state": "pressed",
         "cube_state": "inside_box",
-        "button_joint_qpos": -0.019226249999999997,
+        "button_joint_qpos": -0.019226250000007074,
         "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261561786
+          0.3,
+          0.17999999999999997,
+          0.8449997860059927
         ],
-        "cube_speed_mps": 2.1833944732177327e-14,
+        "cube_speed_mps": 4.8802900664467246e-14,
         "cube_contacts_box_bottom": true
       }
     }

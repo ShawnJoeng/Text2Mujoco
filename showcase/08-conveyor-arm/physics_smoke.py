@@ -48,6 +48,63 @@ def initial_contact_audit(env) -> str:
     return "PASS"
 
 
+class SequenceContactAudit:
+    """Watch every physics step of the documented sequence for interpenetration.
+
+    ``initial_contact_audit`` describes the start pose and the endpoint
+    tolerances below describe the ends of each motion. Neither sees the middle of
+    a transfer, where a centimetre-deep overlap satisfies both. The module-level
+    ``mujoco.mj_step`` is wrapped rather than an environment method because the
+    settle loops and the generated controllers call the module function directly.
+
+    Sub-millimetre readings are the solver's contact softness under load, so the
+    limit is ``-1e-3``; anything deeper is geometry passing through geometry.
+    """
+
+    LIMIT = -1e-3
+
+    def __init__(self, model: mujoco.MjModel):
+        self.model = model
+        self.steps = 0
+        self.worst = 0.0
+        self.pair: str | None = None
+        self.time_s = 0.0
+        self._genuine = mujoco.mj_step
+
+    def __enter__(self) -> "SequenceContactAudit":
+        def watched(model, data, *args, **kwargs):
+            self._genuine(model, data, *args, **kwargs)
+            self.steps += 1
+            for index in range(data.ncon):
+                contact = data.contact[index]
+                if contact.dist < self.worst:
+                    self.worst = float(contact.dist)
+                    self.pair = "{} / {}".format(
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1),
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2),
+                    )
+                    self.time_s = float(data.time)
+
+        mujoco.mj_step = watched
+        return self
+
+    def __exit__(self, *exc_info: Any) -> None:
+        mujoco.mj_step = self._genuine
+
+    def report(self) -> dict[str, Any]:
+        if self.worst < self.LIMIT:
+            raise AssertionError(
+                f"{self.pair} interpenetrate by {-self.worst * 1000:.3f} mm "
+                f"at t={self.time_s:.3f} s during the documented sequence"
+            )
+        return {
+            "steps": self.steps,
+            "deepest_overlap_mm": round(max(0.0, -self.worst) * 1000.0, 4),
+            "limit_mm": 1.0,
+            "result": "PASS",
+        }
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run with MUJOCO_GL=disable")
@@ -72,30 +129,32 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     expect_error(lambda: env.step({"id": "start_conveyor_to_pickup", "payload": {"speed_mps": 0.1}}), "speed bounds")
     expect_error(lambda: env.reset(seed=True), "boolean seed")
 
-    env.step({"id": "start_conveyor_to_pickup", "payload": {"speed_mps": 0.6}})
-    if env.state["parcel_state"] != "at_pickup" or float(env.parcel_position[0]) < -0.11:
-        raise AssertionError("conveyor did not deliver parcel")
-    env.step({"id": "move_arm_to_parcel", "payload": {"speed_rad_s": 1.0}})
-    if env.state["arm_state"] != "at_parcel":
-        raise AssertionError("arm did not reach parcel")
-    expect_error(lambda: env.step({"id": "grasp_parcel_with_arm", "payload": {"close": False}}), "grasp boolean")
-    env.step({"id": "grasp_parcel_with_arm", "payload": {"close": True}})
-    before_transport = np.asarray(env.observe()["parcel_position"])
-    env.step({"id": "move_arm_to_target_bin", "payload": {"speed_rad_s": 1.0}})
-    after_transport = np.asarray(env.observe()["parcel_position"])
-    if float(np.linalg.norm(after_transport - before_transport)) < 0.06:
-        raise AssertionError("held parcel did not follow arm")
-    expect_error(lambda: env.step({"id": "release_parcel_in_target_bin", "payload": {"open": False}}), "release boolean")
-    env.step({"id": "release_parcel_in_target_bin", "payload": {"open": True}})
-    if env.state["parcel_state"] != "inside_target_bin" or not env.observe()["parcel_inside_target_bin"]:
-        raise AssertionError("parcel did not settle in target bin")
+    with SequenceContactAudit(env.model) as audit:
+        env.step({"id": "start_conveyor_to_pickup", "payload": {"speed_mps": 0.6}})
+        if env.state["parcel_state"] != "at_pickup" or float(env.parcel_position[0]) < -0.11:
+            raise AssertionError("conveyor did not deliver parcel")
+        env.step({"id": "move_arm_to_parcel", "payload": {"speed_rad_s": 1.0}})
+        if env.state["arm_state"] != "at_parcel":
+            raise AssertionError("arm did not reach parcel")
+        expect_error(lambda: env.step({"id": "grasp_parcel_with_arm", "payload": {"close": False}}), "grasp boolean")
+        env.step({"id": "grasp_parcel_with_arm", "payload": {"close": True}})
+        before_transport = np.asarray(env.observe()["parcel_position"])
+        env.step({"id": "move_arm_to_target_bin", "payload": {"speed_rad_s": 1.0}})
+        after_transport = np.asarray(env.observe()["parcel_position"])
+        if float(np.linalg.norm(after_transport - before_transport)) < 0.06:
+            raise AssertionError("held parcel did not follow arm")
+        expect_error(lambda: env.step({"id": "release_parcel_in_target_bin", "payload": {"open": False}}), "release boolean")
+        env.step({"id": "release_parcel_in_target_bin", "payload": {"open": True}})
+        if env.state["parcel_state"] != "inside_target_bin" or not env.observe()["parcel_inside_target_bin"]:
+            raise AssertionError("parcel did not settle in target bin")
+    sequence_contact = audit.report()
     if env.is_success():
         raise AssertionError("inspection is required before success")
     env.reset(seed=808)
     if env.observe()["seed"] != 808 or env.observe()["state"]["history"]:
         raise AssertionError("custom reset failed")
     env.reset()
-    return {"status": "PASS", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "path_base": "package_root", "static_checks": {"xml_parse": "PASS", "mjcf_compile": "PASS", "conveyor_hinge": "PASS", "parcel_free_joint": "PASS", "explicit_actuators": 7, "visible_markers": len(env.points)}, "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS", "conveyor_delivery": "PASS", "held_parcel_transport": "PASS", "target_bin_settle": "PASS"}, "dependency_enforcement": "PASS", "deterministic_reset": "PASS", "interaction_sequence": ["start_conveyor_to_pickup", "move_arm_to_parcel", "grasp_parcel_with_arm", "move_arm_to_target_bin", "release_parcel_in_target_bin"]}
+    return {"status": "PASS", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "path_base": "package_root", "static_checks": {"xml_parse": "PASS", "mjcf_compile": "PASS", "conveyor_hinge": "PASS", "parcel_free_joint": "PASS", "explicit_actuators": 7, "visible_markers": len(env.points)}, "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS", "conveyor_delivery": "PASS", "held_parcel_transport": "PASS", "target_bin_settle": "PASS", "sequence_contact": sequence_contact}, "dependency_enforcement": "PASS", "deterministic_reset": "PASS", "interaction_sequence": ["start_conveyor_to_pickup", "move_arm_to_parcel", "grasp_parcel_with_arm", "move_arm_to_target_bin", "release_parcel_in_target_bin"]}
 
 
 def main() -> int:

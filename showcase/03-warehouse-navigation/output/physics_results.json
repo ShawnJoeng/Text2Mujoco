@@ -15,6 +15,12 @@
     "geometry_half_sizes": "PASS",
     "quaternion_conversion": "PASS"
   },
+  "sequence_contact": {
+    "steps": 3475,
+    "deepest_overlap_mm": 0.0,
+    "limit_mm": 1.0,
+    "result": "PASS"
+  },
   "physics": {
     "initial_contact": "PASS",
     "mj_step": "PASS",

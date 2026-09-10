@@ -12,17 +12,23 @@
   "physics": {
     "initial_contact": "PASS",
     "lever_actuator": "PASS",
-    "gate_lift_m": 0.11656407732540523,
+    "gate_lift_m": 0.1164990925839923,
     "release_zone": "PASS",
     "tray_settling": "PASS",
     "tray_contact": "PASS",
     "ball_position": [
-      0.5496834200530977,
+      0.5528997318967296,
       0.0,
-      0.8096458860177458
+      0.809999184475463
     ],
-    "ball_speed_mps": 0.10485479238938078,
+    "ball_speed_mps": 6.976353926740213e-10,
     "finite_state": "PASS"
+  },
+  "sequence_contact": {
+    "steps": 1519,
+    "deepest_overlap_mm": 0.4196,
+    "limit_mm": 1.0,
+    "result": "PASS"
   },
   "interaction_sequence": [
     "pull_blue_lever",

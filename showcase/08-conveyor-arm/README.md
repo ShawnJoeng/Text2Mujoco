@@ -7,7 +7,7 @@ This MuJoCo 3.2.7 showcase demonstrates a synchronized conveyor and robot workfl
 1. `start_conveyor_to_pickup` drives the conveyor roller while the parcel advances to the pickup index.
 2. `move_arm_to_parcel` moves the arm joints and tool lift to the handoff pose.
 3. `grasp_parcel_with_arm` closes both powered finger slides and enables a deterministic task-level hold.
-4. `move_arm_to_target_bin` transports the held parcel with the arm actuators.
+4. `move_arm_to_target_bin` lifts the held parcel above the bin rim, traverses in straight Cartesian sub-steps, then lowers it into the bin with the arm actuators.
 5. `release_parcel_in_target_bin` opens both fingers, disables the hold, and settles the parcel in the five-piece target bin.
 6. `inspect_handoff` captures RGB-D evidence from `handoff_camera`.
 

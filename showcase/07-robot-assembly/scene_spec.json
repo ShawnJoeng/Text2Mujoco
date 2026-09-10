@@ -7,6 +7,10 @@
     "机械臂是内嵌在 MJCF 中的三关节平面机械臂，带工具升降关节和单侧夹爪滑动关节；几何体使用 primitive。",
     "抓取阶段使用可复现的任务级夹持约束，将定位销保持在工具中心；机械臂关节和夹爪执行器仍然实际驱动物理模型。",
     "装配座由底座、四个导向柱和插入底面组成，定位销释放后由重力和碰撞接触决定最终姿态。",
+    "所有几何体都参与碰撞：world_part (contype 1 / conaffinity 6)、robot_part (2 / 5)、payload_part (4 / 7) 三个 default class 让世界-机械臂、世界-负载、机械臂-负载互相碰撞，只过滤机械臂自身碰撞（短链 primitive 无法自我折叠，且连杆有意嵌套在关节轮毂与手掌内）。",
+    "所有 z 坐标由支撑面顶面加半高推导：桌面顶 0.780 -> 装配座底座 0.780..0.880 -> 导向柱 0.880..0.940 -> 插入底面 0.880..0.900 -> 就位定位销中心 0.970；机械臂旋转平面 1.175 使最低连杆表面 (1.130) 高于导向柱顶 (0.940)。",
+    "工具升降轴使用 gravcomp=\"1\" 表示配重轴；否则 P 伺服在 0.40 kg 工具下下垂 9.3 mm，而任务级夹持是位置级约束，会把下垂直接传给定位销。",
+    "搬运在 tool_z = 0 进行：被夹持定位销的最低面位于 0.980，比导向柱顶高 40 mm，因此关节空间插值的中途姿态也不会撞到装配座。",
     "固定相机输出 640 x 480 RGB-D；黄色、青色、绿色、品红色和橙色 site 是无碰撞可见交互标记。",
     "场景只使用 MJCF primitive，不依赖下载的网格或机器人资产。"
   ],
@@ -35,13 +39,13 @@
       "source": "./model.xml",
       "body_name": "arm_base",
       "pose": {
-        "position": [-0.55, 0.0, 0.95],
+        "position": [-0.55, 0.0, 1.175],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "physics": {
         "dynamic": false,
-        "contype": 0,
-        "conaffinity": 0
+        "contype": 2,
+        "conaffinity": 5
       },
       "exports": {
         "body": ["arm_tool"],
@@ -66,7 +70,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.9, 0.01, 0.001]
       },
       "semantic": "support_surface"
@@ -81,16 +85,16 @@
         "geom_name": "red_peg_geom"
       },
       "pose": {
-        "position": [0.20, 0.0, 0.84],
+        "position": [0.21, 0.0, 0.85],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "physics": {
         "dynamic": true,
         "joint_name": "peg_free",
         "mass_kg": 0.16,
-        "contype": 1,
-        "conaffinity": 1,
-        "friction": [0.7, 0.01, 0.002]
+        "contype": 4,
+        "conaffinity": 7,
+        "friction": [0.65, 0.01, 0.002]
       },
       "semantic": "assembly_peg"
     },
@@ -100,18 +104,18 @@
       "body_name": "insertion_fixture",
       "geometry": {
         "shape": "box",
-        "dimensions": [0.34, 0.30, 0.10],
+        "dimensions": [0.34, 0.20, 0.10],
         "geom_name": "fixture_base_geom"
       },
       "pose": {
-        "position": [0.17, 0.21, 0.80],
+        "position": [0.17, 0.21, 0.83],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
-        "friction": [0.8, 0.01, 0.001]
+        "conaffinity": 6,
+        "friction": [0.82, 0.01, 0.001]
       },
       "semantic": "assembly_fixture"
     },
@@ -125,14 +129,14 @@
         "geom_name": "socket_floor_geom"
       },
       "pose": {
-        "position": [0.17, 0.21, 0.86],
+        "position": [0.17, 0.21, 0.89],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
-        "friction": [0.8, 0.01, 0.001]
+        "conaffinity": 6,
+        "friction": [0.72, 0.01, 0.002]
       },
       "semantic": "insertion_socket_bottom"
     }
@@ -144,7 +148,7 @@
       "target": {"type": "joint", "name": "arm_shoulder"},
       "marker_site": "peg_approach_marker",
       "pose": {
-        "position": [0.20, 0.0, 1.01],
+        "position": [0.21, 0.0, 1.01],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {
@@ -169,7 +173,7 @@
       "target": {"type": "joint", "name": "gripper_slide"},
       "marker_site": "grasp_peg_marker",
       "pose": {
-        "position": [0.20, 0.0, 0.94],
+        "position": [0.21, 0.0, 0.94],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {

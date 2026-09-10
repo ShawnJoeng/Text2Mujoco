@@ -22,14 +22,14 @@
   "visible_interaction_markers": {
     "status": "PASS",
     "pixels": {
-      "yellow": 1587,
-      "cyan": 1187,
+      "yellow": 1736,
+      "cyan": 1149,
       "green": 375,
-      "magenta": 352,
-      "orange": 2052
+      "magenta": 349,
+      "orange": 2553
     }
   },
-  "tool_movement_m": 0.377685605016887,
+  "tool_movement_m": 0.37559244855939816,
   "screenshots": {
     "initial": {
       "path": "output/screenshots/initial/rgb.png"
@@ -47,7 +47,7 @@
         480,
         640
       ],
-      "finite_geometry_pixels": 226004,
+      "finite_geometry_pixels": 226550,
       "min_m": 1.8865543603897095,
       "max_m": 6.59121561050415
     },
@@ -56,7 +56,7 @@
         480,
         640
       ],
-      "finite_geometry_pixels": 226004,
+      "finite_geometry_pixels": 226712,
       "min_m": 1.8865543603897095,
       "max_m": 6.59121561050415
     }

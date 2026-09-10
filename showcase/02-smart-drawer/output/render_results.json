@@ -2,7 +2,7 @@
   "status": "PASS",
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "path_base": "package_root",
   "render_backend_requested": "glfw",
   "renderer_context": "mujoco.cgl.GLContext",
@@ -21,12 +21,12 @@
         249.38202709937812
       ],
       "after_centroid_px": [
-        461.58809314586995,
-        258.10204305799647
+        461.55001647084663,
+        258.0747227407489
       ],
       "before_pixels": 24281,
-      "after_pixels": 18208,
-      "movement_px": 41.941920146561394
+      "after_pixels": 18214,
+      "movement_px": 41.89899963724996
     },
     "cyan": {
       "before_centroid_px": [
@@ -56,7 +56,7 @@
     }
   },
   "drawer_articulation_m": 0.2180230231609386,
-  "changed_depth_pixels": 13700,
+  "changed_depth_pixels": 13716,
   "task_success": true,
   "interaction_sequence": [
     "press_unlock_button",

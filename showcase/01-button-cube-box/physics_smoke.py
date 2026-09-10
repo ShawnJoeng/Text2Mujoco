@@ -67,7 +67,8 @@ def check_model(environment) -> dict[str, Any]:
             environment.require_id(object_type, name)
 
     np.testing.assert_allclose(model.opt.gravity, [0.0, 0.0, -9.81], atol=1e-9)
-    if not math.isclose(float(model.opt.timestep), 0.002, abs_tol=1e-12):
+    declared_timestep = float(environment.spec["scene"]["runtime"]["timestep_s"])
+    if not math.isclose(float(model.opt.timestep), declared_timestep, abs_tol=1e-12):
         raise AssertionError(f"unexpected timestep: {model.opt.timestep}")
     button_type = model.jnt_type[environment.button_joint_id]
     cube_type = model.jnt_type[environment.cube_joint_id]
@@ -134,6 +135,63 @@ def initial_contact_audit(env) -> str:
     return "PASS"
 
 
+class SequenceContactAudit:
+    """Watch every physics step of the documented sequence for interpenetration.
+
+    ``initial_contact_audit`` describes the start pose and the endpoint
+    tolerances below describe the ends of each motion. Neither sees the middle of
+    a transfer, where a centimetre-deep overlap satisfies both. The module-level
+    ``mujoco.mj_step`` is wrapped rather than an environment method because the
+    settle loops and the generated controllers call the module function directly.
+
+    Sub-millimetre readings are the solver's contact softness under load, so the
+    limit is ``-1e-3``; anything deeper is geometry passing through geometry.
+    """
+
+    LIMIT = -1e-3
+
+    def __init__(self, model: mujoco.MjModel):
+        self.model = model
+        self.steps = 0
+        self.worst = 0.0
+        self.pair: str | None = None
+        self.time_s = 0.0
+        self._genuine = mujoco.mj_step
+
+    def __enter__(self) -> "SequenceContactAudit":
+        def watched(model, data, *args, **kwargs):
+            self._genuine(model, data, *args, **kwargs)
+            self.steps += 1
+            for index in range(data.ncon):
+                contact = data.contact[index]
+                if contact.dist < self.worst:
+                    self.worst = float(contact.dist)
+                    self.pair = "{} / {}".format(
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1),
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2),
+                    )
+                    self.time_s = float(data.time)
+
+        mujoco.mj_step = watched
+        return self
+
+    def __exit__(self, *exc_info: Any) -> None:
+        mujoco.mj_step = self._genuine
+
+    def report(self) -> dict[str, Any]:
+        if self.worst < self.LIMIT:
+            raise AssertionError(
+                f"{self.pair} interpenetrate by {-self.worst * 1000:.3f} mm "
+                f"at t={self.time_s:.3f} s during the documented sequence"
+            )
+        return {
+            "steps": self.steps,
+            "deepest_overlap_mm": round(max(0.0, -self.worst) * 1000.0, 4),
+            "limit_mm": 1.0,
+            "result": "PASS",
+        }
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run in a MUJOCO_GL=disable process")
@@ -156,86 +214,88 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         if not callable(getattr(environment, method, None)):
             raise AssertionError(f"missing public environment method: {method}")
 
-    environment.run_physics(100)
-    initial_observation = environment.observe()
-    if not all(math.isfinite(value) for value in initial_observation["cube_position"]):
-        raise AssertionError("initial physics produced a non-finite cube pose")
+    with SequenceContactAudit(environment.model) as sequence_audit:
+        environment.run_physics(100)
+        initial_observation = environment.observe()
+        if not all(math.isfinite(value) for value in initial_observation["cube_position"]):
+            raise AssertionError("initial physics produced a non-finite cube pose")
 
-    environment.reset()
-    expect_environment_error(
-        lambda: environment.step({"id": "grasp_red_cube", "payload": {"close": True}}),
-        "dependency enforcement",
-    )
-    expect_environment_error(
-        lambda: environment.step({"id": "missing", "payload": {}}),
-        "unknown interaction",
-    )
-    for invalid_id in ([], {}, {"nested": "id"}):
+        environment.reset()
         expect_environment_error(
-            lambda value=invalid_id: environment.step({"id": value, "payload": {}}),
-            "unhashable/invalid interaction id",
+            lambda: environment.step({"id": "grasp_red_cube", "payload": {"close": True}}),
+            "dependency enforcement",
         )
-    expect_environment_error(
-        lambda: environment.step(
-            {"id": "press_start_button", "payload": {"press_depth_m": 0.01}}
-        ),
-        "numeric bound validation",
-    )
-    expect_environment_error(
-        lambda: environment.step(
-            {"id": "press_start_button", "payload": {"press_depth_m": 0.0}}
-        ),
-        "insufficient press force",
-    )
-    expect_environment_error(
-        lambda: environment.step(
-            {"id": "press_start_button", "payload": {"press_depth_m": 0.021}}
-        ),
-        "maximum press depth validation",
-    )
+        expect_environment_error(
+            lambda: environment.step({"id": "missing", "payload": {}}),
+            "unknown interaction",
+        )
+        for invalid_id in ([], {}, {"nested": "id"}):
+            expect_environment_error(
+                lambda value=invalid_id: environment.step({"id": value, "payload": {}}),
+                "unhashable/invalid interaction id",
+            )
+        expect_environment_error(
+            lambda: environment.step(
+                {"id": "press_start_button", "payload": {"press_depth_m": 0.01}}
+            ),
+            "numeric bound validation",
+        )
+        expect_environment_error(
+            lambda: environment.step(
+                {"id": "press_start_button", "payload": {"press_depth_m": 0.0}}
+            ),
+            "insufficient press force",
+        )
+        expect_environment_error(
+            lambda: environment.step(
+                {"id": "press_start_button", "payload": {"press_depth_m": 0.021}}
+            ),
+            "maximum press depth validation",
+        )
 
-    environment.step({"id": "press_start_button", "payload": {"press_depth_m": 0.018}})
-    pressed_qpos = environment.observe()["button_joint_qpos"]
-    if pressed_qpos > -0.014:
-        raise AssertionError(f"button did not press: qpos={pressed_qpos}")
-    expect_environment_error(
-        lambda: environment.step(
-            {"id": "press_start_button", "payload": {"press_depth_m": 0.018}}
-        ),
-        "state precondition enforcement",
-    )
-    expect_environment_error(
-        lambda: environment.step({"id": "grasp_red_cube", "payload": {"close": False}}),
-        "boolean payload validation",
-    )
-    environment.step({"id": "grasp_red_cube", "payload": {"close": True}})
-    held_position = np.asarray(environment.observe()["cube_position"])
-    environment.run_physics(50)
-    np.testing.assert_allclose(
-        environment.observe()["cube_position"], held_position, atol=1e-9
-    )
-    expect_environment_error(
-        lambda: environment.step(
+        environment.step({"id": "press_start_button", "payload": {"press_depth_m": 0.018}})
+        pressed_qpos = environment.observe()["button_joint_qpos"]
+        if pressed_qpos > -0.014:
+            raise AssertionError(f"button did not press: qpos={pressed_qpos}")
+        expect_environment_error(
+            lambda: environment.step(
+                {"id": "press_start_button", "payload": {"press_depth_m": 0.018}}
+            ),
+            "state precondition enforcement",
+        )
+        expect_environment_error(
+            lambda: environment.step({"id": "grasp_red_cube", "payload": {"close": False}}),
+            "boolean payload validation",
+        )
+        environment.step({"id": "grasp_red_cube", "payload": {"close": True}})
+        held_position = np.asarray(environment.observe()["cube_position"])
+        environment.run_physics(50)
+        np.testing.assert_allclose(
+            environment.observe()["cube_position"], held_position, atol=1e-9
+        )
+        expect_environment_error(
+            lambda: environment.step(
+                {
+                    "id": "place_cube_in_box",
+                    "payload": {"pose": [9.0, 9.0, 9.0], "release": True},
+                }
+            ),
+            "target bound enforcement",
+        )
+        environment.step(
             {
                 "id": "place_cube_in_box",
-                "payload": {"pose": [9.0, 9.0, 9.0], "release": True},
+                "payload": {"pose": [0.3, 0.18, 0.86], "release": True},
             }
-        ),
-        "target bound enforcement",
-    )
-    environment.step(
-        {
-            "id": "place_cube_in_box",
-            "payload": {"pose": [0.3, 0.18, 0.86], "release": True},
-        }
-    )
-    placed = environment.observe()
-    if not environment.cube_is_inside_box():
-        raise AssertionError(f"cube is outside box after release: {placed['cube_position']}")
-    if not environment.cube_contacts_box_bottom():
-        raise AssertionError("cube has no contact with the open-box bottom")
-    if placed["cube_linear_speed_mps"] >= 0.1:
-        raise AssertionError(f"cube did not settle: {placed['cube_linear_speed_mps']}")
+        )
+        placed = environment.observe()
+        if not environment.cube_is_inside_box():
+            raise AssertionError(f"cube is outside box after release: {placed['cube_position']}")
+        if not environment.cube_contacts_box_bottom():
+            raise AssertionError("cube has no contact with the open-box bottom")
+        if placed["cube_linear_speed_mps"] >= 0.1:
+            raise AssertionError(f"cube did not settle: {placed['cube_linear_speed_mps']}")
+    sequence_contact = sequence_audit.report()
 
     artifacts = environment.save_artifacts(args.output_dir)
     if environment.spec["outputs"].get("save_mjcf", False):
@@ -303,6 +363,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "path_base": "package_root",
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "model_checks": model_checks,
+        "sequence_contact": sequence_contact,
         "physics": {
             "initial_contact": "PASS",
             "mj_step": "PASS",

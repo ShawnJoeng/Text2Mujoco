@@ -30,17 +30,31 @@
     <material name="marker_orange" rgba="1 0.35 0.02 1" emission="0.35"/>
   </asset>
 
+  <!-- Collision classes. A pair collides when (contype1 & conaffinity2) or
+       (contype2 & conaffinity1) is non-zero, so these three bitmasks give
+       world-robot, world-payload, robot-payload and payload-payload contact
+       while filtering robot-robot self collision, which the planar arm would
+       otherwise report between its own hubs and links. -->
   <default>
     <geom friction="0.72 0.01 0.002" condim="6" solref="0.008 1" solimp="0.90 0.95 0.001"/>
+    <default class="world_part">
+      <geom contype="1" conaffinity="6"/>
+    </default>
+    <default class="robot_part">
+      <geom contype="2" conaffinity="5"/>
+    </default>
+    <default class="payload_part">
+      <geom contype="4" conaffinity="7"/>
+    </default>
   </default>
 
   <worldbody>
     <light name="key_light" pos="-1.2 -1.1 2.8" dir="0.35 0.32 -1" directional="true" castshadow="true"/>
     <light name="fill_light" pos="1.4 0.3 2.0" dir="-0.7 -0.2 -1" directional="true" diffuse="0.42 0.44 0.48" specular="0.08 0.08 0.08"/>
     <camera name="handoff_camera" pos="2.1258 -2.2258 2.5989" quat="0.8258179558 0.4483825660 0.1631979076 0.3005731548" fovy="45"/>
-    <geom name="ground_geom" type="plane" size="3 3 0.1" material="ground_mat"/>
+    <geom name="ground_geom" type="plane" size="3 3 0.1" material="ground_mat" class="world_part"/>
 
-    <body name="workbench" pos="0 0 0.74">
+    <body name="workbench" pos="0 0 0.74" childclass="world_part">
       <geom name="workbench_top_geom" type="box" size="0.90 0.575 0.04" material="bench_mat" friction="0.90 0.01 0.001"/>
       <geom name="workbench_leg_fl" type="box" pos="-0.80 -0.47 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
       <geom name="workbench_leg_fr" type="box" pos="0.80 -0.47 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
@@ -48,71 +62,84 @@
       <geom name="workbench_leg_br" type="box" pos="0.80 0.47 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
     </body>
 
-    <body name="conveyor_frame" pos="-0.30 0 0.81">
+    <body name="conveyor_frame" pos="-0.30 0 0.81" childclass="world_part">
       <geom name="conveyor_frame_geom" type="box" size="0.675 0.26 0.04" material="frame_mat" friction="0.82 0.01 0.001"/>
       <geom name="belt_surface_geom" type="box" pos="0 0 0.052" size="0.64 0.225 0.012" material="belt_mat" friction="0.95 0.01 0.001"/>
-      <geom name="conveyor_left_rail" type="box" pos="0 0.245 0.08" size="0.66 0.018 0.055" material="rail_mat"/>
-      <geom name="conveyor_right_rail" type="box" pos="0 -0.245 0.08" size="0.66 0.018 0.055" material="rail_mat"/>
+      <!-- Side guards stop at x = 0, clear of the target bin footprint that
+           starts at x = 0.02; the spec-declared 1.35 m conveyor frame and the
+           spec-declared 0.46 m bin overlap in plan, and a rail that reached
+           into the bin interior would be struck by the parcel being placed. -->
+      <geom name="conveyor_left_rail" type="box" pos="-0.18 0.245 0.08" size="0.48 0.018 0.055" material="rail_mat"/>
+      <geom name="conveyor_right_rail" type="box" pos="-0.18 -0.245 0.08" size="0.48 0.018 0.055" material="rail_mat"/>
     </body>
-    <body name="conveyor_drive" pos="-0.94 0 0.89">
+    <!-- Head and tail rollers. The collision cylinder is spun about its own
+         symmetry axis, so its swept volume is the cylinder itself and the
+         clearances below hold at every drive angle. -->
+    <body name="conveyor_drive" pos="-0.94 0 0.89" childclass="robot_part">
       <joint name="conveyor_drive_hinge" type="hinge" axis="0 1 0" damping="0.12" armature="0.008"/>
-      <geom name="conveyor_drive_geom" type="cylinder" size="0.19 0.06" quat="0.70710678 0 0.70710678 0" material="roller_mat" contype="0" conaffinity="0"/>
-      <site name="conveyor_drive_site" type="sphere" pos="0 0 0.20" size="0.014" rgba="0.9 0.9 0.9 1" group="2"/>
+      <geom name="conveyor_drive_geom" type="cylinder" size="0.055 0.06" quat="0.70710678 0.70710678 0 0" mass="0.35" material="roller_mat"/>
+      <site name="conveyor_drive_site" type="sphere" pos="0 0 0.07" size="0.014" rgba="0.9 0.9 0.9 1" group="2"/>
     </body>
-    <body name="conveyor_tail" pos="0.34 0 0.89">
-      <geom name="conveyor_tail_geom" type="cylinder" size="0.19 0.06" quat="0.70710678 0 0.70710678 0" material="roller_mat" contype="0" conaffinity="0"/>
+    <body name="conveyor_tail" pos="0.34 0 0.83" childclass="world_part">
+      <geom name="conveyor_tail_geom" type="cylinder" size="0.04 0.06" quat="0.70710678 0.70710678 0 0" material="roller_mat"/>
     </body>
 
-    <!-- Articulated planar handoff arm. Link collisions are disabled to keep the
-         demonstration deterministic while payload collisions remain physical. -->
-    <body name="arm_base" pos="0.40 -0.30 1.08">
-      <geom name="arm_base_geom" type="cylinder" size="0.12 0.08" material="arm_dark_mat" contype="0" conaffinity="0"/>
+    <!-- Articulated planar handoff arm. Every link, the tool and both fingers
+         carry robot_part collision geometry; the base plane sits high enough
+         that a carried parcel clears the target bin rim during transfer. -->
+    <body name="arm_base" pos="0.40 -0.30 1.26" childclass="robot_part">
+      <geom name="arm_base_geom" type="cylinder" size="0.12 0.08" material="arm_dark_mat"/>
       <body name="arm_link1" pos="0 0 0">
         <joint name="arm_shoulder" type="hinge" axis="0 0 1" range="-3.05 3.05" damping="1.5" armature="0.015"/>
-        <geom name="arm_link1_geom" type="capsule" fromto="0 0 0 0.32 0 0" size="0.045" mass="0.65" material="arm_mat" contype="0" conaffinity="0"/>
-        <geom name="arm_shoulder_hub" type="cylinder" size="0.065 0.035" material="arm_dark_mat" contype="0" conaffinity="0"/>
+        <geom name="arm_link1_geom" type="capsule" fromto="0 0 0 0.32 0 0" size="0.045" mass="0.65" material="arm_mat"/>
+        <geom name="arm_shoulder_hub" type="cylinder" size="0.065 0.035" material="arm_dark_mat"/>
         <body name="arm_link2" pos="0.32 0 0">
           <joint name="arm_elbow" type="hinge" axis="0 0 1" range="-2.8 2.8" damping="1.2" armature="0.012"/>
-          <geom name="arm_link2_geom" type="capsule" fromto="0 0 0 0.28 0 0" size="0.040" mass="0.52" material="arm_mat" contype="0" conaffinity="0"/>
-          <geom name="arm_elbow_hub" type="cylinder" size="0.058 0.032" material="arm_dark_mat" contype="0" conaffinity="0"/>
+          <geom name="arm_link2_geom" type="capsule" fromto="0 0 0 0.28 0 0" size="0.040" mass="0.52" material="arm_mat"/>
+          <geom name="arm_elbow_hub" type="cylinder" size="0.058 0.032" material="arm_dark_mat"/>
           <body name="arm_link3" pos="0.28 0 0">
             <joint name="arm_wrist" type="hinge" axis="0 0 1" range="-2.8 2.8" damping="1.0" armature="0.010"/>
-            <geom name="arm_link3_geom" type="capsule" fromto="0 0 0 0.16 0 0" size="0.035" mass="0.30" material="arm_mat" contype="0" conaffinity="0"/>
-            <geom name="arm_wrist_hub" type="cylinder" size="0.050 0.028" material="arm_dark_mat" contype="0" conaffinity="0"/>
+            <geom name="arm_link3_geom" type="capsule" fromto="0 0 0 0.16 0 0" size="0.035" mass="0.30" material="arm_mat"/>
+            <geom name="arm_wrist_hub" type="cylinder" size="0.050 0.028" material="arm_dark_mat"/>
             <body name="arm_tool" pos="0.16 0 0">
-              <joint name="tool_z" type="slide" axis="0 0 1" range="-0.12 0" damping="3.0" armature="0.008"/>
-              <geom name="tool_palm_geom" type="box" pos="0 0 -0.025" size="0.075 0.075 0.025" mass="0.24" material="arm_dark_mat" contype="0" conaffinity="0"/>
+              <joint name="tool_z" type="slide" axis="0 0 1" range="-0.22 0.02" damping="3.0" armature="0.008"/>
+              <geom name="tool_palm_geom" type="box" pos="0 0 -0.025" size="0.075 0.115 0.025" mass="0.24" material="arm_dark_mat"/>
               <body name="left_finger" pos="0 0 -0.04">
                 <joint name="gripper_left_slide" type="slide" axis="0 1 0" range="-0.045 0" damping="2.0" armature="0.004"/>
-                <geom name="left_finger_geom" type="box" pos="0 0.048 0" size="0.035 0.012 0.055" mass="0.08" material="arm_mat" contype="0" conaffinity="0"/>
+                <geom name="left_finger_geom" type="box" pos="0 0.116 0" size="0.035 0.012 0.055" mass="0.08" material="arm_mat"/>
               </body>
               <body name="right_finger" pos="0 0 -0.04">
                 <joint name="gripper_right_slide" type="slide" axis="0 1 0" range="0 0.045" damping="2.0" armature="0.004"/>
-                <geom name="right_finger_geom" type="box" pos="0 -0.048 0" size="0.035 0.012 0.055" mass="0.08" material="arm_mat" contype="0" conaffinity="0"/>
+                <geom name="right_finger_geom" type="box" pos="0 -0.116 0" size="0.035 0.012 0.055" mass="0.08" material="arm_mat"/>
               </body>
-              <site name="arm_tcp" type="sphere" pos="0 0 -0.04" size="0.012" rgba="1 0.45 0.02 1" group="2"/>
+              <!-- Grasp centre: the carried parcel hangs here, 5 mm below the
+                   palm face, gripped over the top 40 mm of its 120 mm side. -->
+              <site name="arm_tcp" type="sphere" pos="0 0 -0.115" size="0.012" rgba="1 0.45 0.02 1" group="2"/>
             </body>
           </body>
         </body>
       </body>
     </body>
 
-    <body name="blue_parcel" pos="-0.55 0 0.934">
+    <body name="blue_parcel" pos="-0.55 0 0.934" childclass="payload_part">
       <freejoint name="parcel_free"/>
       <geom name="blue_parcel_geom" type="box" size="0.06 0.06 0.06" mass="0.22" material="parcel_mat" friction="0.76 0.01 0.002"/>
       <site name="parcel_top_site" type="sphere" pos="0 0 0.075" size="0.010" rgba="0.04 0.45 1 1" group="2"/>
     </body>
 
-    <body name="blue_target_bin" pos="0.25 0.18 0.80">
-      <geom name="blue_bin_bottom" type="box" pos="0 0 0.01" size="0.21 0.21 0.01" material="target_bin_mat" friction="0.78 0.01 0.002"/>
+    <body name="blue_target_bin" pos="0.25 0.18 0.80" childclass="world_part">
+      <!-- Floor top at local z = 0.08, which is interior_bounds.min[2] in
+           scene_spec.json, so a 0.12 m parcel resting on it centres at world
+           0.94 m: 0.06 m of local clearance inside the declared interior. -->
+      <geom name="blue_bin_bottom" type="box" pos="0 0 0.04" size="0.21 0.21 0.04" material="target_bin_mat" friction="0.78 0.01 0.002"/>
       <geom name="blue_bin_left" type="box" pos="-0.22 0 0.135" size="0.01 0.21 0.125" material="target_bin_mat"/>
       <geom name="blue_bin_right" type="box" pos="0.22 0 0.135" size="0.01 0.21 0.125" material="target_bin_mat"/>
       <geom name="blue_bin_front" type="box" pos="0 -0.22 0.135" size="0.21 0.01 0.125" material="target_bin_mat"/>
       <geom name="blue_bin_back" type="box" pos="0 0.22 0.135" size="0.21 0.01 0.125" material="target_bin_mat"/>
       <site name="target_bin_center_site" type="cylinder" pos="0 0 0.03" size="0.055 0.006" rgba="0.05 1 0.18 1" group="2"/>
     </body>
-    <body name="red_distractor_bin" pos="0.25 0.68 0.80">
-      <geom name="red_bin_bottom" type="box" pos="0 0 0.01" size="0.21 0.21 0.01" material="distractor_mat"/>
+    <body name="red_distractor_bin" pos="0.25 0.68 0.80" childclass="world_part">
+      <geom name="red_bin_bottom" type="box" pos="0 0 0.04" size="0.21 0.21 0.04" material="distractor_mat"/>
       <geom name="red_bin_left" type="box" pos="-0.22 0 0.135" size="0.01 0.21 0.125" material="distractor_mat"/>
       <geom name="red_bin_right" type="box" pos="0.22 0 0.135" size="0.01 0.21 0.125" material="distractor_mat"/>
       <geom name="red_bin_front" type="box" pos="0 -0.22 0.135" size="0.21 0.01 0.125" material="distractor_mat"/>
@@ -127,12 +154,20 @@
     <site name="handoff_inspection_marker" type="sphere" pos="0.52 0.40 1.02" size="0.028" material="marker_yellow" group="2"/>
   </worldbody>
 
+  <!-- The drive roller is journalled inside the conveyor frame: its bearing
+       seat overlaps the frame slab and the belt plate by construction, so a
+       genuine roller/frame contact would fight the hinge that
+       start_conveyor_to_pickup drives. This is the only excluded pair. -->
+  <contact>
+    <exclude body1="conveyor_drive" body2="conveyor_frame"/>
+  </contact>
+
   <actuator>
     <velocity name="conveyor_motor" joint="conveyor_drive_hinge" kv="0.35" ctrlrange="-8 8"/>
     <position name="shoulder_motor" joint="arm_shoulder" kp="140" kv="14" ctrlrange="-3.05 3.05"/>
     <position name="elbow_motor" joint="arm_elbow" kp="140" kv="14" ctrlrange="-2.8 2.8"/>
     <position name="wrist_motor" joint="arm_wrist" kp="110" kv="11" ctrlrange="-2.8 2.8"/>
-    <position name="tool_lift_motor" joint="tool_z" kp="420" kv="24" ctrlrange="-0.12 0"/>
+    <position name="tool_lift_motor" joint="tool_z" kp="420" kv="24" ctrlrange="-0.22 0.02"/>
     <position name="gripper_left_motor" joint="gripper_left_slide" kp="260" kv="16" ctrlrange="-0.045 0"/>
     <position name="gripper_right_motor" joint="gripper_right_slide" kp="260" kv="16" ctrlrange="0 0.045"/>
   </actuator>

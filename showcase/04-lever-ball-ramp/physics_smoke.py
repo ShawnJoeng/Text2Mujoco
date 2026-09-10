@@ -8,6 +8,7 @@ import json
 import os
 import platform
 from pathlib import Path
+from typing import Any
 
 import mujoco
 import numpy as np
@@ -46,6 +47,63 @@ def initial_contact_audit(env) -> str:
     return "PASS"
 
 
+class SequenceContactAudit:
+    """Watch every physics step of the documented sequence for interpenetration.
+
+    ``initial_contact_audit`` describes the start pose and the endpoint
+    tolerances below describe the ends of each motion. Neither sees the middle of
+    a transfer, where a centimetre-deep overlap satisfies both. The module-level
+    ``mujoco.mj_step`` is wrapped rather than an environment method because the
+    settle loops and the generated controllers call the module function directly.
+
+    Sub-millimetre readings are the solver's contact softness under load, so the
+    limit is ``-1e-3``; anything deeper is geometry passing through geometry.
+    """
+
+    LIMIT = -1e-3
+
+    def __init__(self, model: mujoco.MjModel):
+        self.model = model
+        self.steps = 0
+        self.worst = 0.0
+        self.pair: str | None = None
+        self.time_s = 0.0
+        self._genuine = mujoco.mj_step
+
+    def __enter__(self) -> "SequenceContactAudit":
+        def watched(model, data, *args, **kwargs):
+            self._genuine(model, data, *args, **kwargs)
+            self.steps += 1
+            for index in range(data.ncon):
+                contact = data.contact[index]
+                if contact.dist < self.worst:
+                    self.worst = float(contact.dist)
+                    self.pair = "{} / {}".format(
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1),
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2),
+                    )
+                    self.time_s = float(data.time)
+
+        mujoco.mj_step = watched
+        return self
+
+    def __exit__(self, *exc_info: Any) -> None:
+        mujoco.mj_step = self._genuine
+
+    def report(self) -> dict[str, Any]:
+        if self.worst < self.LIMIT:
+            raise AssertionError(
+                f"{self.pair} interpenetrate by {-self.worst * 1000:.3f} mm "
+                f"at t={self.time_s:.3f} s during the documented sequence"
+            )
+        return {
+            "steps": self.steps,
+            "deepest_overlap_mm": round(max(0.0, -self.worst) * 1000.0, 4),
+            "limit_mm": 1.0,
+            "result": "PASS",
+        }
+
+
 def run(args: argparse.Namespace) -> dict:
     base = Path(__file__).resolve().parent
     env = build_environment(args.model, args.spec)
@@ -56,29 +114,31 @@ def run(args: argparse.Namespace) -> dict:
     expect_error(lambda: env.step({"id": "check_release_zone", "payload": {}}), "dependency")
     expect_error(lambda: env.step({"id": "pull_blue_lever", "payload": {"pull_angle_rad": 0.2}}), "bounds")
 
-    env.run_physics(25)
-    if not np.isfinite(env.data.qpos).all() or not np.isfinite(env.data.qvel).all():
-        raise AssertionError("non-finite state after free stepping")
-    marker_positions = env.observe()["marker_positions"]
-    if len(marker_positions) != 4 or not all(np.isfinite(position).all() for position in marker_positions.values()):
-        raise AssertionError("interaction markers are missing or non-finite")
-    env.step({"id": "pull_blue_lever", "payload": {"pull_angle_rad": 0.95}})
-    pulled = env.observe()
-    if pulled["lever_angle_rad"] > -0.75 or pulled["gate_lift_m"] < 0.1:
-        raise AssertionError(f"lever/gate did not open: {pulled}")
-    env.step({"id": "check_release_zone", "payload": {}})
-    released = env.observe()
-    if not released["ball_has_cleared_release_zone"]:
-        raise AssertionError("ball did not clear release zone")
-    env.step({"id": "confirm_target_tray", "payload": {}})
-    placed = env.observe()
-    if not placed["ball_inside_target"] or placed["ball_speed_mps"] >= 0.15:
-        raise AssertionError(f"ball did not settle in tray: {placed}")
-    if not placed["ball_contacts_tray_bottom"]:
-        env.run_physics(120)
+    with SequenceContactAudit(env.model) as sequence_audit:
+        env.run_physics(25)
+        if not np.isfinite(env.data.qpos).all() or not np.isfinite(env.data.qvel).all():
+            raise AssertionError("non-finite state after free stepping")
+        marker_positions = env.observe()["marker_positions"]
+        if len(marker_positions) != 4 or not all(np.isfinite(position).all() for position in marker_positions.values()):
+            raise AssertionError("interaction markers are missing or non-finite")
+        env.step({"id": "pull_blue_lever", "payload": {"pull_angle_rad": 0.95}})
+        pulled = env.observe()
+        if pulled["lever_angle_rad"] > -0.75 or pulled["gate_lift_m"] < 0.1:
+            raise AssertionError(f"lever/gate did not open: {pulled}")
+        env.step({"id": "check_release_zone", "payload": {}})
+        released = env.observe()
+        if not released["ball_has_cleared_release_zone"]:
+            raise AssertionError("ball did not clear release zone")
+        env.step({"id": "confirm_target_tray", "payload": {}})
         placed = env.observe()
-    if not placed["ball_contacts_tray_bottom"]:
-        raise AssertionError("ball has no tray-bottom contact")
+        if not placed["ball_inside_target"] or placed["ball_speed_mps"] >= 0.15:
+            raise AssertionError(f"ball did not settle in tray: {placed}")
+        if not placed["ball_contacts_tray_bottom"]:
+            env.run_physics(120)
+            placed = env.observe()
+        if not placed["ball_contacts_tray_bottom"]:
+            raise AssertionError("ball has no tray-bottom contact")
+    sequence_contact = sequence_audit.report()
     history = placed["history"]
     env.reset(seed=99)
     if env.observe()["seed"] != 99 or env.observe()["history"]:
@@ -117,6 +177,7 @@ def run(args: argparse.Namespace) -> dict:
             "ball_speed_mps": placed["ball_speed_mps"],
             "finite_state": "PASS",
         },
+        "sequence_contact": sequence_contact,
         "interaction_sequence": history,
         "deterministic_reset": "PASS",
         "mjcf_reload": "PASS",

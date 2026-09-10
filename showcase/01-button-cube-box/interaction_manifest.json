@@ -20,7 +20,7 @@
       "id": "press_start_button",
       "target": {"type": "joint", "name": "button_slide"},
       "marker_site": "press_start_button_marker",
-      "pose": {"position": [0.38, -0.18, 0.845], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0.38, -0.18, 0.86], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "press",
       "action": {
         "mode": "direct",

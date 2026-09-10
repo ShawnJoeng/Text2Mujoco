@@ -3,7 +3,7 @@
   "scene": "02-smart-drawer",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via glfw",
   "sequence_kind": "dense simulation frames",
@@ -16,7 +16,7 @@
   "frame_count": 7,
   "regular_frame_count": 4,
   "event_frame_count": 3,
-  "simulation_time_span_s": 0.684,
+  "simulation_time_span_s": 0.716,
   "gif": "output/screenshots/dense_sequence.gif",
   "tiff": "output/screenshots/dense_sequence.tif",
   "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
@@ -79,9 +79,9 @@
       "archive_frame": 3,
       "index": 2,
       "target_time_s": null,
-      "actual_time_s": 0.22,
-      "absolute_sim_time_s": 0.22,
-      "physics_step": 110,
+      "actual_time_s": 0.252,
+      "absolute_sim_time_s": 0.252,
+      "physics_step": 126,
       "phase": "press_unlock_button",
       "event_frame": true,
       "rgb_shape": [
@@ -125,10 +125,10 @@
         "lock_state": "unlocked",
         "drawer_state": "closed",
         "inspection_state": "pending",
-        "drawer_joint_qpos": 0.2032561030087609,
+        "drawer_joint_qpos": 0.18233791578127106,
         "drawer_body_position": [
           0.0,
-          -0.20723884740771456,
+          -0.18567426240664667,
           0.86
         ]
       }
@@ -137,9 +137,9 @@
       "archive_frame": 5,
       "index": 4,
       "target_time_s": null,
-      "actual_time_s": 0.444,
-      "absolute_sim_time_s": 0.444,
-      "physics_step": 222,
+      "actual_time_s": 0.476,
+      "absolute_sim_time_s": 0.476,
+      "physics_step": 238,
       "phase": "pull_drawer_22cm",
       "event_frame": true,
       "rgb_shape": [
@@ -185,10 +185,10 @@
         "lock_state": "unlocked",
         "drawer_state": "open_22cm",
         "inspection_state": "pending",
-        "drawer_joint_qpos": 0.22003445691447093,
+        "drawer_joint_qpos": 0.22007715604510483,
         "drawer_body_position": [
           0.0,
-          -0.22503593629595647,
+          -0.22508178635226828,
           0.86
         ]
       }
@@ -197,9 +197,9 @@
       "archive_frame": 7,
       "index": 6,
       "target_time_s": null,
-      "actual_time_s": 0.684,
-      "absolute_sim_time_s": 0.684,
-      "physics_step": 342,
+      "actual_time_s": 0.716,
+      "absolute_sim_time_s": 0.716,
+      "physics_step": 358,
       "phase": "inspect_open_drawer",
       "event_frame": true,
       "rgb_shape": [
@@ -216,10 +216,10 @@
         "lock_state": "unlocked",
         "drawer_state": "open_22cm",
         "inspection_state": "verified_open",
-        "drawer_joint_qpos": 0.22000991422553712,
+        "drawer_joint_qpos": 0.2200099142255374,
         "drawer_body_position": [
           0.0,
-          -0.22501018710503654,
+          -0.2250101871050368,
           0.86
         ]
       }

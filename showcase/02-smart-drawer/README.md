@@ -4,8 +4,8 @@ This generated package implements a three-step task: press the green button to u
 
 ## Scene and Interaction
 
-- `press_unlock_button` drives `unlock_button_slide` to `0.012 m`. A yellow emissive site marks the unlock point.
-- `pull_drawer_22cm` is available only after unlocking. A position actuator drives `drawer_slide` toward `0.22 m`; a cyan emissive site marks the handle.
+- `press_unlock_button` drives `unlock_button_slide` to `0.012 m`. A yellow site marks the unlock point.
+- `pull_drawer_22cm` is available only after unlocking. A position actuator drives `drawer_slide` toward `0.22 m`; a cyan site marks the handle.
 - `inspect_open_drawer` requires the drawer position to be at least `0.218 m`. It captures `640 x 480` RGB-D from `fixed_inspection_camera`; a magenta site marks the inspection point.
 
 The drawer uses a real slide joint, position actuators, and multiple collision geoms. Pulling is a task-level control command, not a robot gripper contact simulation. The scene uses only MJCF primitives and requires no downloaded mesh assets.

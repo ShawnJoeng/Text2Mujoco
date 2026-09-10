@@ -48,6 +48,63 @@ def initial_contact_audit(env) -> str:
     return "PASS"
 
 
+class SequenceContactAudit:
+    """Watch every physics step of the documented sequence for interpenetration.
+
+    ``initial_contact_audit`` describes the start pose and the endpoint
+    tolerances below describe the ends of each motion. Neither sees the middle of
+    a transfer, where a centimetre-deep overlap satisfies both. The module-level
+    ``mujoco.mj_step`` is wrapped rather than an environment method because the
+    settle loops and the generated controllers call the module function directly.
+
+    Sub-millimetre readings are the solver's contact softness under load, so the
+    limit is ``-1e-3``; anything deeper is geometry passing through geometry.
+    """
+
+    LIMIT = -1e-3
+
+    def __init__(self, model: mujoco.MjModel):
+        self.model = model
+        self.steps = 0
+        self.worst = 0.0
+        self.pair: str | None = None
+        self.time_s = 0.0
+        self._genuine = mujoco.mj_step
+
+    def __enter__(self) -> "SequenceContactAudit":
+        def watched(model, data, *args, **kwargs):
+            self._genuine(model, data, *args, **kwargs)
+            self.steps += 1
+            for index in range(data.ncon):
+                contact = data.contact[index]
+                if contact.dist < self.worst:
+                    self.worst = float(contact.dist)
+                    self.pair = "{} / {}".format(
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1),
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2),
+                    )
+                    self.time_s = float(data.time)
+
+        mujoco.mj_step = watched
+        return self
+
+    def __exit__(self, *exc_info: Any) -> None:
+        mujoco.mj_step = self._genuine
+
+    def report(self) -> dict[str, Any]:
+        if self.worst < self.LIMIT:
+            raise AssertionError(
+                f"{self.pair} interpenetrate by {-self.worst * 1000:.3f} mm "
+                f"at t={self.time_s:.3f} s during the documented sequence"
+            )
+        return {
+            "steps": self.steps,
+            "deepest_overlap_mm": round(max(0.0, -self.worst) * 1000.0, 4),
+            "limit_mm": 1.0,
+            "result": "PASS",
+        }
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run with MUJOCO_GL=disable")
@@ -79,21 +136,22 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     expect_error(lambda: env.step({"id": "move_arm_to_peg", "payload": {"bogus": True}}), "unknown payload")
     expect_error(lambda: env.reset(seed=True), "boolean seed")
 
-    env.step({"id": "move_arm_to_peg", "payload": {"speed_rad_s": 1.0}})
-    if env.state["arm_state"] != "at_peg":
-        raise AssertionError("arm did not reach peg")
-    expect_error(lambda: env.step({"id": "grasp_peg_with_arm", "payload": {"close": False}}), "grasp boolean")
-    env.step({"id": "grasp_peg_with_arm", "payload": {"close": True}})
-    held_before = np.asarray(env.observe()["peg_position"])
-    env.step({"id": "move_arm_to_socket", "payload": {"speed_rad_s": 1.0}})
-    held_after = np.asarray(env.observe()["peg_position"])
-    if float(np.linalg.norm(held_after - held_before)) < 0.05:
-        raise AssertionError("held peg did not follow arm transport")
-    env.step({"id": "insert_peg_into_socket", "payload": {"depth_m": 0.08}})
-    if env.observe()["tool_z_qpos"] > -0.06:
-        raise AssertionError("tool did not lower")
-    expect_error(lambda: env.step({"id": "release_assembled_peg", "payload": {"open": False}}), "release boolean")
-    env.step({"id": "release_assembled_peg", "payload": {"open": True}})
+    with SequenceContactAudit(env.model) as audit:
+        env.step({"id": "move_arm_to_peg", "payload": {"speed_rad_s": 1.0}})
+        if env.state["arm_state"] != "at_peg":
+            raise AssertionError("arm did not reach peg")
+        expect_error(lambda: env.step({"id": "grasp_peg_with_arm", "payload": {"close": False}}), "grasp boolean")
+        env.step({"id": "grasp_peg_with_arm", "payload": {"close": True}})
+        held_before = np.asarray(env.observe()["peg_position"])
+        env.step({"id": "move_arm_to_socket", "payload": {"speed_rad_s": 1.0}})
+        held_after = np.asarray(env.observe()["peg_position"])
+        if float(np.linalg.norm(held_after - held_before)) < 0.05:
+            raise AssertionError("held peg did not follow arm transport")
+        env.step({"id": "insert_peg_into_socket", "payload": {"depth_m": 0.08}})
+        if env.observe()["tool_z_qpos"] > -0.06:
+            raise AssertionError("tool did not lower")
+        expect_error(lambda: env.step({"id": "release_assembled_peg", "payload": {"open": False}}), "release boolean")
+        env.step({"id": "release_assembled_peg", "payload": {"open": True}})
     if env.state["peg_state"] != "seated":
         raise AssertionError("peg did not seat")
     peg_error = float(np.linalg.norm(np.asarray(env.observe()["peg_position"]) - env.SOCKET_POSITION))
@@ -123,7 +181,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "explicit_actuators": 5,
             "visible_markers": len(env.points),
         },
-        "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS", "held_peg_transport": "PASS", "socket_release_tolerance_m": peg_error},
+        "physics": {"initial_contact": "PASS", "sequence_contact": audit.report(), "mj_step": "PASS", "finite_state": "PASS", "held_peg_transport": "PASS", "socket_release_tolerance_m": peg_error},
         "dependency_enforcement": "PASS",
         "deterministic_reset": "PASS",
         "interaction_sequence": [

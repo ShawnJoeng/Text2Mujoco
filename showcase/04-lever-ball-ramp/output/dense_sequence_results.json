@@ -13,10 +13,10 @@
   "gif_frame_duration_ms": 200,
   "gif_final_frame_duration_ms": 800,
   "depth_capture": "keyframes_only; dense pass stores RGB frames",
-  "frame_count": 13,
-  "regular_frame_count": 9,
+  "frame_count": 12,
+  "regular_frame_count": 8,
   "event_frame_count": 4,
-  "simulation_time_span_s": 1.686,
+  "simulation_time_span_s": 1.519,
   "gif": "output/screenshots/dense_sequence.gif",
   "tiff": "output/screenshots/dense_sequence.tif",
   "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
@@ -58,7 +58,7 @@
       "target_time_s": 0.2,
       "actual_time_s": 0.2,
       "absolute_sim_time_s": 0.2,
-      "physics_step": 100,
+      "physics_step": 200,
       "phase": "pull_blue_lever",
       "event_frame": false,
       "rgb_shape": [
@@ -72,14 +72,14 @@
         "gate_state": "closed",
         "target_state": "empty",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.6324384556399861,
-        "gate_lift_m": 0.10634270277668936,
+        "lever_angle_rad": -0.69866271807034,
+        "gate_lift_m": 0.11252093609236989,
         "ball_position": [
-          -0.417621132949351,
+          -0.41784744150807607,
           0.0,
-          1.0182764225515233
+          1.0183362112144307
         ],
-        "ball_speed_mps": 0.2323652981071187,
+        "ball_speed_mps": 0.22936472005756722,
         "ball_inside_target": false
       }
     },
@@ -87,9 +87,9 @@
       "archive_frame": 3,
       "index": 2,
       "target_time_s": null,
-      "actual_time_s": 0.258,
-      "absolute_sim_time_s": 0.258,
-      "physics_step": 129,
+      "actual_time_s": 0.229,
+      "absolute_sim_time_s": 0.229,
+      "physics_step": 229,
       "phase": "pull_blue_lever",
       "event_frame": true,
       "rgb_shape": [
@@ -105,14 +105,14 @@
         "gate_state": "open",
         "target_state": "empty",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.7500922811271031,
-        "gate_lift_m": 0.11656385066363964,
+        "lever_angle_rad": -0.7504452949420051,
+        "gate_lift_m": 0.11649791144718623,
         "ball_position": [
-          -0.40281061596414874,
+          -0.41093920569104847,
           0.0,
-          1.0145737236749095
+          1.0166190058708597
         ],
-        "ball_speed_mps": 0.29871864294983297,
+        "ball_speed_mps": 0.2634056690211455,
         "ball_inside_target": false
       }
     },
@@ -122,7 +122,7 @@
       "target_time_s": 0.4,
       "actual_time_s": 0.4,
       "absolute_sim_time_s": 0.4,
-      "physics_step": 200,
+      "physics_step": 400,
       "phase": "check_release_zone",
       "event_frame": false,
       "rgb_shape": [
@@ -138,14 +138,14 @@
         "gate_state": "open",
         "target_state": "empty",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.8864770134222467,
-        "gate_lift_m": 0.12288555296593201,
+        "lever_angle_rad": -0.8997536415039119,
+        "gate_lift_m": 0.12315613469308016,
         "ball_position": [
-          -0.3507718860142911,
+          -0.35116391980473394,
           0.0,
-          1.001519219551894
+          1.0017127626128137
         ],
-        "ball_speed_mps": 0.4605042249194179,
+        "ball_speed_mps": 0.4660167831376165,
         "ball_inside_target": false
       }
     },
@@ -153,9 +153,9 @@
       "archive_frame": 5,
       "index": 4,
       "target_time_s": null,
-      "actual_time_s": 0.584,
-      "absolute_sim_time_s": 0.584,
-      "physics_step": 292,
+      "actual_time_s": 0.585,
+      "absolute_sim_time_s": 0.585,
+      "physics_step": 585,
       "phase": "check_release_zone",
       "event_frame": true,
       "rgb_shape": [
@@ -172,14 +172,14 @@
         "gate_state": "open",
         "target_state": "empty",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.9368705234097389,
-        "gate_lift_m": 0.12364547970769889,
+        "lever_angle_rad": -0.9399907148185729,
+        "gate_lift_m": 0.12366111235962135,
         "ball_position": [
-          -0.24997925851650835,
+          -0.24981708490668786,
           0.0,
-          0.9764859519891785
+          0.9765870658437515
         ],
-        "ball_speed_mps": 0.6697526394668439,
+        "ball_speed_mps": 0.6739606317742453,
         "ball_inside_target": false
       }
     },
@@ -189,108 +189,6 @@
       "target_time_s": 0.6,
       "actual_time_s": 0.6,
       "absolute_sim_time_s": 0.6,
-      "physics_step": 300,
-      "phase": "confirm_target_tray",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "pull_blue_lever",
-          "check_release_zone"
-        ],
-        "lever_state": "pulled",
-        "gate_state": "open",
-        "target_state": "empty",
-        "inspection_state": "pending",
-        "lever_angle_rad": -0.9386930526144645,
-        "gate_lift_m": 0.12365594282861933,
-        "ball_position": [
-          -0.2394404935330489,
-          0.0,
-          0.973832201141336
-        ],
-        "ball_speed_mps": 0.6969428148756914,
-        "ball_inside_target": false
-      }
-    },
-    {
-      "archive_frame": 7,
-      "index": 6,
-      "target_time_s": 0.8,
-      "actual_time_s": 0.8,
-      "absolute_sim_time_s": 0.8,
-      "physics_step": 400,
-      "phase": "confirm_target_tray",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "pull_blue_lever",
-          "check_release_zone"
-        ],
-        "lever_state": "pulled",
-        "gate_state": "open",
-        "target_state": "empty",
-        "inspection_state": "pending",
-        "lever_angle_rad": -0.9494229077384345,
-        "gate_lift_m": 0.12369181910285139,
-        "ball_position": [
-          -0.08366711434941482,
-          0.0,
-          0.9349825031661176
-        ],
-        "ball_speed_mps": 0.9139544361128081,
-        "ball_inside_target": false
-      }
-    },
-    {
-      "archive_frame": 8,
-      "index": 7,
-      "target_time_s": 1.0,
-      "actual_time_s": 1.0,
-      "absolute_sim_time_s": 1.0,
-      "physics_step": 500,
-      "phase": "confirm_target_tray",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "pull_blue_lever",
-          "check_release_zone"
-        ],
-        "lever_state": "pulled",
-        "gate_state": "open",
-        "target_state": "empty",
-        "inspection_state": "pending",
-        "lever_angle_rad": -0.9516276560127381,
-        "gate_lift_m": 0.12369348982454066,
-        "ball_position": [
-          0.11657892910609978,
-          0.0,
-          0.8851727854366107
-        ],
-        "ball_speed_mps": 1.146156409121529,
-        "ball_inside_target": false
-      }
-    },
-    {
-      "archive_frame": 9,
-      "index": 8,
-      "target_time_s": 1.2,
-      "actual_time_s": 1.2,
-      "absolute_sim_time_s": 1.2,
       "physics_step": 600,
       "phase": "confirm_target_tray",
       "event_frame": false,
@@ -308,24 +206,24 @@
         "gate_state": "open",
         "target_state": "empty",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.9520806777306595,
-        "gate_lift_m": 0.12369356762835451,
+        "lever_angle_rad": -0.9413515469429895,
+        "gate_lift_m": 0.12366771914405916,
         "ball_position": [
-          0.3526835798487206,
+          -0.23993429818719947,
           0.0,
-          0.8107326986228874
+          0.97411802322882
         ],
-        "ball_speed_mps": 1.1242300852900453,
-        "ball_inside_target": true
+        "ball_speed_mps": 0.6932941848178592,
+        "ball_inside_target": false
       }
     },
     {
-      "archive_frame": 10,
-      "index": 9,
-      "target_time_s": 1.4,
-      "actual_time_s": 1.4,
-      "absolute_sim_time_s": 1.4,
-      "physics_step": 700,
+      "archive_frame": 7,
+      "index": 6,
+      "target_time_s": 0.8,
+      "actual_time_s": 0.8,
+      "absolute_sim_time_s": 0.8,
+      "physics_step": 800,
       "phase": "confirm_target_tray",
       "event_frame": false,
       "rgb_shape": [
@@ -342,24 +240,92 @@
         "gate_state": "open",
         "target_state": "empty",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.9521737623603361,
-        "gate_lift_m": 0.12369357125159919,
+        "lever_angle_rad": -0.9499547353550654,
+        "gate_lift_m": 0.12369232785780235,
         "ball_position": [
-          0.5575006568989558,
+          -0.08421584021973857,
           0.0,
-          0.8118078422443399
+          0.935466101433549
         ],
-        "ball_speed_mps": 0.23359238040901972,
+        "ball_speed_mps": 0.9174261509637077,
+        "ball_inside_target": false
+      }
+    },
+    {
+      "archive_frame": 8,
+      "index": 7,
+      "target_time_s": 1.0,
+      "actual_time_s": 1.0,
+      "absolute_sim_time_s": 1.0,
+      "physics_step": 1000,
+      "phase": "confirm_target_tray",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "pull_blue_lever",
+          "check_release_zone"
+        ],
+        "lever_state": "pulled",
+        "gate_state": "open",
+        "target_state": "empty",
+        "inspection_state": "pending",
+        "lever_angle_rad": -0.9517339477487053,
+        "gate_lift_m": 0.12369351160916718,
+        "ball_position": [
+          0.11601524309702435,
+          0.0,
+          0.8856943974761413
+        ],
+        "ball_speed_mps": 1.1444647667874088,
+        "ball_inside_target": false
+      }
+    },
+    {
+      "archive_frame": 9,
+      "index": 8,
+      "target_time_s": 1.2,
+      "actual_time_s": 1.2,
+      "absolute_sim_time_s": 1.2,
+      "physics_step": 1200,
+      "phase": "confirm_target_tray",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "pull_blue_lever",
+          "check_release_zone"
+        ],
+        "lever_state": "pulled",
+        "gate_state": "open",
+        "target_state": "empty",
+        "inspection_state": "pending",
+        "lever_angle_rad": -0.9521019005120929,
+        "gate_lift_m": 0.12369356855108248,
+        "ball_position": [
+          0.35144279128240224,
+          0.0,
+          0.8104818793541224
+        ],
+        "ball_speed_mps": 1.1231985984215183,
         "ball_inside_target": true
       }
     },
     {
-      "archive_frame": 11,
-      "index": 10,
+      "archive_frame": 10,
+      "index": 9,
       "target_time_s": null,
-      "actual_time_s": 1.446,
-      "absolute_sim_time_s": 1.446,
-      "physics_step": 723,
+      "actual_time_s": 1.399,
+      "absolute_sim_time_s": 1.399,
+      "physics_step": 1399,
       "phase": "confirm_target_tray",
       "event_frame": true,
       "rgb_shape": [
@@ -377,24 +343,24 @@
         "gate_state": "open",
         "target_state": "occupied",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.9521811065437117,
-        "gate_lift_m": 0.12369357134116017,
+        "lever_angle_rad": -0.9521778384491815,
+        "gate_lift_m": 0.12369357128803972,
         "ball_position": [
-          0.5496834200530695,
+          0.5546104423406932,
           0.0,
-          0.8096458860177519
+          0.8117683576517364
         ],
-        "ball_speed_mps": 0.10485479239003818,
+        "ball_speed_mps": 0.14980159571104587,
         "ball_inside_target": true
       }
     },
     {
-      "archive_frame": 12,
-      "index": 11,
-      "target_time_s": 1.6,
-      "actual_time_s": 1.6,
-      "absolute_sim_time_s": 1.6,
-      "physics_step": 800,
+      "archive_frame": 11,
+      "index": 10,
+      "target_time_s": 1.4,
+      "actual_time_s": 1.4,
+      "absolute_sim_time_s": 1.4,
+      "physics_step": 1400,
       "phase": "settled_after_confirm_target_tray",
       "event_frame": false,
       "rgb_shape": [
@@ -412,24 +378,24 @@
         "gate_state": "open",
         "target_state": "occupied",
         "inspection_state": "pending",
-        "lever_angle_rad": -0.9521928889134301,
-        "gate_lift_m": 0.12369357142033001,
+        "lever_angle_rad": -0.9521779954025335,
+        "gate_lift_m": 0.12369357129015578,
         "ball_position": [
-          0.5462989420546633,
+          0.5545227290031728,
           0.0,
-          0.8099304614543044
+          0.811889794419227
         ],
-        "ball_speed_mps": 0.002413029549485471,
+        "ball_speed_mps": 0.14196536478806354,
         "ball_inside_target": true
       }
     },
     {
-      "archive_frame": 13,
-      "index": 12,
+      "archive_frame": 12,
+      "index": 11,
       "target_time_s": null,
-      "actual_time_s": 1.686,
-      "absolute_sim_time_s": 1.686,
-      "physics_step": 843,
+      "actual_time_s": 1.519,
+      "absolute_sim_time_s": 1.519,
+      "physics_step": 1519,
       "phase": "inspect_with_camera",
       "event_frame": true,
       "rgb_shape": [
@@ -448,22 +414,22 @@
         "gate_state": "open",
         "target_state": "occupied",
         "inspection_state": "captured",
-        "lever_angle_rad": -0.9521953304912009,
-        "gate_lift_m": 0.12369357142636705,
+        "lever_angle_rad": -0.9521900674710525,
+        "gate_lift_m": 0.12369357140581637,
         "ball_position": [
-          0.5462081943849248,
-          0.0,
-          0.8099304592666787
+          0.5514455709095996,
+          6.521392762005349e-39,
+          0.8099991844782732
         ],
-        "ball_speed_mps": 0.00031516683585397086,
+        "ball_speed_mps": 5.364832514915792e-13,
         "ball_inside_target": true
       }
     }
   ],
   "archive_verification": {
     "status": "PASS",
-    "gif_frame_count": 13,
-    "tiff_page_count": 13,
+    "gif_frame_count": 12,
+    "tiff_page_count": 12,
     "gif_frame_durations_ms": [
       200,
       800

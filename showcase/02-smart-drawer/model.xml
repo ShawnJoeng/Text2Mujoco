@@ -42,11 +42,25 @@
       <geom name="upper_handle" type="capsule" fromto="-0.10 -0.242 0.125 0.10 -0.242 0.125" size="0.012" material="handle_mat"/>
       <site name="camera_check_marker" type="sphere" pos="0.24 -0.235 0.235" size="0.027" rgba="1 0.05 0.78 1" group="2"/>
     </body>
+    <!-- The unlock button is an actuated body, so it collides, and its housing
+         has to leave the 0.012 m stroke somewhere to go. A solid bezel cylinder
+         in front of the cap cannot: the two overlap by 10 mm at rest. The bezel
+         is therefore a four-piece collar whose inner faces stand 3.5 mm clear of
+         the 0.0275 m cap radius, with a backplate 2 mm behind the fully pressed
+         cap. Local +z points along world -y here, so "in front" is -y.
+         The default joint limit is soft enough that this cap coasted 3.3 mm past
+         its own 0.012 m stop and hit that backplate; the declared stroke has to
+         be the real stroke, so the limit is stiffened to the 2*timestep floor
+         and the cap's damping raised, which leaves 0.025 mm of overshoot. -->
     <body name="unlock_button_mount" pos="-0.20 -0.215 1.245" quat="0.70710678 0.70710678 0 0">
-      <geom name="unlock_button_bezel" type="cylinder" pos="0 0 0.008" size="0.039 0.009" material="handle_mat" contype="0" conaffinity="0"/>
+      <geom name="unlock_button_backplate" type="cylinder" pos="0 0 -0.014" size="0.045 0.007" material="handle_mat"/>
+      <geom name="unlock_bezel_left" type="box" pos="-0.038 0 0.008" size="0.007 0.045 0.009" material="handle_mat"/>
+      <geom name="unlock_bezel_right" type="box" pos="0.038 0 0.008" size="0.007 0.045 0.009" material="handle_mat"/>
+      <geom name="unlock_bezel_top" type="box" pos="0 0.038 0.008" size="0.031 0.007 0.009" material="handle_mat"/>
+      <geom name="unlock_bezel_bottom" type="box" pos="0 -0.038 0.008" size="0.031 0.007 0.009" material="handle_mat"/>
       <body name="unlock_button" pos="0 0 0.018">
-        <joint name="unlock_button_slide" type="slide" axis="0 0 -1" range="0 0.012" damping="3"/>
-        <geom name="unlock_button_geom" type="cylinder" size="0.0275 0.011" mass="0.04" material="green_mat" contype="0" conaffinity="0"/>
+        <joint name="unlock_button_slide" type="slide" axis="0 0 -1" range="0 0.012" damping="8" solreflimit="0.004 1" solimplimit="0.99 0.999 0.0005"/>
+        <geom name="unlock_button_geom" type="cylinder" size="0.0275 0.011" mass="0.04" material="green_mat"/>
         <site name="unlock_point_marker" type="sphere" pos="0 0 0.035" size="0.023" rgba="1 0.82 0.02 1" group="2"/>
       </body>
     </body>
@@ -57,10 +71,12 @@
       <geom name="drawer_right_geom" type="box" pos="0.233 0 0.075" size="0.012 0.19 0.075" mass="0.2" material="drawer_mat"/>
       <geom name="drawer_back_geom" type="box" pos="0 0.178 0.075" size="0.221 0.012 0.075" mass="0.2" material="drawer_mat"/>
       <geom name="drawer_front_geom" type="box" pos="0 -0.202 0.03" size="0.255 0.014 0.08" mass="0.5" material="drawer_mat"/>
-      <geom name="drawer_handle_geom" type="capsule" fromto="-0.105 -0.235 0.03 0.105 -0.235 0.03" size="0.014" mass="0.1" material="handle_mat" contype="0" conaffinity="0"/>
+      <!-- The handle is the outermost surface of a body that moves 0.22 m, and
+           the tools ride in the open tray, so all three collide. -->
+      <geom name="drawer_handle_geom" type="capsule" fromto="-0.105 -0.235 0.03 0.105 -0.235 0.03" size="0.014" mass="0.1" material="handle_mat"/>
       <site name="drawer_handle_marker" type="sphere" pos="0 -0.265 0.03" size="0.026" rgba="0.02 0.95 1 1" group="2"/>
-      <geom name="tool_red" type="box" pos="-0.11 0.02 0.045" size="0.055 0.075 0.025" rgba="0.82 0.08 0.06 1" contype="0" conaffinity="0" mass="0.0"/>
-      <geom name="tool_yellow" type="cylinder" pos="0.09 0.03 0.05" size="0.035 0.04" rgba="0.94 0.62 0.03 1" contype="0" conaffinity="0" mass="0.0"/>
+      <geom name="tool_red" type="box" pos="-0.11 0.02 0.037" size="0.055 0.075 0.025" rgba="0.82 0.08 0.06 1" mass="0.0"/>
+      <geom name="tool_yellow" type="cylinder" pos="0.09 0.03 0.052" size="0.035 0.04" rgba="0.94 0.62 0.03 1" mass="0.0"/>
     </body>
   </worldbody>
   <actuator>

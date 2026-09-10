@@ -3,7 +3,7 @@
   "scene": "01-button-cube-box",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via glfw",
   "sequence_kind": "dense simulation frames",
@@ -13,10 +13,10 @@
   "gif_frame_duration_ms": 200,
   "gif_final_frame_duration_ms": 800,
   "depth_capture": "keyframes_only; dense pass stores RGB frames",
-  "frame_count": 20,
-  "regular_frame_count": 16,
+  "frame_count": 12,
+  "regular_frame_count": 8,
   "event_frame_count": 4,
-  "simulation_time_span_s": 3.0,
+  "simulation_time_span_s": 1.5,
   "gif": "output/screenshots/dense_sequence.gif",
   "tiff": "output/screenshots/dense_sequence.tif",
   "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
@@ -55,34 +55,6 @@
       "target_time_s": 0.2,
       "actual_time_s": 0.2,
       "absolute_sim_time_s": 0.2,
-      "physics_step": 100,
-      "phase": "warmup",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [],
-        "button_state": "ready",
-        "cube_state": "free",
-        "button_joint_qpos": -0.0012333349411505126,
-        "cube_position": [
-          -0.12,
-          -0.03,
-          0.8249714970506437
-        ],
-        "cube_speed_mps": 4.383795478977281e-06,
-        "cube_contacts_box_bottom": false
-      }
-    },
-    {
-      "archive_frame": 3,
-      "index": 2,
-      "target_time_s": 0.4,
-      "actual_time_s": 0.4,
-      "absolute_sim_time_s": 0.4,
       "physics_step": 200,
       "phase": "press_start_button",
       "event_frame": false,
@@ -95,50 +67,22 @@
         "history": [],
         "button_state": "ready",
         "cube_state": "free",
-        "button_joint_qpos": -0.01928849182845112,
+        "button_joint_qpos": -0.020471199301664984,
         "cube_position": [
           -0.12,
           -0.03,
-          0.8249713270380913
+          0.8249997860059927
         ],
-        "cube_speed_mps": 2.262290310651701e-08,
+        "cube_speed_mps": 4.720226150135963e-14,
         "cube_contacts_box_bottom": false
       }
     },
     {
-      "archive_frame": 4,
-      "index": 3,
-      "target_time_s": 0.6,
-      "actual_time_s": 0.6,
-      "absolute_sim_time_s": 0.6,
-      "physics_step": 300,
-      "phase": "press_start_button",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [],
-        "button_state": "ready",
-        "cube_state": "free",
-        "button_joint_qpos": -0.01923255566670555,
-        "cube_position": [
-          -0.12,
-          -0.03,
-          0.8249713261607307
-        ],
-        "cube_speed_mps": 1.167462749915596e-10,
-        "cube_contacts_box_bottom": false
-      }
-    },
-    {
-      "archive_frame": 5,
-      "index": 4,
-      "target_time_s": 0.8,
-      "actual_time_s": 0.8,
-      "absolute_sim_time_s": 0.8,
+      "archive_frame": 3,
+      "index": 2,
+      "target_time_s": 0.4,
+      "actual_time_s": 0.4,
+      "absolute_sim_time_s": 0.4,
       "physics_step": 400,
       "phase": "press_start_button",
       "event_frame": false,
@@ -151,50 +95,22 @@
         "history": [],
         "button_state": "ready",
         "cube_state": "free",
-        "button_joint_qpos": -0.01922618490209565,
+        "button_joint_qpos": -0.019224846920542427,
         "cube_position": [
           -0.12,
           -0.03,
-          0.824971326156203
+          0.8249997860059927
         ],
-        "cube_speed_mps": 6.025226004402056e-13,
+        "cube_speed_mps": 4.7195605741662435e-14,
         "cube_contacts_box_bottom": false
       }
     },
     {
-      "archive_frame": 6,
-      "index": 5,
-      "target_time_s": 1.0,
-      "actual_time_s": 1.0,
-      "absolute_sim_time_s": 1.0,
-      "physics_step": 500,
-      "phase": "press_start_button",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [],
-        "button_state": "ready",
-        "cube_state": "free",
-        "button_joint_qpos": -0.01922624751342143,
-        "cube_position": [
-          -0.12,
-          -0.03,
-          0.8249713261561805
-        ],
-        "cube_speed_mps": 2.321715665836938e-14,
-        "cube_contacts_box_bottom": false
-      }
-    },
-    {
-      "archive_frame": 7,
-      "index": 6,
-      "target_time_s": 1.2,
-      "actual_time_s": 1.2,
-      "absolute_sim_time_s": 1.2,
+      "archive_frame": 4,
+      "index": 3,
+      "target_time_s": 0.6,
+      "actual_time_s": 0.6,
+      "absolute_sim_time_s": 0.6,
       "physics_step": 600,
       "phase": "press_start_button",
       "event_frame": false,
@@ -207,22 +123,22 @@
         "history": [],
         "button_state": "ready",
         "cube_state": "free",
-        "button_joint_qpos": -0.01922625004410612,
+        "button_joint_qpos": -0.01922576187529882,
         "cube_position": [
           -0.12,
           -0.03,
-          0.8249713261561805
+          0.8249997860059927
         ],
-        "cube_speed_mps": 2.3212708399928007e-14,
+        "cube_speed_mps": 4.7200041955923503e-14,
         "cube_contacts_box_bottom": false
       }
     },
     {
-      "archive_frame": 8,
-      "index": 7,
+      "archive_frame": 5,
+      "index": 4,
       "target_time_s": null,
-      "actual_time_s": 1.2,
-      "absolute_sim_time_s": 1.2,
+      "actual_time_s": 0.6,
+      "absolute_sim_time_s": 0.6,
       "physics_step": 600,
       "phase": "press_start_button",
       "event_frame": true,
@@ -237,22 +153,22 @@
         ],
         "button_state": "pressed",
         "cube_state": "free",
-        "button_joint_qpos": -0.01922625004410612,
+        "button_joint_qpos": -0.01922576187529882,
         "cube_position": [
           -0.12,
           -0.03,
-          0.8249713261561805
+          0.8249997860059927
         ],
-        "cube_speed_mps": 2.3212708399928007e-14,
+        "cube_speed_mps": 4.7200041955923503e-14,
         "cube_contacts_box_bottom": false
       }
     },
     {
-      "archive_frame": 9,
-      "index": 8,
+      "archive_frame": 6,
+      "index": 5,
       "target_time_s": null,
-      "actual_time_s": 1.2,
-      "absolute_sim_time_s": 1.2,
+      "actual_time_s": 0.6,
+      "absolute_sim_time_s": 0.6,
       "physics_step": 600,
       "phase": "grasp_red_cube",
       "event_frame": true,
@@ -268,7 +184,7 @@
         ],
         "button_state": "pressed",
         "cube_state": "grasped",
-        "button_joint_qpos": -0.01922625004410612,
+        "button_joint_qpos": -0.01922576187529882,
         "cube_position": [
           -0.12,
           -0.03,
@@ -279,42 +195,11 @@
       }
     },
     {
-      "archive_frame": 10,
-      "index": 9,
-      "target_time_s": 1.4,
-      "actual_time_s": 1.4,
-      "absolute_sim_time_s": 1.4,
-      "physics_step": 700,
-      "phase": "place_cube_in_box",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "press_start_button",
-          "grasp_red_cube"
-        ],
-        "button_state": "pressed",
-        "cube_state": "grasped",
-        "button_joint_qpos": -0.019226250000872955,
-        "cube_position": [
-          0.3,
-          0.18,
-          0.9157620000000009
-        ],
-        "cube_speed_mps": 1.9619999999999982,
-        "cube_contacts_box_bottom": false
-      }
-    },
-    {
-      "archive_frame": 11,
-      "index": 10,
-      "target_time_s": 1.6,
-      "actual_time_s": 1.6,
-      "absolute_sim_time_s": 1.6,
+      "archive_frame": 7,
+      "index": 6,
+      "target_time_s": 0.8,
+      "actual_time_s": 0.8,
+      "absolute_sim_time_s": 0.8,
       "physics_step": 800,
       "phase": "place_cube_in_box",
       "event_frame": false,
@@ -330,53 +215,22 @@
         ],
         "button_state": "pressed",
         "cube_state": "grasped",
-        "button_joint_qpos": -0.019226249999974857,
+        "button_joint_qpos": -0.01922625053169686,
         "cube_position": [
-          0.30000000000018356,
-          0.17999999999638686,
-          0.8448707784548786
+          0.3,
+          0.18,
+          0.9147809999999973
         ],
-        "cube_speed_mps": 0.00258349846193062,
-        "cube_contacts_box_bottom": true
+        "cube_speed_mps": 1.9620000000000086,
+        "cube_contacts_box_bottom": false
       }
     },
     {
-      "archive_frame": 12,
-      "index": 11,
-      "target_time_s": 1.8,
-      "actual_time_s": 1.8,
-      "absolute_sim_time_s": 1.8,
-      "physics_step": 900,
-      "phase": "place_cube_in_box",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "press_start_button",
-          "grasp_red_cube"
-        ],
-        "button_state": "pressed",
-        "cube_state": "grasped",
-        "button_joint_qpos": -0.01922624999999975,
-        "cube_position": [
-          0.3000000000001864,
-          0.1799999999963239,
-          0.8449708080670868
-        ],
-        "cube_speed_mps": 1.3290168945345977e-05,
-        "cube_contacts_box_bottom": true
-      }
-    },
-    {
-      "archive_frame": 13,
-      "index": 12,
-      "target_time_s": 2.0,
-      "actual_time_s": 2.0,
-      "absolute_sim_time_s": 2.0,
+      "archive_frame": 8,
+      "index": 7,
+      "target_time_s": 1.0,
+      "actual_time_s": 1.0,
+      "absolute_sim_time_s": 1.0,
       "physics_step": 1000,
       "phase": "place_cube_in_box",
       "event_frame": false,
@@ -392,53 +246,22 @@
         ],
         "button_state": "pressed",
         "cube_state": "grasped",
-        "button_joint_qpos": -0.01922625000000001,
+        "button_joint_qpos": -0.019226250191385182,
         "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713234825721
+          0.3,
+          0.17999999999999997,
+          0.844999786005945
         ],
-        "cube_speed_mps": 6.858369581387928e-08,
+        "cube_speed_mps": 5.890517765366338e-12,
         "cube_contacts_box_bottom": true
       }
     },
     {
-      "archive_frame": 14,
-      "index": 13,
-      "target_time_s": 2.2,
-      "actual_time_s": 2.2,
-      "absolute_sim_time_s": 2.2,
-      "physics_step": 1100,
-      "phase": "place_cube_in_box",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "press_start_button",
-          "grasp_red_cube"
-        ],
-        "button_state": "pressed",
-        "cube_state": "grasped",
-        "button_joint_qpos": -0.019226249999999997,
-        "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261423824
-        ],
-        "cube_speed_mps": 3.53928477875992e-10,
-        "cube_contacts_box_bottom": true
-      }
-    },
-    {
-      "archive_frame": 15,
-      "index": 14,
-      "target_time_s": 2.4,
-      "actual_time_s": 2.4,
-      "absolute_sim_time_s": 2.4,
+      "archive_frame": 9,
+      "index": 8,
+      "target_time_s": 1.2,
+      "actual_time_s": 1.2,
+      "absolute_sim_time_s": 1.2,
       "physics_step": 1200,
       "phase": "place_cube_in_box",
       "event_frame": false,
@@ -454,53 +277,22 @@
         ],
         "button_state": "pressed",
         "cube_state": "grasped",
-        "button_joint_qpos": -0.019226249999999997,
+        "button_joint_qpos": -0.01922624999979875,
         "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261561085
+          0.3,
+          0.17999999999999997,
+          0.8449997860059927
         ],
-        "cube_speed_mps": 1.8236525803029197e-12,
+        "cube_speed_mps": 4.8800679584876875e-14,
         "cube_contacts_box_bottom": true
       }
     },
     {
-      "archive_frame": 16,
-      "index": 15,
-      "target_time_s": 2.6,
-      "actual_time_s": 2.6,
-      "absolute_sim_time_s": 2.6,
-      "physics_step": 1300,
-      "phase": "place_cube_in_box",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "press_start_button",
-          "grasp_red_cube"
-        ],
-        "button_state": "pressed",
-        "cube_state": "grasped",
-        "button_joint_qpos": -0.019226249999999997,
-        "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261561786
-        ],
-        "cube_speed_mps": 2.1833948781028724e-14,
-        "cube_contacts_box_bottom": true
-      }
-    },
-    {
-      "archive_frame": 17,
-      "index": 16,
-      "target_time_s": 2.8,
-      "actual_time_s": 2.8,
-      "absolute_sim_time_s": 2.8,
+      "archive_frame": 10,
+      "index": 9,
+      "target_time_s": 1.4,
+      "actual_time_s": 1.4,
+      "absolute_sim_time_s": 1.4,
       "physics_step": 1400,
       "phase": "place_cube_in_box",
       "event_frame": false,
@@ -516,53 +308,22 @@
         ],
         "button_state": "pressed",
         "cube_state": "grasped",
-        "button_joint_qpos": -0.019226249999999997,
+        "button_joint_qpos": -0.019226249999924963,
         "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261561786
+          0.3,
+          0.17999999999999997,
+          0.8449997860059927
         ],
-        "cube_speed_mps": 2.1825062767672047e-14,
+        "cube_speed_mps": 4.879957050112689e-14,
         "cube_contacts_box_bottom": true
       }
     },
     {
-      "archive_frame": 18,
-      "index": 17,
-      "target_time_s": 3.0,
-      "actual_time_s": 3.0,
-      "absolute_sim_time_s": 3.0,
-      "physics_step": 1500,
-      "phase": "place_cube_in_box",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "press_start_button",
-          "grasp_red_cube"
-        ],
-        "button_state": "pressed",
-        "cube_state": "grasped",
-        "button_joint_qpos": -0.019226249999999997,
-        "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261561786
-        ],
-        "cube_speed_mps": 2.1833944732177327e-14,
-        "cube_contacts_box_bottom": true
-      }
-    },
-    {
-      "archive_frame": 19,
-      "index": 18,
+      "archive_frame": 11,
+      "index": 10,
       "target_time_s": null,
-      "actual_time_s": 3.0,
-      "absolute_sim_time_s": 3.0,
+      "actual_time_s": 1.5,
+      "absolute_sim_time_s": 1.5,
       "physics_step": 1500,
       "phase": "place_cube_in_box",
       "event_frame": true,
@@ -579,22 +340,22 @@
         ],
         "button_state": "pressed",
         "cube_state": "inside_box",
-        "button_joint_qpos": -0.019226249999999997,
+        "button_joint_qpos": -0.019226250000007074,
         "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261561786
+          0.3,
+          0.17999999999999997,
+          0.8449997860059927
         ],
-        "cube_speed_mps": 2.1833944732177327e-14,
+        "cube_speed_mps": 4.8802900664467246e-14,
         "cube_contacts_box_bottom": true
       }
     },
     {
-      "archive_frame": 20,
-      "index": 19,
+      "archive_frame": 12,
+      "index": 11,
       "target_time_s": null,
-      "actual_time_s": 3.0,
-      "absolute_sim_time_s": 3.0,
+      "actual_time_s": 1.5,
+      "absolute_sim_time_s": 1.5,
       "physics_step": 1500,
       "phase": "inspect_rgbd",
       "event_frame": true,
@@ -612,21 +373,21 @@
         ],
         "button_state": "pressed",
         "cube_state": "inside_box",
-        "button_joint_qpos": -0.019226249999999997,
+        "button_joint_qpos": -0.019226250000007074,
         "cube_position": [
-          0.3000000000001864,
-          0.1799999999963238,
-          0.8449713261561786
+          0.3,
+          0.17999999999999997,
+          0.8449997860059927
         ],
-        "cube_speed_mps": 2.1833944732177327e-14,
+        "cube_speed_mps": 4.8802900664467246e-14,
         "cube_contacts_box_bottom": true
       }
     }
   ],
   "archive_verification": {
     "status": "PASS",
-    "gif_frame_count": 20,
-    "tiff_page_count": 20,
+    "gif_frame_count": 12,
+    "tiff_page_count": 12,
     "gif_frame_durations_ms": [
       200,
       800

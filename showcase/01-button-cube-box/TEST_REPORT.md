@@ -23,11 +23,11 @@ The generated MuJoCo package passed the static, physics, interaction, persistenc
 - Stable named objects: 20.
 - Open-box collision geoms: 5.
 - Gravity: `[0.0, 0.0, -9.81]` m/s^2.
-- Timestep: `0.002` s.
+- Timestep: `0.001` s.
 - Cube mass: `0.2` kg.
 - Button slide joint reached the pressed range through its position actuator.
-- Released cube settled at approximately `[0.30, 0.18, 0.84497]` m.
-- Final linear speed was approximately `2.18e-14` m/s.
+- Released cube settled at approximately `[0.30, 0.18, 0.84500]` m.
+- Final linear speed was approximately `4.88e-14` m/s.
 - Cube-to-box-bottom contact was present.
 - Eleven invalid/dependency/payload/state-precondition/ID/limit branches raised `EnvironmentError`; four invalid reset seeds and four invalid step counts were rejected.
 - Grasp hold, output flags, and declared marker/camera pose consistency passed.
@@ -38,14 +38,14 @@ The generated MuJoCo package passed the static, physics, interaction, persistenc
 
 - Full sequence: `press_start_button -> grasp_red_cube -> place_cube_in_box -> inspect_rgbd`.
 - RGB shape: `480 x 640 x 3` for both frames.
-- Initial RGB standard deviation: `65.483`; final: `65.917`.
+- Initial RGB standard deviation: `64.855`; final: `65.199`.
 - Dynamic range: `255` for both frames.
 - Red cube pixels: initial `1278`; final `1289`.
 - Red cube centroid movement: `130.518` px.
 - Depth shape: `480 x 640` for both frames.
 - Finite geometry depth pixels (far-plane background excluded): `161229` for both frames.
 - Observed geometry depth range: approximately `1.149` to `3.628` m; far plane is `16.0` m.
-- Changed geometry depth pixels after interaction: `1815`.
+- Changed geometry depth pixels after interaction: `1801`.
 
 Artifacts:
 

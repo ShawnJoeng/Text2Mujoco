@@ -7,7 +7,9 @@
     "未提供机器人或网格资产，按钮、方块、盒子和桌子使用 MJCF primitive。",
     "按钮通过 slide joint 和 position actuator 物理驱动。",
     "抓取采用任务级 qpos 抽象；释放后的下落、碰撞和稳定由 MuJoCo 动力学计算。",
-    "RGB-D 使用固定 MuJoCo camera；优先 EGL，缺少图形能力时使用 OSMesa CPU 渲染。"
+    "RGB-D 使用固定 MuJoCo camera；优先 EGL，缺少图形能力时使用 OSMesa CPU 渲染。",
+    "启动按钮是会运动的刚体，因此参与碰撞；按钮座不能是实心圆柱，否则 0.02 m 行程无处可去，改为底板加四片围栏，围栏内表面距 0.04 m 帽半径 3 mm。",
+    "积分步长取 0.001 s：接触时间常数下限是 2*timestep，只有这样 solref 0.002 才能把方块 2.2 m/s 的落箱冲击压在 1 mm 以内。"
   ],
   "open_questions": [
     "若后续要求真实机械臂接触抓取，需要提供机器人 MJCF/mesh 和控制器。"
@@ -19,7 +21,8 @@
       "mujoco_version": "3.2.7",
       "mode": "python",
       "headless": true,
-      "gl_backend": "auto"
+      "gl_backend": "auto",
+      "timestep_s": 0.001
     },
     "world": {
       "units": "m",
@@ -61,7 +64,7 @@
         "geom_name": "start_button_geom"
       },
       "pose": {
-        "position": [0.38, -0.18, 0.815],
+        "position": [0.38, -0.18, 0.83],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "physics": {
@@ -69,8 +72,8 @@
         "joint_name": "button_slide",
         "actuator_name": "button_press",
         "mass_kg": 0.05,
-        "contype": 0,
-        "conaffinity": 0,
+        "contype": 1,
+        "conaffinity": 1,
         "friction": [0.5, 0.01, 0.001]
       },
       "semantic": "button"
@@ -137,7 +140,7 @@
       "target": {"type": "joint", "name": "button_slide"},
       "marker_site": "press_start_button_marker",
       "pose": {
-        "position": [0.38, -0.18, 0.845],
+        "position": [0.38, -0.18, 0.86],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {

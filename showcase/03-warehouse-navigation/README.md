@@ -1,6 +1,6 @@
 # Small Warehouse Navigation (MuJoCo 3.2.7)
 
-This generated package implements an ordered warehouse-navigation task. An orange planar robot starts in the southwest corner, reaches yellow checkpoint A, follows three safe waypoints along the south side of the main shelves to green checkpoint B, and finally captures `640 x 480` RGB-D evidence with a fixed top-view camera.
+This generated package implements an ordered warehouse-navigation task. An orange planar robot starts in the southwest corner, reaches yellow checkpoint A, follows three safe waypoints along the south side of the main shelves to green checkpoint B, and finally captures `640 x 480` RGB-D evidence with a fixed three-quarter overhead camera.
 
 ## Scene and Interaction
 
@@ -19,7 +19,7 @@ The environment exposes `list_interaction_points()`, `get_action_schema()`, `res
 - `environment.py`: environment API, action validation, dependency checks, waypoint control, collision checks, and RGB-D capture.
 - `interaction_manifest.json`: canonical machine-readable interaction points, visible markers, and action schemas.
 - `physics_smoke.py`: MJCF compilation, dynamics, invalid actions, route safety, collision, reset, and XML/MJB reload validation.
-- `render_smoke.py`: real top-view RGB-D, marker visibility, robot pixel movement, task success, and render-reset validation.
+- `render_smoke.py`: real overhead RGB-D, marker visibility, robot pixel movement, task success, and render-reset validation.
 - `output/sequence_results.json`: full storyboard capture report.
 - `output/dense_sequence_results.json`: dense simulation-time capture report with GIF/TIFF frame mapping.
 

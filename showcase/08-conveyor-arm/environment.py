@@ -125,7 +125,22 @@ class ConveyorArmEnvironment:
     PARCEL_PICK_XY = np.asarray([-0.08, 0.0], dtype=float)
     BIN_XY = np.asarray([0.25, 0.18], dtype=float)
     PARCEL_Z = 0.934
+    # Tool-lift schedule. arm_tcp is the grasp centre (0.115 m below the tool
+    # frame, which sits 1.26 m up), the position actuator settles 9.3 mm below
+    # its command, and the parcel is a 0.12 m cube.
+    #   GRASP_TOOL_Z:    TCP 0.9437 m, i.e. the centre height of a parcel whose
+    #                    underside is on the 0.874 m belt plate, plus 9.7 mm.
+    #   TRANSFER_TOOL_Z: TCP 1.1457 m, so the carried parcel's underside rides
+    #                    1.086 m, 26 mm above the 1.06 m bin rim, while its top
+    #                    stays 19 mm below arm_link3.
+    #   PLACE_TOOL_Z:    TCP 0.9497 m, 10 mm above where a parcel resting on the
+    #                    0.88 m bin floor centres, so the release is a settle
+    #                    rather than a drop.
+    GRASP_TOOL_Z = -0.192
+    TRANSFER_TOOL_Z = 0.010
+    PLACE_TOOL_Z = -0.186
     RELEASE_POSITION = np.asarray([0.25, 0.18, 0.94], dtype=float)
+    CARTESIAN_STEP_M = 0.03
     LINK_1 = 0.32
     LINK_2_EFFECTIVE = 0.44
 
@@ -155,6 +170,7 @@ class ConveyorArmEnvironment:
         self.parcel_joint_id = self.require_id("joint", "parcel_free")
         self.parcel_body_id = self.require_id("body", "blue_parcel")
         self.parcel_geom_id = self.require_id("geom", "blue_parcel_geom")
+        self.tool_body_id = self.require_id("body", "arm_tool")
         self.bin_body_id = self.require_id("body", "blue_target_bin")
         self.bin_bottom_geom_id = self.require_id("geom", "blue_bin_bottom")
         self.tcp_site_id = self.require_id("site", "arm_tcp")
@@ -272,8 +288,18 @@ class ConveyorArmEnvironment:
         return result
 
     def _pin_parcel_to_tool(self) -> None:
+        """Hold the parcel at the grasp centre with the gripper's own yaw.
+
+        The fingers rotate with the tool, so pinning the parcel with an identity
+        quaternion would drive the closed finger faces into its corners; the
+        4 mm nominal aperture clearance (closed inner face 0.064 m against the
+        0.060 m parcel half-width) only holds while parcel and gripper share an
+        orientation.
+        """
         self.data.qpos[self.parcel_qpos_adr : self.parcel_qpos_adr + 3] = self.tcp_position
-        self.data.qpos[self.parcel_qpos_adr + 3 : self.parcel_qpos_adr + 7] = [1.0, 0.0, 0.0, 0.0]
+        self.data.qpos[self.parcel_qpos_adr + 3 : self.parcel_qpos_adr + 7] = np.asarray(
+            self.data.xquat[self.tool_body_id], dtype=float
+        )
         self.data.qvel[self.parcel_dof_adr : self.parcel_dof_adr + 6] = 0.0
         mujoco.mj_forward(self.model, self.data)
 
@@ -301,11 +327,29 @@ class ConveyorArmEnvironment:
         if not np.isfinite(self.data.qpos).all() or not np.isfinite(self.data.qvel).all():
             raise EnvironmentError("MuJoCo state contains non-finite values")
 
-    def _move_arm_to(self, target_xy: np.ndarray, speed_rad_s: float) -> None:
-        desired = self._ik_xy(target_xy)
-        for actuator_id, value in zip(self.arm_actuator_ids, desired):
+    def _command_arm(self, angles: np.ndarray) -> None:
+        for actuator_id, value in zip(self.arm_actuator_ids, angles):
             self.data.ctrl[actuator_id] = float(value)
+
+    def _move_arm_to(self, target_xy: np.ndarray, speed_rad_s: float) -> None:
+        target_xy = np.asarray(target_xy, dtype=float)
+        desired = self._ik_xy(target_xy)
         steps = max(180, int(round(430 / max(0.2, min(2.0, speed_rad_s)))))
+        if self.held_parcel:
+            # A pose that is clear at both ends of a joint-space move says nothing
+            # about the middle: interpolating the two hinges bows the tool through
+            # an arc of its own choosing, which is how a carried parcel ends up
+            # dragged through a bin wall. With a payload attached, walk the tool
+            # along a straight Cartesian line and re-solve the IK per sub-step so
+            # every intermediate pose is one the clearance budget was derived for.
+            start = self.tcp_position[:2].copy()
+            span = float(np.linalg.norm(target_xy - start))
+            waypoints = max(1, int(math.ceil(span / self.CARTESIAN_STEP_M)))
+            for index in range(1, waypoints + 1):
+                partial = start + (target_xy - start) * (index / waypoints)
+                self._command_arm(self._ik_xy(partial))
+                self.run_physics(max(8, steps // (4 * waypoints)))
+        self._command_arm(desired)
         self.run_physics(steps)
         actual = self.arm_angles
         if float(np.max(np.abs(actual - desired))) > 0.08:
@@ -402,7 +446,7 @@ class ConveyorArmEnvironment:
             if self.state["parcel_state"] != "at_pickup" or self.state["arm_state"] != "home":
                 raise EnvironmentError("parcel or arm is not ready")
             self._move_arm_to(self.PARCEL_PICK_XY, float(payload.get("speed_rad_s", 1.0)))
-            self._set_tool_target(-0.10)
+            self._set_tool_target(self.GRASP_TOOL_Z)
             if float(np.linalg.norm(self.tcp_position - np.asarray([-0.08, 0.0, 0.98]))) > 0.12:
                 raise EnvironmentError("arm did not reach parcel approach pose")
             self.state["arm_state"] = "at_parcel"
@@ -418,7 +462,14 @@ class ConveyorArmEnvironment:
         elif point_id == "move_arm_to_target_bin":
             if self.state["parcel_state"] != "grasped" or self.state["gripper_state"] != "closed":
                 raise EnvironmentError("parcel must be grasped before transport")
-            self._move_arm_to(self.BIN_XY, float(payload.get("speed_rad_s", 1.0)))
+            speed = float(payload.get("speed_rad_s", 1.0))
+            # lift -> traverse -> lower. The rim of the target bin is at 1.06 m and
+            # the only path from the pickup into the bin crosses blue_bin_left, so
+            # the parcel's underside is raised above the rim before any horizontal
+            # travel starts and only comes back down inside the bin footprint.
+            self._set_tool_target(self.TRANSFER_TOOL_Z)
+            self._move_arm_to(self.BIN_XY, speed)
+            self._set_tool_target(self.PLACE_TOOL_Z)
             if float(np.linalg.norm(self.tcp_position[:2] - self.BIN_XY)) > 0.12:
                 raise EnvironmentError("arm did not reach target bin")
             self.state["arm_state"] = "over_target_bin"

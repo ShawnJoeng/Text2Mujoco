@@ -121,14 +121,39 @@ def _validate_payload(payload: Any, schema: Mapping[str, Any]) -> dict[str, Any]
 class ForkliftPalletEnvironment:
     """Deterministic mobile-forklift transport and delivery task."""
 
-    START = np.asarray([-2.2, -0.9], dtype=float)
+    START = np.asarray([-2.6, -0.9], dtype=float)
     PALLET_START = np.asarray([-1.0, -0.9, 0.88], dtype=float)
     PALLET_DROP = np.asarray([1.55, 0.35, 0.94], dtype=float)
-    FORK_OFFSET = np.asarray([0.94, 0.0], dtype=float)
+    # The load centre has to clear the mast, not sit on it. At the old 0.94 m the
+    # pallet's back face landed at base+0.44 while the mast rails occupy
+    # base+0.33 to base+0.51, so the deck was inside the right rail for the whole
+    # carry; 1.10 m puts the back face at base+0.60.
+    FORK_OFFSET = np.asarray([1.10, 0.0], dtype=float)
+    # A held pallet rests on the tines, so its centre is the tine top plus the
+    # deck half-height: 0.785 m at zero lift plus 0.07 m. Deriving the carry
+    # height from the pallet's seated height instead left the deck floating a
+    # fork thickness above the steel that was supposed to be holding it.
+    PALLET_CARRY_Z0 = 0.855
+    # Lift at which the runners settle on the delivery stand (0.94 m centre), and
+    # the lift that then breaks tine-to-deck contact before the truck reverses.
+    # The withdrawal height sits mid-channel: with the pallet released at 0.94 m
+    # its deck bottom is 0.87 and the stand deck top is 0.72, so 0.045 m of lift
+    # leaves 40 mm above the steel below and 40 mm below the deck above. The
+    # servo's own settling error is a centimetre, so a tighter window is what
+    # scraped the deck on the way out.
+    RELEASE_LIFT_M = 0.085
+    WITHDRAW_LIFT_M = 0.045
+    # Far enough back that the tines are clear of the delivery deck and its legs.
+    WITHDRAW_X = -0.75
+    # Turn on the spot behind the loading stand, then run the transfer down the
+    # y=0 lane: the loading stand's legs sit at y=-0.50 and the delivery stand's
+    # at y=-0.15, so a lane at y=-0.35 drives the chassis through one and a lane
+    # at y=0.35 through the other.
     CARRY_WAYPOINTS = (
-        np.asarray([-1.60, -0.35], dtype=float),
-        np.asarray([0.25, -0.35], dtype=float),
-        np.asarray([0.61, 0.35], dtype=float),
+        np.asarray([-2.10, 0.0], dtype=float),
+        np.asarray([0.25, 0.0], dtype=float),
+        np.asarray([0.25, 0.35], dtype=float),
+        np.asarray([0.45, 0.35], dtype=float),
     )
 
     def __init__(self, model_path: Path, spec_path: Path):
@@ -270,14 +295,14 @@ class ForkliftPalletEnvironment:
         return float(self.data.qpos[self.qpos_adr["lift"]])
 
     def fork_anchor(self) -> np.ndarray:
-        # The pallet is lifted with the carriage after engagement. Before the
-        # hold is enabled ``engaged_lift_target`` is zero, so the anchor sits at
-        # the pallet's seated height on the loading pad.
+        # The pallet is lifted with the carriage after engagement, resting on the
+        # tine top. Before the hold is enabled ``engaged_lift_target`` is zero and
+        # only the xy components are read, by the alignment checks.
         return np.asarray(
             [
                 self.base_xy[0] + self.FORK_OFFSET[0],
                 self.base_xy[1] + self.FORK_OFFSET[1],
-                float(self.PALLET_START[2]) + self.engaged_lift_target,
+                self.PALLET_CARRY_Z0 + self.engaged_lift_target,
             ],
             dtype=float,
         )
@@ -285,7 +310,7 @@ class ForkliftPalletEnvironment:
     def _rack_contacts(self) -> int:
         pallet_geom_ids = {
             self.require_id("geom", name)
-            for name in ("pallet_deck", "pallet_runner_left", "pallet_runner_right", "payload_crate_geom")
+            for name in ("pallet_deck", "pallet_runner_left", "pallet_runner_center", "pallet_runner_right", "payload_crate_geom")
         }
         count = 0
         for contact in self.data.contact[: self.data.ncon]:
@@ -340,6 +365,17 @@ class ForkliftPalletEnvironment:
 
     def _set_lift(self, target: float) -> None:
         target = float(np.clip(target, 0.0, 0.35))
+        # Ramp the command at roughly 0.25 m/s instead of stepping it. A stiff
+        # mast servo handed a 0.18 m step accelerates the tines to about 1.7 m/s
+        # and drives them 4.5 mm into the pallet deck above them on the first
+        # contact; a real mast raises at a finite rate and lands on the deck.
+        start = self.fork_lift_qpos
+        increments = max(1, int(math.ceil(abs(target - start) / 0.005)))
+        for fraction in np.linspace(1.0 / increments, 1.0, increments):
+            self.data.ctrl[self.lift_actuator_id] = float(start + (target - start) * fraction)
+            for _ in range(10):
+                mujoco.mj_step(self.model, self.data)
+                self._sync_engaged_pallet()
         self.data.ctrl[self.lift_actuator_id] = target
         for _ in range(900):
             mujoco.mj_step(self.model, self.data)
@@ -353,6 +389,25 @@ class ForkliftPalletEnvironment:
             self._sync_engaged_pallet()
         if abs(self.fork_lift_qpos - target) > 0.07:
             raise EnvironmentError("fork lift actuator did not reach target")
+
+    def _lower_engaged_to(self, target: float) -> None:
+        """Walk the loaded carriage down in 10 mm increments.
+
+        ``_sync_engaged_pallet`` re-pins the lift to ``engaged_lift_target`` after
+        every step, so the position servo cannot move a loaded carriage at all;
+        the target itself has to be walked down. Stepping it keeps the tine top
+        and the deck bottom locked together for the whole descent, which is what
+        stops a single jump from putting the runners through the stand deck.
+        """
+        start = float(self.engaged_lift_target)
+        target = float(np.clip(target, 0.0, 0.35))
+        increments = max(1, int(math.ceil(abs(target - start) / 0.01)))
+        for fraction in np.linspace(1.0 / increments, 1.0, increments):
+            self.engaged_lift_target = float(start + (target - start) * fraction)
+            self.data.ctrl[self.lift_actuator_id] = self.engaged_lift_target
+            for _ in range(6):
+                mujoco.mj_step(self.model, self.data)
+                self._sync_engaged_pallet()
 
     def run_physics(self, steps: int) -> None:
         if isinstance(steps, bool) or not isinstance(steps, int) or steps < 0:
@@ -436,14 +491,17 @@ class ForkliftPalletEnvironment:
                 raise EnvironmentError("pallet is not ready for release")
             if not payload["release"]:
                 raise EnvironmentError("release action requires release=true")
-            # Set the pallet down on the delivery-zone floor first, then lower
-            # the empty forks. The zone floor is higher than the loading pad, so
-            # lowering while still engaged would drag the pallet through it.
-            self.data.qpos[self.qpos_adr["pallet"] : self.qpos_adr["pallet"] + 3] = self.PALLET_DROP
-            self.data.qvel[self.dof_adr["pallet"] : self.dof_adr["pallet"] + 6] = 0.0
-            mujoco.mj_forward(self.model, self.data)
+            # A fork truck cannot set a pallet down and then drop its tines to the
+            # floor: they are still under the deck, inside the delivery stand.
+            # Lower the load until the runners take the weight, break tine-to-deck
+            # contact, reverse clear of the stand, and only then bring the empty
+            # carriage down.
+            self._lower_engaged_to(self.RELEASE_LIFT_M)
             self.engaged = False
             self.engaged_lift_target = 0.0
+            self._set_lift(self.WITHDRAW_LIFT_M)
+            self.run_physics(60)
+            self._drive_to(np.asarray([self.WITHDRAW_X, self.PALLET_DROP[1]], dtype=float), 0.8)
             self._set_lift(0.0)
             self.run_physics(120)
             if not self._pallet_inside_delivery():

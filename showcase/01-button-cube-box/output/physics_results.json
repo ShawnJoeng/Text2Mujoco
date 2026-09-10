@@ -13,10 +13,16 @@
       0.0,
       -9.81
     ],
-    "timestep_s": 0.002,
+    "timestep_s": 0.001,
     "cube_mass_kg": 0.2,
     "quaternion_conversion": "PASS",
     "declared_pose_consistency": "PASS"
+  },
+  "sequence_contact": {
+    "steps": 1550,
+    "deepest_overlap_mm": 0.1754,
+    "limit_mm": 1.0,
+    "result": "PASS"
   },
   "physics": {
     "initial_contact": "PASS",
@@ -26,11 +32,11 @@
     "open_box_contact": "PASS",
     "finite_state": "PASS",
     "cube_position": [
-      0.3000000000001864,
-      0.17999999999632382,
-      0.8449713261561786
+      0.300000000000063,
+      0.17999999999993593,
+      0.8449997860059927
     ],
-    "cube_linear_speed_mps": 2.1832683853301037e-14
+    "cube_linear_speed_mps": 4.878872844619673e-14
   },
   "interaction_sequence": [
     "press_start_button",

@@ -25,13 +25,13 @@
         640,
         3
       ],
-      "rgb_std": 66.4477314926719,
+      "rgb_std": 66.04698213886141,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 198926,
+      "finite_depth_pixels": 199854,
       "finite_depth_min_m": 3.4163074493408203,
       "finite_depth_max_m": 8.736580848693848,
       "observation": {
@@ -40,9 +40,9 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.6601675621546252,
+          0.7691701565810742,
           0.0,
-          1.7182359742493505
+          1.6977553527296698
         ],
         "blue_part_position": [
           0.23,
@@ -62,13 +62,13 @@
         640,
         3
       ],
-      "rgb_std": 66.1540972729423,
+      "rgb_std": 65.88535135028236,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 194679,
+      "finite_depth_pixels": 195453,
       "finite_depth_min_m": 3.4163074493408203,
       "finite_depth_max_m": 8.736580848693848,
       "observation": {
@@ -79,9 +79,9 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.2300000000000001,
+          0.2313011514636907,
           0.0,
-          0.855
+          0.855414962792283
         ],
         "blue_part_position": [
           0.23,
@@ -101,13 +101,13 @@
         640,
         3
       ],
-      "rgb_std": 66.14360981217682,
+      "rgb_std": 65.86741396357742,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 194667,
+      "finite_depth_pixels": 195427,
       "finite_depth_min_m": 3.4163074493408203,
       "finite_depth_max_m": 8.736580848693848,
       "observation": {
@@ -119,14 +119,14 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.19752299643542054,
+          0.2280196848259582,
           0.0,
-          0.78062930734575
+          0.8527939731106922
         ],
         "blue_part_position": [
-          0.1984510130040595,
+          0.23,
           0.0,
-          0.7818759472449097
+          0.8549304592645249
         ],
         "blue_part_inside_bin": false
       }
@@ -141,13 +141,13 @@
         640,
         3
       ],
-      "rgb_std": 66.35595066924402,
+      "rgb_std": 66.07841987808621,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 194663,
+      "finite_depth_pixels": 196710,
       "finite_depth_min_m": 3.4163074493408203,
       "finite_depth_max_m": 8.736580848693848,
       "observation": {
@@ -160,16 +160,16 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.78,
+          0.7782879890978192,
           0.0,
-          0.9099999999999999
+          1.0969997184884268
         ],
         "blue_part_position": [
-          0.78,
+          0.7799899206738146,
           0.0,
-          0.9099999999999999
+          1.0991015000186184
         ],
-        "blue_part_inside_bin": true
+        "blue_part_inside_bin": false
       }
     },
     {
@@ -182,13 +182,13 @@
         640,
         3
       ],
-      "rgb_std": 65.96208455842437,
+      "rgb_std": 66.08513899200088,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 194630,
+      "finite_depth_pixels": 196691,
       "finite_depth_min_m": 3.4163074493408203,
       "finite_depth_max_m": 8.736580848693848,
       "observation": {
@@ -202,9 +202,9 @@
         "gripper_state": "open",
         "blue_part_state": "inside_blue_bin",
         "arm_tcp_position": [
-          0.467776793758988,
+          0.7753118353386573,
           0.0,
-          0.5420318360786008
+          1.090459269653178
         ],
         "blue_part_position": [
           0.78,
@@ -224,13 +224,13 @@
         640,
         3
       ],
-      "rgb_std": 65.96208455842437,
+      "rgb_std": 66.08513899200088,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 194630,
+      "finite_depth_pixels": 196691,
       "finite_depth_min_m": 3.4163074493408203,
       "finite_depth_max_m": 8.736580848693848,
       "observation": {
@@ -245,9 +245,9 @@
         "gripper_state": "open",
         "blue_part_state": "inside_blue_bin",
         "arm_tcp_position": [
-          0.467776793758988,
+          0.7753118353386573,
           0.0,
-          0.5420318360786008
+          1.090459269653178
         ],
         "blue_part_position": [
           0.78,

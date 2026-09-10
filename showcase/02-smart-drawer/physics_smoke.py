@@ -10,6 +10,7 @@ import os
 import platform
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from typing import Any
 
 import mujoco
 import numpy as np
@@ -48,6 +49,63 @@ def initial_contact_audit(env) -> str:
     return "PASS"
 
 
+class SequenceContactAudit:
+    """Watch every physics step of the documented sequence for interpenetration.
+
+    ``initial_contact_audit`` describes the start pose and the endpoint
+    tolerances below describe the ends of each motion. Neither sees the middle of
+    a transfer, where a centimetre-deep overlap satisfies both. The module-level
+    ``mujoco.mj_step`` is wrapped rather than an environment method because the
+    settle loops and the generated controllers call the module function directly.
+
+    Sub-millimetre readings are the solver's contact softness under load, so the
+    limit is ``-1e-3``; anything deeper is geometry passing through geometry.
+    """
+
+    LIMIT = -1e-3
+
+    def __init__(self, model: mujoco.MjModel):
+        self.model = model
+        self.steps = 0
+        self.worst = 0.0
+        self.pair: str | None = None
+        self.time_s = 0.0
+        self._genuine = mujoco.mj_step
+
+    def __enter__(self) -> "SequenceContactAudit":
+        def watched(model, data, *args, **kwargs):
+            self._genuine(model, data, *args, **kwargs)
+            self.steps += 1
+            for index in range(data.ncon):
+                contact = data.contact[index]
+                if contact.dist < self.worst:
+                    self.worst = float(contact.dist)
+                    self.pair = "{} / {}".format(
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom1),
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, contact.geom2),
+                    )
+                    self.time_s = float(data.time)
+
+        mujoco.mj_step = watched
+        return self
+
+    def __exit__(self, *exc_info: Any) -> None:
+        mujoco.mj_step = self._genuine
+
+    def report(self) -> dict[str, Any]:
+        if self.worst < self.LIMIT:
+            raise AssertionError(
+                f"{self.pair} interpenetrate by {-self.worst * 1000:.3f} mm "
+                f"at t={self.time_s:.3f} s during the documented sequence"
+            )
+        return {
+            "steps": self.steps,
+            "deepest_overlap_mm": round(max(0.0, -self.worst) * 1000.0, 4),
+            "limit_mm": 1.0,
+            "result": "PASS",
+        }
+
+
 def run(args: argparse.Namespace) -> dict:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics smoke must run with MUJOCO_GL=disable")
@@ -69,46 +127,48 @@ def run(args: argparse.Namespace) -> dict:
     for marker in ("unlock_point_marker", "drawer_handle_marker", "camera_check_marker"):
         environment.require_id("site", marker)
 
-    environment.run_physics(100)
-    if not all(math.isfinite(value) for value in environment.data.qpos):
-        raise AssertionError("initial simulation contains non-finite qpos")
-    expect_error(lambda: environment.step({"id": "missing", "payload": {}}), "unknown id")
-    expect_error(
-        lambda: environment.step({"id": "pull_drawer_22cm", "payload": {"distance_m": 0.22}}),
-        "locked drawer",
-    )
-    expect_error(
-        lambda: environment.step({"id": "press_unlock_button", "payload": {"press_depth_m": 0.009}}),
-        "short button press",
-    )
-    expect_error(
-        lambda: environment.step({"id": "pull_drawer_22cm", "payload": {"distance_m": 0.21}}),
-        "wrong pull distance",
-    )
-    expect_error(lambda: environment.run_physics(True), "boolean step count")
+    with SequenceContactAudit(environment.model) as sequence_audit:
+        environment.run_physics(100)
+        if not all(math.isfinite(value) for value in environment.data.qpos):
+            raise AssertionError("initial simulation contains non-finite qpos")
+        expect_error(lambda: environment.step({"id": "missing", "payload": {}}), "unknown id")
+        expect_error(
+            lambda: environment.step({"id": "pull_drawer_22cm", "payload": {"distance_m": 0.22}}),
+            "locked drawer",
+        )
+        expect_error(
+            lambda: environment.step({"id": "press_unlock_button", "payload": {"press_depth_m": 0.009}}),
+            "short button press",
+        )
+        expect_error(
+            lambda: environment.step({"id": "pull_drawer_22cm", "payload": {"distance_m": 0.21}}),
+            "wrong pull distance",
+        )
+        expect_error(lambda: environment.run_physics(True), "boolean step count")
 
-    # The documented lower boundary must be executable, not rejected by the
-    # actuator convergence tolerance.
-    environment.reset()
-    boundary = environment.step(
-        {"id": "press_unlock_button", "payload": {"press_depth_m": 0.01}}
-    )
-    if boundary["unlock_button_joint_qpos"] < 0.01 - 1e-5:
-        raise AssertionError("minimum legal button depth did not unlock")
-    environment.reset()
+        # The documented lower boundary must be executable, not rejected by the
+        # actuator convergence tolerance.
+        environment.reset()
+        boundary = environment.step(
+            {"id": "press_unlock_button", "payload": {"press_depth_m": 0.01}}
+        )
+        if boundary["unlock_button_joint_qpos"] < 0.01 - 1e-5:
+            raise AssertionError("minimum legal button depth did not unlock")
+        environment.reset()
 
-    environment.step({"id": "press_unlock_button", "payload": {"press_depth_m": 0.012}})
-    pressed = environment.observe()
-    if pressed["unlock_button_joint_qpos"] < 0.01 or pressed["state"]["lock_state"] != "unlocked":
-        raise AssertionError("button did not physically unlock")
-    environment.step({"id": "pull_drawer_22cm", "payload": {"distance_m": 0.22}})
-    opened = environment.observe()
-    if abs(opened["drawer_joint_qpos"] - 0.22) > 0.002:
-        raise AssertionError(f"drawer target error: {opened['drawer_joint_qpos']}")
-    if opened["state"]["history"] != ["press_unlock_button", "pull_drawer_22cm"]:
-        raise AssertionError("interaction history mismatch")
-    if environment.is_success():
-        raise AssertionError("physics-only sequence must still require camera inspection")
+        environment.step({"id": "press_unlock_button", "payload": {"press_depth_m": 0.012}})
+        pressed = environment.observe()
+        if pressed["unlock_button_joint_qpos"] < 0.01 or pressed["state"]["lock_state"] != "unlocked":
+            raise AssertionError("button did not physically unlock")
+        environment.step({"id": "pull_drawer_22cm", "payload": {"distance_m": 0.22}})
+        opened = environment.observe()
+        if abs(opened["drawer_joint_qpos"] - 0.22) > 0.002:
+            raise AssertionError(f"drawer target error: {opened['drawer_joint_qpos']}")
+        if opened["state"]["history"] != ["press_unlock_button", "pull_drawer_22cm"]:
+            raise AssertionError("interaction history mismatch")
+        if environment.is_success():
+            raise AssertionError("physics-only sequence must still require camera inspection")
+    sequence_contact = sequence_audit.report()
 
     artifacts = environment.save_artifacts(args.output_dir)
     xml_reload = mujoco.MjModel.from_xml_path(
@@ -141,6 +201,7 @@ def run(args: argparse.Namespace) -> dict:
         "mujoco_gl": os.environ.get("MUJOCO_GL"),
         "mjcf_compile": "PASS",
         "initial_contact": "PASS",
+        "sequence_contact": sequence_contact,
         "finite_state": "PASS",
         "unlock_actuator": "PASS",
         "drawer_actuator": "PASS",

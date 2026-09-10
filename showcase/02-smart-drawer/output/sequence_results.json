@@ -3,7 +3,7 @@
   "scene": "02-smart-drawer",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via glfw",
   "interaction_sequence": [
@@ -23,13 +23,13 @@
         640,
         3
       ],
-      "rgb_std": 62.18275950322052,
+      "rgb_std": 62.105896550309204,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 191482,
+      "finite_depth_pixels": 191644,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -55,13 +55,13 @@
         640,
         3
       ],
-      "rgb_std": 62.17544853230109,
+      "rgb_std": 62.098816567295714,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 191447,
+      "finite_depth_pixels": 191607,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -89,13 +89,13 @@
         640,
         3
       ],
-      "rgb_std": 60.88748878963715,
+      "rgb_std": 60.816767151501104,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 192649,
+      "finite_depth_pixels": 192812,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -124,13 +124,13 @@
         640,
         3
       ],
-      "rgb_std": 60.87071061160615,
+      "rgb_std": 60.79975053949083,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 192664,
+      "finite_depth_pixels": 192827,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -141,10 +141,10 @@
         "lock_state": "unlocked",
         "drawer_state": "open_22cm",
         "inspection_state": "pending",
-        "drawer_joint_qpos": 0.22000991422553712,
+        "drawer_joint_qpos": 0.2200099142255374,
         "drawer_body_position": [
           0.0,
-          -0.22501018710503654,
+          -0.2250101871050368,
           0.86
         ]
       }
@@ -159,13 +159,13 @@
         640,
         3
       ],
-      "rgb_std": 60.87071061160615,
+      "rgb_std": 60.79975053949083,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 192664,
+      "finite_depth_pixels": 192827,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -177,10 +177,10 @@
         "lock_state": "unlocked",
         "drawer_state": "open_22cm",
         "inspection_state": "verified_open",
-        "drawer_joint_qpos": 0.22000991422553712,
+        "drawer_joint_qpos": 0.2200099142255374,
         "drawer_body_position": [
           0.0,
-          -0.22501018710503654,
+          -0.2250101871050368,
           0.86
         ]
       }

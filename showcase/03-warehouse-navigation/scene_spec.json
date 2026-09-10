@@ -37,7 +37,8 @@
       "geometry": {
         "shape": "cylinder",
         "dimensions": [0.46, 0.46, 0.24],
-        "geom_name": "mobile_robot_geom"
+        "geom_name": "mobile_robot_geom",
+        "part_geom_names": ["mobile_robot_geom", "robot_top", "robot_heading"]
       },
       "pose": {
         "position": [-2.35, -1.35, 0.14],
@@ -48,8 +49,8 @@
         "joint_name": "robot_x",
         "actuator_name": "robot_x_motor",
         "mass_kg": 6.0,
-        "contype": 1,
-        "conaffinity": 1,
+        "contype": 2,
+        "conaffinity": 5,
         "friction": [0.9, 0.01, 0.001]
       },
       "semantic": "mobile_robot"
@@ -61,7 +62,8 @@
       "geometry": {
         "shape": "box",
         "dimensions": [0.7, 2.2, 1.4],
-        "geom_name": "central_shelf_geom"
+        "geom_name": "central_shelf_geom",
+        "part_geom_names": ["central_shelf_geom", "central_shelf_edge_w", "central_shelf_edge_e"]
       },
       "pose": {
         "position": [0.0, 0.25, 0.7],
@@ -70,7 +72,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.8, 0.01, 0.001]
       },
       "semantic": "route_obstacle"
@@ -82,7 +84,8 @@
       "geometry": {
         "shape": "box",
         "dimensions": [1.7, 0.55, 1.4],
-        "geom_name": "north_shelf_geom"
+        "geom_name": "north_shelf_geom",
+        "part_geom_names": ["north_shelf_geom", "north_shelf_edge"]
       },
       "pose": {
         "position": [-1.75, 1.72, 0.7],
@@ -91,7 +94,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.8, 0.01, 0.001]
       },
       "semantic": "warehouse_shelf"
@@ -103,7 +106,8 @@
       "geometry": {
         "shape": "box",
         "dimensions": [0.55, 1.25, 1.4],
-        "geom_name": "east_shelf_geom"
+        "geom_name": "east_shelf_geom",
+        "part_geom_names": ["east_shelf_geom", "east_shelf_edge"]
       },
       "pose": {
         "position": [2.35, -0.25, 0.7],
@@ -112,7 +116,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 1,
+        "conaffinity": 6,
         "friction": [0.8, 0.01, 0.001]
       },
       "semantic": "warehouse_shelf"
