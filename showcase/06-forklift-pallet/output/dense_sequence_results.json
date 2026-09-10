@@ -3,9 +3,9 @@
   "scene": "06-forklift-pallet",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.13.5",
-  "render_backend_requested": "osmesa",
-  "renderer_context": "osmesa",
+  "python_version": "3.12.13",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
   "sequence_kind": "dense simulation frames",
   "simulation_interval_s": 0.2,
   "sampling_clock": "MuJoCo data.time elapsed since reset",
@@ -1500,11 +1500,11 @@
           0.2649198583177782,
           0.25
         ],
-        "fork_lift_qpos_m": -0.0003667645047826841,
+        "fork_lift_qpos_m": -0.00036676450478268413,
         "pallet_position": [
           1.55,
-          0.3500008620762097,
-          0.8139902402025115
+          0.35000086207620973,
+          0.8139902402025113
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -1539,11 +1539,11 @@
           0.2617994773889437,
           0.25
         ],
-        "fork_lift_qpos_m": -0.00036676544392431166,
+        "fork_lift_qpos_m": -0.00036676544392431177,
         "pallet_position": [
           1.55,
-          0.35000086626696036,
-          0.8139942433983701
+          0.350000866266961,
+          0.8139942433983696
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -1579,11 +1579,11 @@
           0.2615158676861301,
           0.25
         ],
-        "fork_lift_qpos_m": -0.0003667654438685311,
+        "fork_lift_qpos_m": -0.00036676544386853103,
         "pallet_position": [
           1.55,
-          0.35000086628768645,
-          0.8139942536065415
+          0.3500008662876882,
+          0.8139942536065403
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0

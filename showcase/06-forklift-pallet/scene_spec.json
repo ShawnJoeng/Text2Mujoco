@@ -220,7 +220,7 @@
       "id": "delivery_camera_sensor",
       "type": "camera",
       "camera_name": "delivery_camera",
-      "pose": {"position": [0, 0, 5.8], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [3.6723, -4.6358, 5.2237], "orientation_xyzw": [0.4411589632, 0.1605687312, 0.3019858623, 0.8296993376]},
       "frequency_hz": 20,
       "data": ["rgb", "depth", "camera_pose"]
     }

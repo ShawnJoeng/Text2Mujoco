@@ -295,8 +295,8 @@
       "type": "camera",
       "camera_name": "assembly_camera",
       "pose": {
-        "position": [0, 0, 2.8],
-        "orientation_xyzw": [0, 0, 0, 1]
+        "position": [1.4883, -1.7737, 2.0586],
+        "orientation_xyzw": [0.4483825660, 0.1631979076, 0.3005731548, 0.8258179558]
       },
       "frequency_hz": 30,
       "data": ["rgb", "depth", "camera_pose", "arm_joint_qpos", "peg_position"]

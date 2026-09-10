@@ -228,7 +228,7 @@
       "id": "sorting_camera_sensor",
       "type": "camera",
       "camera_name": "sorting_camera",
-      "pose": {"position": [0, 0, 4.8], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [2.2078, -3.1531, 3.2472], "orientation_xyzw": [0.4550743979, 0.1434844065, 0.2642654025, 0.8381427770]},
       "frequency_hz": 20,
       "data": ["rgb", "depth", "camera_pose"]
     }

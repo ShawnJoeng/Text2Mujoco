@@ -3,9 +3,9 @@
   "scene": "08-conveyor-arm",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.13.5",
-  "render_backend_requested": "osmesa",
-  "renderer_context": "osmesa",
+  "python_version": "3.12.13",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
   "sequence_kind": "dense simulation frames",
   "simulation_interval_s": 0.2,
   "sampling_clock": "MuJoCo data.time elapsed since reset",
@@ -81,7 +81,7 @@
         ],
         "parcel_position": [
           -0.55,
-          8.890527183325421e-18,
+          9.454419207374893e-18,
           0.9339459383603561
         ],
         "parcel_inside_target_bin": false
@@ -245,12 +245,12 @@
         "parcel_state": "at_pickup",
         "tool_position": [
           1.1088204769059105,
-          -0.049812351395220236,
+          -0.04981235139522028,
           1.0306571428571505
         ],
         "parcel_position": [
           -0.08,
-          3.649383783720104e-18,
+          4.5603523128774695e-18,
           0.9309090981490515
         ],
         "parcel_inside_target_bin": false
@@ -285,7 +285,7 @@
         ],
         "parcel_position": [
           -0.08,
-          1.5006573736854154e-17,
+          1.667258655861834e-17,
           0.933961065412376
         ],
         "parcel_inside_target_bin": false
@@ -314,13 +314,13 @@
         "gripper_state": "open",
         "parcel_state": "at_pickup",
         "tool_position": [
-          -0.0882714690211231,
-          -0.012234388300805156,
+          -0.08827146902112318,
+          -0.012234388300805109,
           1.030657142857143
         ],
         "parcel_position": [
           -0.08,
-          2.6821195534487312e-17,
+          2.8690988292401046e-17,
           0.9339650304582727
         ],
         "parcel_inside_target_bin": false
@@ -349,13 +349,13 @@
         "gripper_state": "open",
         "parcel_state": "at_pickup",
         "tool_position": [
-          -0.0803458031937109,
-          0.0003825380646507335,
+          -0.08034580319371079,
+          0.0003825380646508506,
           1.030657142857143
         ],
         "parcel_position": [
           -0.08,
-          3.860929632123137e-17,
+          4.0756865442678874e-17,
           0.9339650361670271
         ],
         "parcel_inside_target_bin": false
@@ -390,7 +390,7 @@
         ],
         "parcel_position": [
           -0.08,
-          5.046393256381632e-17,
+          5.268938353118856e-17,
           0.933965036175247
         ],
         "parcel_inside_target_bin": false
@@ -419,13 +419,13 @@
         "gripper_state": "open",
         "parcel_state": "at_pickup",
         "tool_position": [
-          -0.08000703420104532,
-          5.5401417323472715e-06,
+          -0.08000703420104521,
+          5.540141732301301e-06,
           0.932674961653438
         ],
         "parcel_position": [
           -0.08,
-          6.188025559539335e-17,
+          6.431146032020324e-17,
           0.933965036175258
         ],
         "parcel_inside_target_bin": false
@@ -460,7 +460,7 @@
         ],
         "parcel_position": [
           -0.08,
-          7.377620167697655e-17,
+          7.619412481085016e-17,
           0.933965036175258
         ],
         "parcel_inside_target_bin": false
@@ -496,7 +496,7 @@
         ],
         "parcel_position": [
           -0.08,
-          8.161757803845364e-17,
+          8.409275093689383e-17,
           0.933965036175258
         ],
         "parcel_inside_target_bin": false
@@ -532,7 +532,7 @@
         ],
         "parcel_position": [
           -0.08,
-          8.56195345099652e-17,
+          8.814703828961411e-17,
           0.933965036175258
         ],
         "parcel_inside_target_bin": false
@@ -568,7 +568,7 @@
         ],
         "parcel_position": [
           -0.08,
-          9.759379989336335e-17,
+          1.0013392210169754e-16,
           0.933965036175258
         ],
         "parcel_inside_target_bin": false
@@ -604,8 +604,8 @@
           0.9306571428580191
         ],
         "parcel_position": [
-          -0.08000000467354038,
-          4.2508946059352515e-09,
+          -0.08000000467354024,
+          4.250894619813039e-09,
           0.9306571428580743
         ],
         "parcel_inside_target_bin": false
@@ -636,13 +636,13 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.01872956071147222,
-          0.06789131533936818,
+          0.018729560711472304,
+          0.06789131533936824,
           0.9306571428572593
         ],
         "parcel_position": [
-          0.01872956071147222,
-          0.06789131533936818,
+          0.018729560711472304,
+          0.06789131533936824,
           0.9306571428572593
         ],
         "parcel_inside_target_bin": false
@@ -673,12 +673,12 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.24074678366355418,
+          0.24074678366355434,
           0.1888858402533175,
           0.9306571428571432
         ],
         "parcel_position": [
-          0.24074678366355418,
+          0.24074678366355434,
           0.1888858402533175,
           0.9306571428571432
         ],
@@ -710,13 +710,13 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.25046931372100184,
-          0.18220369346068838,
+          0.2504693137210018,
+          0.1822036934606884,
           0.930657142857143
         ],
         "parcel_position": [
-          0.25046931372100184,
-          0.18220369346068838,
+          0.2504693137210018,
+          0.1822036934606884,
           0.930657142857143
         ],
         "parcel_inside_target_bin": true
@@ -747,13 +747,13 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.25001302235575806,
-          0.18026685957681995,
+          0.25001302235575784,
+          0.18026685957681993,
           0.930657142857143
         ],
         "parcel_position": [
-          0.25001302235575806,
-          0.18026685957681995,
+          0.25001302235575784,
+          0.18026685957681993,
           0.930657142857143
         ],
         "parcel_inside_target_bin": true
@@ -785,13 +785,13 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.24999735595365896,
-          0.18003550938449342,
+          0.24999735595365885,
+          0.18003550938449356,
           0.930657142857143
         ],
         "parcel_position": [
           0.24999731515672344,
-          0.18003623595823726,
+          0.18003623595823737,
           0.930657142857143
         ],
         "parcel_inside_target_bin": true
@@ -823,8 +823,8 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.24999747790507326,
-          0.18003341761754516,
+          0.24999747790507318,
+          0.18003341761754527,
           0.930657142857143
         ],
         "parcel_position": [
@@ -861,8 +861,8 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.24999969989026974,
-          0.18000452284226248,
+          0.24999969989026977,
+          0.18000452284226254,
           0.930657142857143
         ],
         "parcel_position": [
@@ -899,8 +899,8 @@
         "gripper_state": "open",
         "parcel_state": "grasped",
         "tool_position": [
-          0.249999967610822,
-          0.18000061322093636,
+          0.24999996761082188,
+          0.1800006132209363,
           0.930657142857143
         ],
         "parcel_position": [
@@ -937,8 +937,8 @@
         "gripper_state": "open",
         "parcel_state": "grasped",
         "tool_position": [
-          0.24999999543346582,
-          0.1800000823451362,
+          0.2499999954334658,
+          0.18000008234513604,
           0.930657142857143
         ],
         "parcel_position": [
@@ -976,7 +976,7 @@
         "parcel_state": "grasped",
         "tool_position": [
           0.24999999932490927,
-          0.18000001103374375,
+          0.18000001103374386,
           0.930657142857143
         ],
         "parcel_position": [
@@ -1014,7 +1014,7 @@
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999950394064,
+          0.24999999950394047,
           0.18000000799944965,
           0.930657142857143
         ],
@@ -1053,8 +1053,8 @@
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999990225974,
-          0.1800000014784107,
+          0.24999999990225957,
+          0.18000000147841072,
           0.930657142857143
         ],
         "parcel_position": [
@@ -1093,8 +1093,8 @@
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999995132333,
-          0.1800000007169342,
+          0.24999999995132338,
+          0.18000000071693417,
           0.930657142857143
         ],
         "parcel_position": [

@@ -2,9 +2,9 @@
   "status": "PASS",
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
-  "python_version": "3.13.5",
-  "render_backend_requested": "osmesa",
-  "renderer_context": "mujoco.osmesa.GLContext",
+  "python_version": "3.12.13",
+  "render_backend_requested": "glfw",
+  "renderer_context": "mujoco.cgl.GLContext",
   "path_base": "package_root",
   "resolution": [
     640,
@@ -22,11 +22,11 @@
   "visible_interaction_markers": {
     "status": "PASS",
     "pixels": {
-      "yellow": 4741,
-      "cyan": 19622,
-      "green": 2702,
-      "magenta": 261,
-      "orange": 2123
+      "yellow": 1340,
+      "cyan": 8777,
+      "green": 8964,
+      "magenta": 207,
+      "orange": 2792
     }
   },
   "forklift_movement_m": 2.9980055815819515,
@@ -47,18 +47,18 @@
         480,
         640
       ],
-      "finite_geometry_pixels": 307200,
-      "min_m": 3.7100000381469727,
-      "max_m": 5.8000006675720215
+      "finite_geometry_pixels": 156194,
+      "min_m": 5.403749465942383,
+      "max_m": 11.841093063354492
     },
     "final": {
       "shape": [
         480,
         640
       ],
-      "finite_geometry_pixels": 307200,
-      "min_m": 3.7100000381469727,
-      "max_m": 5.8000006675720215
+      "finite_geometry_pixels": 154766,
+      "min_m": 5.403749465942383,
+      "max_m": 11.841093063354492
     }
   }
 }

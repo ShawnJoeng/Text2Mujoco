@@ -3,9 +3,9 @@
   "scene": "06-forklift-pallet",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.13.5",
-  "render_backend_requested": "osmesa",
-  "renderer_context": "osmesa",
+  "python_version": "3.12.13",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
   "interaction_sequence": [
     "drive_to_pallet",
     "raise_forks",
@@ -26,15 +26,15 @@
         640,
         3
       ],
-      "rgb_std": 56.82423699168127,
-      "rgb_dynamic_range": 252,
+      "rgb_std": 56.7468013662073,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.7100000381469727,
-      "finite_depth_max_m": 5.8000006675720215,
+      "finite_depth_pixels": 156194,
+      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [],
         "forklift_state": "parked",
@@ -64,15 +64,15 @@
         640,
         3
       ],
-      "rgb_std": 56.65677563009338,
-      "rgb_dynamic_range": 252,
+      "rgb_std": 56.724109943823336,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.7100000381469727,
-      "finite_depth_max_m": 5.8000006675720215,
+      "finite_depth_pixels": 155933,
+      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
           "drive_to_pallet"
@@ -104,15 +104,15 @@
         640,
         3
       ],
-      "rgb_std": 56.42752678903584,
-      "rgb_dynamic_range": 252,
+      "rgb_std": 56.84446340082633,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.7100000381469727,
-      "finite_depth_max_m": 5.8000006675720215,
+      "finite_depth_pixels": 155693,
+      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
           "drive_to_pallet",
@@ -145,15 +145,15 @@
         640,
         3
       ],
-      "rgb_std": 56.17772535745774,
-      "rgb_dynamic_range": 252,
+      "rgb_std": 56.737277729018814,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.7100000381469727,
-      "finite_depth_max_m": 5.8000006675720215,
+      "finite_depth_pixels": 155693,
+      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
           "drive_to_pallet",
@@ -187,15 +187,15 @@
         640,
         3
       ],
-      "rgb_std": 55.65447831437144,
-      "rgb_dynamic_range": 250,
+      "rgb_std": 56.93272489692669,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.7100000381469727,
-      "finite_depth_max_m": 5.8000006675720215,
+      "finite_depth_pixels": 154766,
+      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
           "drive_to_pallet",
@@ -230,15 +230,15 @@
         640,
         3
       ],
-      "rgb_std": 55.570485086848024,
-      "rgb_dynamic_range": 250,
+      "rgb_std": 56.58109478316054,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.7100000381469727,
-      "finite_depth_max_m": 5.8000006675720215,
+      "finite_depth_pixels": 154766,
+      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
           "drive_to_pallet",
@@ -254,11 +254,11 @@
           0.2649198583177782,
           0.25
         ],
-        "fork_lift_qpos_m": -0.0003667645047826841,
+        "fork_lift_qpos_m": -0.00036676450478268413,
         "pallet_position": [
           1.55,
-          0.3500008620762097,
-          0.8139902402025115
+          0.35000086207620973,
+          0.8139902402025113
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -274,15 +274,15 @@
         640,
         3
       ],
-      "rgb_std": 55.537363142842004,
-      "rgb_dynamic_range": 250,
+      "rgb_std": 56.5363393120389,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.7100000381469727,
-      "finite_depth_max_m": 5.8000006675720215,
+      "finite_depth_pixels": 154774,
+      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
           "drive_to_pallet",
@@ -298,11 +298,11 @@
           0.2615158676861301,
           0.25
         ],
-        "fork_lift_qpos_m": -0.0003667654438685311,
+        "fork_lift_qpos_m": -0.00036676544386853103,
         "pallet_position": [
           1.55,
-          0.35000086628768645,
-          0.8139942536065415
+          0.3500008662876882,
+          0.8139942536065403
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -318,15 +318,15 @@
         640,
         3
       ],
-      "rgb_std": 55.537363142842004,
-      "rgb_dynamic_range": 250,
+      "rgb_std": 56.5363393120389,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.7100000381469727,
-      "finite_depth_max_m": 5.8000006675720215,
+      "finite_depth_pixels": 154774,
+      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
           "drive_to_pallet",
@@ -343,11 +343,11 @@
           0.2615158676861301,
           0.25
         ],
-        "fork_lift_qpos_m": -0.0003667654438685311,
+        "fork_lift_qpos_m": -0.00036676544386853103,
         "pallet_position": [
           1.55,
-          0.35000086628768645,
-          0.8139942536065415
+          0.3500008662876882,
+          0.8139942536065403
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0

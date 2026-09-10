@@ -2,7 +2,7 @@
   "status": "PASS",
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via MuJoCo glfw backend",
   "path_base": "package_root",
@@ -19,43 +19,43 @@
   "visible_interaction_markers": {
     "status": "PASS",
     "pixels": {
-      "yellow": 6048,
-      "green": 1641,
-      "magenta": 1118
+      "yellow": 12458,
+      "green": 737,
+      "magenta": 406
     },
     "centroids_px": {
       "yellow": [
-        260.0720899470899,
-        208.90410052910053
+        206.37084604270348,
+        218.17169690158934
       ],
       "green": [
-        438.4801950030469,
-        178.0822669104205
+        391.1668928086838,
+        214.40841248303934
       ],
       "magenta": [
-        507.87388193202145,
-        112.61270125223614
+        416.8128078817734,
+        172.1576354679803
       ]
     }
   },
   "robot_pixel_movement": {
     "status": "PASS",
     "before_centroid_px": [
-      143.2741935483871,
-      342.2096774193548
+      180.64804469273744,
+      403.22067039106145
     ],
     "after_centroid_px": [
-      432.23741007194246,
-      180.23741007194243
+      390.46014492753625,
+      213.3731884057971
     ],
-    "movement_px": 331.2623671552517,
-    "before_pixels": 62,
-    "after_pixels": 139
+    "movement_px": 282.9543847002243,
+    "before_pixels": 358,
+    "after_pixels": 276
   },
   "reset_render": {
     "status": "PASS",
     "centroid_error_px": 0.0,
-    "reset_pixels": 62
+    "reset_pixels": 358
   },
   "screenshots": {
     "before": {
@@ -94,9 +94,9 @@
         640
       ],
       "dtype": "float32",
-      "finite_geometry_pixels": 183965,
-      "min_m": 5.780043601989746,
-      "max_m": 7.199990272521973
+      "finite_geometry_pixels": 118560,
+      "min_m": 6.1114277839660645,
+      "max_m": 10.85342025756836
     },
     "after": {
       "path": "output/screenshots/after_depth.npy",
@@ -105,9 +105,9 @@
         640
       ],
       "dtype": "float32",
-      "finite_geometry_pixels": 183965,
-      "min_m": 5.780043601989746,
-      "max_m": 7.199990272521973
+      "finite_geometry_pixels": 118560,
+      "min_m": 6.1114277839660645,
+      "max_m": 10.85342025756836
     }
   }
 }

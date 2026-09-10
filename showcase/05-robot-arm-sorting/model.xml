@@ -38,7 +38,7 @@
   <worldbody>
     <light name="key_light" pos="-1.5 -2.2 4.2" dir="0.2 0.3 -1" directional="true" castshadow="true"/>
     <light name="fill_light" pos="2.0 1.2 3.0" dir="-0.5 -0.25 -1" directional="true" diffuse="0.42 0.45 0.5" specular="0.08 0.08 0.08"/>
-    <camera name="sorting_camera" pos="0 0 4.8" quat="1 0 0 0" fovy="48"/>
+    <camera name="sorting_camera" pos="2.2078 -3.1531 3.2472" quat="0.8381427770 0.4550743979 0.1434844065 0.2642654025" fovy="45"/>
     <geom name="ground_geom" type="plane" size="3.5 3.0 0.1" material="floor_mat"/>
 
     <body name="worktable" pos="0 0 0.62">
@@ -49,16 +49,17 @@
       <geom name="worktable_leg_br" type="box" pos="1.18 0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
     </body>
 
-    <body name="conveyor_frame" pos="0.26 0 0.76">
-      <geom name="conveyor_belt_geom" type="box" size="0.72 0.23 0.025" material="belt_mat" contype="1" conaffinity="1"/>
-      <geom name="conveyor_rail_left" type="box" pos="0 0.245 0.04" size="0.72 0.018 0.045" material="frame_mat"/>
-      <geom name="conveyor_rail_right" type="box" pos="0 -0.245 0.04" size="0.72 0.018 0.045" material="frame_mat"/>
-      <geom name="conveyor_roller_a" type="cylinder" pos="-0.58 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
-      <geom name="conveyor_roller_b" type="cylinder" pos="0.58 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
+    <body name="conveyor_frame" pos="0.23 0 0.76">
+      <geom name="conveyor_belt_geom" type="box" size="0.27 0.23 0.025" material="belt_mat" contype="1" conaffinity="1"/>
+      <geom name="conveyor_stand_geom" type="box" pos="0 0 -0.0525" size="0.25 0.21 0.0275" material="frame_mat"/>
+      <geom name="conveyor_rail_left" type="box" pos="0 0.245 0.04" size="0.27 0.018 0.045" material="frame_mat"/>
+      <geom name="conveyor_rail_right" type="box" pos="0 -0.245 0.04" size="0.27 0.018 0.045" material="frame_mat"/>
+      <geom name="conveyor_roller_a" type="cylinder" pos="-0.19 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
+      <geom name="conveyor_roller_b" type="cylinder" pos="0.19 0 0.04" quat="0.7071068 0.7071068 0 0" size="0.08 0.24" material="frame_mat"/>
     </body>
 
     <body name="arm_base" pos="-0.35 0 0.70">
-      <geom name="arm_base_geom" type="cylinder" size="0.24 0.35" material="arm_base_mat"/>
+      <geom name="arm_base_geom" type="cylinder" pos="0 0 -0.175" size="0.24 0.525" material="arm_base_mat"/>
       <geom name="arm_base_ring" type="cylinder" pos="0 0 0.37" size="0.28 0.035" material="joint_mat"/>
       <body name="arm_upper_link" pos="0 0 0.82">
         <joint name="arm_shoulder" type="hinge" axis="0 1 0" range="-2.8 1.8" damping="3.0" armature="0.02"/>
@@ -93,7 +94,7 @@
       <geom name="blue_part_geom" type="cylinder" size="0.07 0.07" mass="0.16" material="blue_mat" friction="0.72 0.01 0.003"/>
       <site name="blue_part_top_site" type="sphere" pos="0 0 0.075" size="0.018" rgba="0.02 0.55 1 1" group="2"/>
     </body>
-    <body name="red_part" pos="0.43 0.45 0.84">
+    <body name="red_part" pos="0.43 0.45 0.75">
       <freejoint name="red_part_free"/>
       <geom name="red_part_geom" type="cylinder" size="0.07 0.07" mass="0.16" material="red_mat" friction="0.72 0.01 0.003"/>
     </body>
@@ -105,7 +106,7 @@
       <geom name="blue_bin_front" type="box" pos="0.215 0 0.16" size="0.015 0.22 0.115" material="blue_bin_mat"/>
       <geom name="blue_bin_back" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="blue_bin_mat"/>
     </body>
-    <body name="red_bin" pos="0.78 0.48 0.70">
+    <body name="red_bin" pos="0.78 0.55 0.70">
       <geom name="red_bin_bottom" type="box" pos="0 0 0.045" size="0.23 0.22 0.045" material="red_bin_mat"/>
       <geom name="red_bin_left" type="box" pos="0 0.235 0.16" size="0.23 0.015 0.115" material="red_bin_mat"/>
       <geom name="red_bin_right" type="box" pos="0 -0.235 0.16" size="0.23 0.015 0.115" material="red_bin_mat"/>

@@ -3,7 +3,7 @@
   "scene": "03-warehouse-navigation",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via glfw",
   "sequence_kind": "dense simulation frames",

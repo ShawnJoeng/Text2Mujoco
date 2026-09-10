@@ -3,9 +3,9 @@
   "scene": "08-conveyor-arm",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.13.5",
-  "render_backend_requested": "osmesa",
-  "renderer_context": "osmesa",
+  "python_version": "3.12.13",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
   "interaction_sequence": [
     "start_conveyor_to_pickup",
     "move_arm_to_parcel",
@@ -26,15 +26,15 @@
         640,
         3
       ],
-      "rgb_std": 79.02785525933768,
-      "rgb_dynamic_range": 251,
+      "rgb_std": 59.93006591440119,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 1.5050164461135864,
-      "finite_depth_max_m": 2.799999952316284,
+      "finite_depth_pixels": 207523,
+      "finite_depth_min_m": 2.487281560897827,
+      "finite_depth_max_m": 7.519796848297119,
       "observation": {
         "history": [],
         "conveyor_state": "stopped",
@@ -48,7 +48,7 @@
         ],
         "parcel_position": [
           -0.55,
-          8.890527183325421e-18,
+          9.454419207374893e-18,
           0.9339459383603561
         ],
         "parcel_inside_target_bin": false
@@ -64,15 +64,15 @@
         640,
         3
       ],
-      "rgb_std": 80.33519208934645,
-      "rgb_dynamic_range": 251,
+      "rgb_std": 60.602327371601746,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 1.5050164461135864,
-      "finite_depth_max_m": 2.799999952316284,
+      "finite_depth_pixels": 207339,
+      "finite_depth_min_m": 2.503267288208008,
+      "finite_depth_max_m": 7.519796848297119,
       "observation": {
         "history": [
           "start_conveyor_to_pickup"
@@ -104,15 +104,15 @@
         640,
         3
       ],
-      "rgb_std": 78.55572647287148,
-      "rgb_dynamic_range": 251,
+      "rgb_std": 61.355925069650546,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 1.5050164461135864,
-      "finite_depth_max_m": 2.799999952316284,
+      "finite_depth_pixels": 207549,
+      "finite_depth_min_m": 2.7154018878936768,
+      "finite_depth_max_m": 7.519796848297119,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -129,7 +129,7 @@
         ],
         "parcel_position": [
           -0.08,
-          8.161757803845364e-17,
+          8.409275093689383e-17,
           0.933965036175258
         ],
         "parcel_inside_target_bin": false
@@ -145,15 +145,15 @@
         640,
         3
       ],
-      "rgb_std": 78.54353850496395,
-      "rgb_dynamic_range": 251,
+      "rgb_std": 61.34431923634652,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 1.5050164461135864,
-      "finite_depth_max_m": 2.799999952316284,
+      "finite_depth_pixels": 207550,
+      "finite_depth_min_m": 2.7154018878936768,
+      "finite_depth_max_m": 7.519796848297119,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -170,8 +170,8 @@
           0.9306571428580191
         ],
         "parcel_position": [
-          -0.08000000467354038,
-          4.2508946059352515e-09,
+          -0.08000000467354024,
+          4.250894619813039e-09,
           0.9306571428580743
         ],
         "parcel_inside_target_bin": false
@@ -187,15 +187,15 @@
         640,
         3
       ],
-      "rgb_std": 78.09119287825982,
-      "rgb_dynamic_range": 251,
+      "rgb_std": 61.12488386887836,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 1.5050164461135864,
-      "finite_depth_max_m": 2.799999952316284,
+      "finite_depth_pixels": 207550,
+      "finite_depth_min_m": 2.7154018878936768,
+      "finite_depth_max_m": 7.519796848297119,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -208,13 +208,13 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.24999735595365896,
-          0.18003550938449342,
+          0.24999735595365885,
+          0.18003550938449356,
           0.930657142857143
         ],
         "parcel_position": [
           0.24999731515672344,
-          0.18003623595823726,
+          0.18003623595823737,
           0.930657142857143
         ],
         "parcel_inside_target_bin": true
@@ -230,15 +230,15 @@
         640,
         3
       ],
-      "rgb_std": 78.09425475717767,
-      "rgb_dynamic_range": 251,
+      "rgb_std": 61.125558152859625,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 1.5050164461135864,
-      "finite_depth_max_m": 2.799999952316284,
+      "finite_depth_pixels": 207550,
+      "finite_depth_min_m": 2.7154018878936768,
+      "finite_depth_max_m": 7.519796848297119,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -252,7 +252,7 @@
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999950394064,
+          0.24999999950394047,
           0.18000000799944965,
           0.930657142857143
         ],
@@ -274,15 +274,15 @@
         640,
         3
       ],
-      "rgb_std": 78.0942564283782,
-      "rgb_dynamic_range": 251,
+      "rgb_std": 61.12555448308592,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 1.5050164461135864,
-      "finite_depth_max_m": 2.799999952316284,
+      "finite_depth_pixels": 207550,
+      "finite_depth_min_m": 2.7154018878936768,
+      "finite_depth_max_m": 7.519796848297119,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -296,8 +296,8 @@
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999995132333,
-          0.1800000007169342,
+          0.24999999995132338,
+          0.18000000071693417,
           0.930657142857143
         ],
         "parcel_position": [
@@ -318,15 +318,15 @@
         640,
         3
       ],
-      "rgb_std": 78.0942564283782,
-      "rgb_dynamic_range": 251,
+      "rgb_std": 61.12555448308592,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 1.5050164461135864,
-      "finite_depth_max_m": 2.799999952316284,
+      "finite_depth_pixels": 207550,
+      "finite_depth_min_m": 2.7154018878936768,
+      "finite_depth_max_m": 7.519796848297119,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -341,8 +341,8 @@
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999995132333,
-          0.1800000007169342,
+          0.24999999995132338,
+          0.18000000071693417,
           0.930657142857143
         ],
         "parcel_position": [

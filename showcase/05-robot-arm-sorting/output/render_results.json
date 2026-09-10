@@ -2,19 +2,19 @@
   "status": "PASS",
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
-  "python_version": "3.13.5",
+  "python_version": "3.12.13",
   "path_base": "package_root",
-  "render_backend_requested": "osmesa",
-  "renderer_context": "mujoco.osmesa.GLContext",
+  "render_backend_requested": "glfw",
+  "renderer_context": "mujoco.cgl.GLContext",
   "rgb_verified": "PASS",
   "depth_verified": "PASS",
   "visible_markers": {
-    "blue": 5512,
-    "red": 6154,
-    "yellow": 3292,
-    "cyan": 2623,
-    "magenta": 234,
-    "green": 232
+    "blue": 7141,
+    "red": 4984,
+    "yellow": 1985,
+    "cyan": 1833,
+    "magenta": 403,
+    "green": 238
   },
   "interaction_sequence": [
     "approach_blue_part",
@@ -24,26 +24,26 @@
     "inspect_sorting_result"
   ],
   "task_success": true,
-  "blue_part_motion_m": 0.6000000000000001,
-  "rgb_mean_absolute_delta": 3.093317057291667,
+  "blue_part_motion_m": 0.6000000040299283,
+  "rgb_mean_absolute_delta": 3.685521918402778,
   "depth": {
     "before": {
       "shape": [
         480,
         640
       ],
-      "finite_geometry_pixels": 307200,
-      "min_m": 2.5795962810516357,
-      "max_m": 4.800000190734863
+      "finite_geometry_pixels": 199465,
+      "min_m": 3.4163074493408203,
+      "max_m": 8.736580848693848
     },
     "after": {
       "shape": [
         480,
         640
       ],
-      "finite_geometry_pixels": 307200,
-      "min_m": 3.1370482444763184,
-      "max_m": 4.800000190734863
+      "finite_geometry_pixels": 194822,
+      "min_m": 3.4163074493408203,
+      "max_m": 8.736580848693848
     }
   },
   "screenshots": {

@@ -3,9 +3,9 @@
   "scene": "05-robot-arm-sorting",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.13.5",
-  "render_backend_requested": "osmesa",
-  "renderer_context": "osmesa",
+  "python_version": "3.12.13",
+  "render_backend_requested": "glfw",
+  "renderer_context": "native macOS CGL via glfw",
   "interaction_sequence": [
     "approach_blue_part",
     "grasp_blue_part",
@@ -25,15 +25,15 @@
         640,
         3
       ],
-      "rgb_std": 63.873122179387614,
-      "rgb_dynamic_range": 253,
+      "rgb_std": 66.52199046877125,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 2.629404306411743,
-      "finite_depth_max_m": 4.800000190734863,
+      "finite_depth_pixels": 198926,
+      "finite_depth_min_m": 3.4163074493408203,
+      "finite_depth_max_m": 8.736580848693848,
       "observation": {
         "history": [],
         "arm_state": "home",
@@ -42,12 +42,12 @@
         "arm_tcp_position": [
           0.6601675621546252,
           0.0,
-          1.7182359742493507
+          1.7182359742493505
         ],
         "blue_part_position": [
-          0.17999879528939927,
-          1.0058478144950802e-05,
-          0.8546397438787133
+          0.2010119564867451,
+          8.993303111271261e-06,
+          0.854693188363581
         ],
         "blue_part_inside_bin": false
       }
@@ -62,15 +62,15 @@
         640,
         3
       ],
-      "rgb_std": 64.32176095062738,
-      "rgb_dynamic_range": 253,
+      "rgb_std": 66.24459254385916,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.15763521194458,
-      "finite_depth_max_m": 4.800000190734863,
+      "finite_depth_pixels": 194865,
+      "finite_depth_min_m": 3.4163074493408203,
+      "finite_depth_max_m": 8.736580848693848,
       "observation": {
         "history": [
           "approach_blue_part"
@@ -79,14 +79,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.18000000000000033,
+          0.1800000000000002,
           0.0,
-          0.86
+          0.8599999999999999
         ],
         "blue_part_position": [
-          0.17999918431264902,
-          -1.3222244749163525e-05,
-          0.8546373207111053
+          0.20101972537723148,
+          -3.4212206507182404e-05,
+          0.8546456106835344
         ],
         "blue_part_inside_bin": false
       }
@@ -101,15 +101,15 @@
         640,
         3
       ],
-      "rgb_std": 64.35156400312553,
-      "rgb_dynamic_range": 253,
+      "rgb_std": 66.20725523900354,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.1498422622680664,
-      "finite_depth_max_m": 4.800000190734863,
+      "finite_depth_pixels": 194859,
+      "finite_depth_min_m": 3.4163074493408203,
+      "finite_depth_max_m": 8.736580848693848,
       "observation": {
         "history": [
           "approach_blue_part",
@@ -119,14 +119,14 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.1496852796809299,
+          0.14968527968093004,
           0.0,
-          0.7870888344471781
+          0.7870888344471784
         ],
         "blue_part_position": [
-          0.15054685018129613,
+          0.15054685018129627,
           0.0,
-          0.7882878620546017
+          0.7882878620546016
         ],
         "blue_part_inside_bin": false
       }
@@ -141,15 +141,15 @@
         640,
         3
       ],
-      "rgb_std": 64.3755968668184,
-      "rgb_dynamic_range": 253,
+      "rgb_std": 66.38683755948989,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.1480796337127686,
-      "finite_depth_max_m": 4.800000190734863,
+      "finite_depth_pixels": 194855,
+      "finite_depth_min_m": 3.4163074493408203,
+      "finite_depth_max_m": 8.736580848693848,
       "observation": {
         "history": [
           "approach_blue_part",
@@ -182,15 +182,15 @@
         640,
         3
       ],
-      "rgb_std": 64.31376950863205,
-      "rgb_dynamic_range": 253,
+      "rgb_std": 66.06226533977879,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.1370482444763184,
-      "finite_depth_max_m": 4.800000190734863,
+      "finite_depth_pixels": 194822,
+      "finite_depth_min_m": 3.4163074493408203,
+      "finite_depth_max_m": 8.736580848693848,
       "observation": {
         "history": [
           "approach_blue_part",
@@ -202,14 +202,14 @@
         "gripper_state": "open",
         "blue_part_state": "inside_blue_bin",
         "arm_tcp_position": [
-          0.4652656652088055,
+          0.467776793758988,
           0.0,
-          0.5401303651615307
+          0.5420318360786008
         ],
         "blue_part_position": [
           0.78,
           0.0,
-          0.86
+          0.8599304592645249
         ],
         "blue_part_inside_bin": true
       }
@@ -224,15 +224,15 @@
         640,
         3
       ],
-      "rgb_std": 64.31376950863205,
-      "rgb_dynamic_range": 253,
+      "rgb_std": 66.06226533977879,
+      "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 307200,
-      "finite_depth_min_m": 3.1370482444763184,
-      "finite_depth_max_m": 4.800000190734863,
+      "finite_depth_pixels": 194822,
+      "finite_depth_min_m": 3.4163074493408203,
+      "finite_depth_max_m": 8.736580848693848,
       "observation": {
         "history": [
           "approach_blue_part",
@@ -245,14 +245,14 @@
         "gripper_state": "open",
         "blue_part_state": "inside_blue_bin",
         "arm_tcp_position": [
-          0.4652656652088055,
+          0.467776793758988,
           0.0,
-          0.5401303651615307
+          0.5420318360786008
         ],
         "blue_part_position": [
           0.78,
           0.0,
-          0.86
+          0.8599304592645249
         ],
         "blue_part_inside_bin": true
       }

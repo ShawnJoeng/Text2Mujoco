@@ -37,7 +37,7 @@
   <worldbody>
     <light name="key_light" pos="-2.0 -2.5 4.6" dir="0.2 0.25 -1" directional="true" castshadow="true"/>
     <light name="fill_light" pos="2.5 1.6 3.3" dir="-0.6 -0.2 -1" directional="true" diffuse="0.42 0.45 0.5" specular="0.08 0.08 0.08"/>
-    <camera name="delivery_camera" pos="0 0 5.8" quat="1 0 0 0" fovy="50"/>
+    <camera name="delivery_camera" pos="3.6723 -4.6358 5.2237" quat="0.8296993376 0.4411589632 0.1605687312 0.3019858623" fovy="45"/>
     <geom name="ground_geom" type="plane" size="4.0 3.0 0.1" material="floor_mat"/>
 
     <body name="loading_pad" pos="-1.0 -0.9 0.67">

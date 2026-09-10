@@ -50,7 +50,10 @@ def resolve_package_path(path: str | Path, package_root: Path) -> Path:
 def color_centroid(image: np.ndarray, color: str, minimum_pixels: int = 30) -> tuple[np.ndarray, int]:
     r, g, b = (image[..., index].astype(float) for index in range(3))
     masks = {
-        "orange": (r > 120) & (r > 1.5 * g) & (g > 25) & (g > 1.2 * b),
+        # The shelf edges are orange too (r/g ~1.75); the robot chassis is a much
+        # purer orange (r/g ~3.3). The tighter ratio keeps this centroid on the
+        # robot now that the angled camera also sees the shelf faces.
+        "orange": (r > 120) & (r > 2.4 * g) & (g > 25) & (g > 1.2 * b),
         "yellow": (r > 140) & (g > 105) & (r > 1.15 * b) & (g > 1.6 * b),
         "green": (g > 95) & (g > 1.45 * r) & (g > 1.45 * b),
         "magenta": (r > 100) & (b > 65) & (r > 1.35 * g) & (b > 1.2 * g),

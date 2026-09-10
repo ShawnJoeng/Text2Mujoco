@@ -209,8 +209,8 @@
       "type": "camera",
       "camera_name": "top_camera",
       "pose": {
-        "position": [0.0, 0.0, 7.2],
-        "orientation_xyzw": [0, 0, 0, 1]
+        "position": [-1.9798, -5.4394, 6.4884],
+        "orientation_xyzw": [0.3768696111, -0.0664522807, -0.1604299972, 0.9098437265]
       },
       "frequency_hz": 20,
       "data": ["rgb", "depth", "camera_pose"]

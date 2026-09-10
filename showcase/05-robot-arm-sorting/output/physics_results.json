@@ -2,7 +2,7 @@
   "status": "PASS",
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "path_base": "package_root",
   "mujoco_gl": "disable",
   "static_checks": {

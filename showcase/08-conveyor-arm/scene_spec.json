@@ -217,7 +217,7 @@
       "id": "handoff_rgbd_sensor",
       "type": "camera",
       "camera_name": "handoff_camera",
-      "pose": {"position": [0, 0, 2.8], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [2.1258, -2.2258, 2.5989], "orientation_xyzw": [0.4483825660, 0.1631979076, 0.3005731548, 0.8258179558]},
       "frequency_hz": 30,
       "data": ["rgb", "depth", "camera_pose", "arm_joint_qpos", "parcel_position", "conveyor_state"]
     }

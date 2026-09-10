@@ -3,7 +3,7 @@
   "scene": "03-warehouse-navigation",
   "path_base": "package_root",
   "mujoco_version": "3.2.7",
-  "python_version": "3.9.6",
+  "python_version": "3.12.13",
   "render_backend_requested": "glfw",
   "renderer_context": "native macOS CGL via glfw",
   "interaction_sequence": [
@@ -23,15 +23,15 @@
         640,
         3
       ],
-      "rgb_std": 114.32863652077549,
+      "rgb_std": 107.3340533203748,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 183965,
-      "finite_depth_min_m": 5.780043601989746,
-      "finite_depth_max_m": 7.199990272521973,
+      "finite_depth_pixels": 118560,
+      "finite_depth_min_m": 6.1114277839660645,
+      "finite_depth_max_m": 10.85342025756836,
       "observation": {
         "history": [],
         "robot_state": "at_start",
@@ -56,15 +56,15 @@
         640,
         3
       ],
-      "rgb_std": 114.32057195903607,
+      "rgb_std": 107.39737630413532,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 183965,
-      "finite_depth_min_m": 5.780043601989746,
-      "finite_depth_max_m": 7.199990272521973,
+      "finite_depth_pixels": 118560,
+      "finite_depth_min_m": 6.1114277839660645,
+      "finite_depth_max_m": 10.85342025756836,
       "observation": {
         "history": [
           "reach_checkpoint_a"
@@ -91,15 +91,15 @@
         640,
         3
       ],
-      "rgb_std": 114.42052895344844,
+      "rgb_std": 107.49125500078647,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 183965,
-      "finite_depth_min_m": 5.780043601989746,
-      "finite_depth_max_m": 7.199990272521973,
+      "finite_depth_pixels": 118560,
+      "finite_depth_min_m": 6.1114277839660645,
+      "finite_depth_max_m": 10.85342025756836,
       "observation": {
         "history": [
           "reach_checkpoint_a",
@@ -127,15 +127,15 @@
         640,
         3
       ],
-      "rgb_std": 114.42052895344844,
+      "rgb_std": 107.49125500078647,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 183965,
-      "finite_depth_min_m": 5.780043601989746,
-      "finite_depth_max_m": 7.199990272521973,
+      "finite_depth_pixels": 118560,
+      "finite_depth_min_m": 6.1114277839660645,
+      "finite_depth_max_m": 10.85342025756836,
       "observation": {
         "history": [
           "reach_checkpoint_a",

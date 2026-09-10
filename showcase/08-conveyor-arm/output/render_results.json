@@ -2,8 +2,8 @@
   "status": "PASS",
   "mujoco_executed": true,
   "mujoco_version": "3.2.7",
-  "render_backend_requested": "osmesa",
-  "renderer_context": "mujoco.osmesa.GLContext",
+  "render_backend_requested": "glfw",
+  "renderer_context": "mujoco.cgl.GLContext",
   "path_base": "package_root",
   "resolution": [
     640,
@@ -21,14 +21,14 @@
   "visible_interaction_markers": {
     "status": "PASS",
     "pixels": {
-      "yellow": 4118,
-      "cyan": 6445,
-      "green": 6218,
-      "magenta": 717,
-      "orange": 4427
+      "yellow": 1633,
+      "cyan": 790,
+      "green": 4442,
+      "magenta": 210,
+      "orange": 2103
     }
   },
-  "tool_movement_m": 1.044707465722907,
+  "tool_movement_m": 1.0447074657229072,
   "screenshots": {
     "initial": {
       "path": "output/screenshots/initial/rgb.png"

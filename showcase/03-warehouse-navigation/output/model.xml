@@ -28,7 +28,7 @@
   <worldbody>
     <light name="warehouse_key" pos="-2 -2 7" dir="0.25 0.25 -1" directional="true" castshadow="true"/>
     <light name="warehouse_fill" pos="2 2 5" dir="-0.25 -0.2 -1" directional="true" diffuse="0.35 0.38 0.42"/>
-    <camera name="top_camera" pos="0 0 7.2" quat="1 0 0 0" fovy="47"/>
+    <camera name="top_camera" pos="-1.9798 -5.4394 6.4884" quat="0.9098437265 0.3768696111 -0.0664522807 -0.1604299972" fovy="45"/>
 
     <geom name="ground_geom" type="plane" size="3 2.25 0.1" material="floor_mat"/>
     <geom name="wall_north" type="box" pos="0 2.23 0.25" size="3.0 0.02 0.25" material="wall_mat"/>
