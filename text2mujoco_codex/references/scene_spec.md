@@ -106,6 +106,8 @@ An interaction target is an explicit MuJoCo object reference:
 
 Allowed target types are `body`, `geom`, `joint`, `actuator`, `site`, and `camera`. The referenced name must be declared by an asset, sensor, or interaction marker. Every interaction must have a JSON-compatible action schema, observable conditions, dependencies, effects, and reset data.
 
+A `marker_site` must resolve to a site that is actually drawn for the viewer (`group="2"`) and lying flush on a real surface, not a sphere floating in the air — see [interaction_patterns.md](interaction_patterns.md). Its `pose` here and the site's `pos` in MJCF are two copies of one number and drift apart silently; re-derive the spec pose from the MJCF whenever the model moves. A pose that is really the camera position, or a marker over floor the robot never reaches, means the interaction is annotating nothing.
+
 The bundled validator accepts the object-shaped action-schema subset used by the runtime (`type`, `properties`, `required`, scalar bounds, and array item/length constraints) and rejects malformed field definitions. `scene.world.units` must be `m` and `scene.world.up_axis` must be `Z`; the validator does not perform unit or axis conversion. It also rejects credential-like text, email addresses, and machine-local paths in persisted text. External URI references are rejected for asset and output paths; ordinary descriptive URLs may remain in a prompt when they contain no credential-like material.
 
 ## Sensors and Outputs

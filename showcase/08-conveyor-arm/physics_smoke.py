@@ -113,10 +113,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     initial_contact_audit(env)
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
         raise AssertionError("quaternion conversion failed")
-    for name in ("arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "gripper_left_slide", "gripper_right_slide", "conveyor_drive_hinge", "parcel_free"):
+    for name in ("arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "tool_pitch", "gripper_left_slide", "gripper_right_slide", "conveyor_drive_hinge", "parcel_free"):
         env.require_id("joint", name)
-    for name in ("conveyor_motor", "shoulder_motor", "elbow_motor", "wrist_motor", "tool_lift_motor", "gripper_left_motor", "gripper_right_motor"):
+    for name in ("conveyor_motor", "shoulder_motor", "elbow_motor", "wrist_motor", "tool_lift_motor", "tool_pitch_motor", "gripper_left_motor", "gripper_right_motor"):
         env.require_id("actuator", name)
+    if int(env.model.eq_type[env.grasp_eq_id]) != int(mujoco.mjtEq.mjEQ_WELD):
+        raise AssertionError("the grasp must be a weld equality constraint")
+    if bool(env.data.eq_active[env.grasp_eq_id]):
+        raise AssertionError("the grasp weld must start inactive")
+    if env.model.jnt_type[env.pitch_joint_id] != mujoco.mjtJoint.mjJNT_HINGE:
+        raise AssertionError("tool_pitch must be a hinge joint")
     if env.model.jnt_type[env.conveyor_joint_id] != mujoco.mjtJoint.mjJNT_HINGE:
         raise AssertionError("conveyor drive must be a hinge joint")
     if env.model.jnt_type[env.parcel_joint_id] != mujoco.mjtJoint.mjJNT_FREE:
@@ -150,11 +156,33 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     sequence_contact = audit.report()
     if env.is_success():
         raise AssertionError("inspection is required before success")
+
+    # Prove the carry is the weld and nothing else. Re-run up to the grasp, raise
+    # the tool to transit height, then deactivate the equality constraint in
+    # mid-air with the jaws still shut: a coordinate-write "carry" would keep the
+    # parcel glued under the tool. The 1 mm jaw bite alone develops
+    # 260 N/m * 0.001 m = 0.26 N of clamp per side, i.e. 2 * 0.26 * 0.76 = 0.40 N
+    # of friction against the parcel's 0.22 * 9.81 = 2.16 N of weight, so a real
+    # release has to let it go. From transit height the parcel underside is at
+    # 1.040 m over a 0.884 m belt: 0.156 m of fall, far past the 0.02 m floor.
+    env.reset()
+    env.step({"id": "start_conveyor_to_pickup", "payload": {"speed_mps": 0.6}})
+    env.step({"id": "move_arm_to_parcel", "payload": {"speed_rad_s": 1.0}})
+    env.step({"id": "grasp_parcel_with_arm", "payload": {"close": True}})
+    env._set_tool_target(env.TRANSIT_TOOL_Z)
+    carried_height = float(env.parcel_position[2])
+    env._release_grasp()
+    env.run_physics(400)
+    dropped_height = float(env.parcel_position[2])
+    if carried_height - dropped_height < 0.02:
+        raise AssertionError("released parcel did not fall: the grasp is not a real constraint")
+    weld_drop_mm = round((carried_height - dropped_height) * 1000.0, 3)
+
     env.reset(seed=808)
     if env.observe()["seed"] != 808 or env.observe()["state"]["history"]:
         raise AssertionError("custom reset failed")
     env.reset()
-    return {"status": "PASS", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "path_base": "package_root", "static_checks": {"xml_parse": "PASS", "mjcf_compile": "PASS", "conveyor_hinge": "PASS", "parcel_free_joint": "PASS", "explicit_actuators": 7, "visible_markers": len(env.points)}, "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS", "conveyor_delivery": "PASS", "held_parcel_transport": "PASS", "target_bin_settle": "PASS", "sequence_contact": sequence_contact}, "dependency_enforcement": "PASS", "deterministic_reset": "PASS", "interaction_sequence": ["start_conveyor_to_pickup", "move_arm_to_parcel", "grasp_parcel_with_arm", "move_arm_to_target_bin", "release_parcel_in_target_bin"]}
+    return {"status": "PASS", "mujoco_executed": True, "mujoco_version": mujoco.__version__, "path_base": "package_root", "static_checks": {"xml_parse": "PASS", "mjcf_compile": "PASS", "conveyor_hinge": "PASS", "parcel_free_joint": "PASS", "grasp_constraint": "weld", "explicit_actuators": 8, "visible_markers": len(env.points)}, "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS", "conveyor_delivery": "PASS", "held_parcel_transport": "PASS", "target_bin_settle": "PASS", "weld_release_drop_mm": weld_drop_mm, "sequence_contact": sequence_contact}, "dependency_enforcement": "PASS", "deterministic_reset": "PASS", "interaction_sequence": ["start_conveyor_to_pickup", "move_arm_to_parcel", "grasp_parcel_with_arm", "move_arm_to_target_bin", "release_parcel_in_target_bin"]}
 
 
 def main() -> int:

@@ -37,7 +37,7 @@
       "id": "check_release_zone",
       "target": {"type": "site", "name": "release_zone_marker"},
       "marker_site": "release_zone_marker",
-      "pose": {"position": [-0.41, 0, 1.06], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [-0.2185485, 0.09, 0.9387339], "orientation_xyzw": [0, 0.1218693434, 0, 0.9925461516]},
       "affordance": "observe_release",
       "action": {
         "mode": "direct",
@@ -71,7 +71,7 @@
       "id": "inspect_with_camera",
       "target": {"type": "camera", "name": "inspection_camera"},
       "marker_site": "camera_checkpoint_marker",
-      "pose": {"position": [1.2, -1.2, 1.42], "orientation_xyzw": [0.5235515583, 0.216862156, 0.3153052722, 0.7612142645]},
+      "pose": {"position": [0.54, 0.28, 0.98], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "inspect",
       "action": {
         "mode": "direct",

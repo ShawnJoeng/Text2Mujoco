@@ -15,8 +15,8 @@
         "after": 2654
       },
       "magenta": {
-        "before": 0,
-        "after": 97
+        "before": 277,
+        "after": 325
       },
       "cyan": {
         "before": 2129,
@@ -47,8 +47,8 @@
     480,
     640
   ],
-  "changed_rgb_pixels": 7662,
-  "changed_depth_pixels": 6057,
+  "changed_rgb_pixels": 7616,
+  "changed_depth_pixels": 6041,
   "screenshots": {
     "before_rgb": "output/screenshots/before.png",
     "after_rgb": "output/screenshots/after.png",
@@ -82,13 +82,13 @@
           640,
           3
         ],
-        "rgb_std": 70.73034902124952,
+        "rgb_std": 70.70074314424895,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 173086,
+        "finite_depth_pixels": 173066,
         "finite_depth_min_m": 1.0819425582885742,
         "finite_depth_max_m": 4.684053897857666,
         "observation": {
@@ -118,13 +118,13 @@
           640,
           3
         ],
-        "rgb_std": 71.31917899720824,
+        "rgb_std": 71.31511583112076,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 174894,
+        "finite_depth_pixels": 174867,
         "finite_depth_min_m": 1.0819425582885742,
         "finite_depth_max_m": 4.684053897857666,
         "observation": {
@@ -156,13 +156,13 @@
           640,
           3
         ],
-        "rgb_std": 71.27166884536483,
+        "rgb_std": 71.26297617672218,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 174764,
+        "finite_depth_pixels": 174735,
         "finite_depth_min_m": 1.0819425582885742,
         "finite_depth_max_m": 4.684053897857666,
         "observation": {
@@ -195,13 +195,13 @@
           640,
           3
         ],
-        "rgb_std": 71.47577195476602,
+        "rgb_std": 71.47076354051353,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 174761,
+        "finite_depth_pixels": 174732,
         "finite_depth_min_m": 1.0819425582885742,
         "finite_depth_max_m": 4.684053897857666,
         "observation": {
@@ -235,13 +235,13 @@
           640,
           3
         ],
-        "rgb_std": 71.47519754843924,
+        "rgb_std": 71.47018980095658,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 174761,
+        "finite_depth_pixels": 174732,
         "finite_depth_min_m": 1.0819425582885742,
         "finite_depth_max_m": 4.684053897857666,
         "observation": {
@@ -258,10 +258,10 @@
           "gate_lift_m": 0.12369357140581637,
           "ball_position": [
             0.5514455709095996,
-            6.521392762005349e-39,
+            6.521392761941146e-39,
             0.8099991844782732
           ],
-          "ball_speed_mps": 5.364832514915792e-13,
+          "ball_speed_mps": 5.364832523386057e-13,
           "ball_inside_target": true
         }
       },
@@ -275,13 +275,13 @@
           640,
           3
         ],
-        "rgb_std": 71.47519754843924,
+        "rgb_std": 71.47018980095658,
         "rgb_dynamic_range": 255,
         "depth_shape": [
           480,
           640
         ],
-        "finite_depth_pixels": 174761,
+        "finite_depth_pixels": 174732,
         "finite_depth_min_m": 1.0819425582885742,
         "finite_depth_max_m": 4.684053897857666,
         "observation": {
@@ -299,10 +299,10 @@
           "gate_lift_m": 0.12369357140581637,
           "ball_position": [
             0.5514455709095996,
-            6.521392762005349e-39,
+            6.521392761941146e-39,
             0.8099991844782732
           ],
-          "ball_speed_mps": 5.364832514915792e-13,
+          "ball_speed_mps": 5.364832523386057e-13,
           "ball_inside_target": true
         }
       }

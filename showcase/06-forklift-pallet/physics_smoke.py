@@ -36,6 +36,17 @@ def static_checks(env) -> dict[str, Any]:
     }.items():
         for name in names:
             env.require_id(object_type, name)
+    # ``MjvOption().sitegroup`` is [1, 1, 1, 0, 0, 0]: group 2 is drawn, group 4
+    # is not. Every site the contract names as a marker has to stay in a drawn
+    # group or the render evidence shows an unannotated scene, and fork_tip_site
+    # has to stay out of one: the controller reads it as the fork frame, and
+    # drawing it puts an emissive ball 60 mm inside the pallet's centre runner
+    # exactly when the tines are correctly in the channel.
+    for name in [point["marker_site"] for point in env.spec["interaction_points"]]:
+        if int(env.model.site_group[env.require_id("site", name)]) != 2:
+            raise AssertionError(f"{name} is a contract marker and must stay in drawn group 2")
+    if int(env.model.site_group[env.require_id("site", "fork_tip_site")]) != 4:
+        raise AssertionError("fork_tip_site is a kinematic reference and must stay in group 4")
     if env.model.nu != 4 or env.model.njnt != 5:
         raise AssertionError("forklift joint/actuator count is unexpected")
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
@@ -142,6 +153,60 @@ class SequenceContactAudit:
         }
 
 
+def grasp_constraint_audit(env) -> dict[str, Any]:
+    """Prove the pallet is carried by the weld and not by a coordinate write.
+
+    07-robot-assembly proves this by opening its gripper in mid-air and watching
+    the peg fall. A fork cannot be tested by height: the load rides on top of the
+    tines, so contact carries its weight and the pallet settles at the same height
+    whether the weld is active or not. What the weld carries is the load's grip on
+    the carriage, so that is what is measured - the same manoeuvre run twice, once
+    welded and once released, and the pallet has to part company with the carriage
+    by at least the 20 mm the pattern asks for.
+
+    The manoeuvre is a 0.79 m reverse command written in one step instead of
+    ramped. At kp 1800 that demands 1422 N, so the servo saturates at its 400 N
+    limit and the 17.0 kg truck pulls away at 400 / 17.0 = 23.5 m/s^2, while tine
+    friction can transmit at most 0.85 * 9.81 = 8.3 m/s^2 to the 3.35 kg load. An
+    ungrasped pallet therefore has to slide along the tines and a welded one
+    cannot - whereas a pallet whose free-joint qpos is being written every step
+    holds its offset in both runs, which is the defect this catches.
+    """
+
+    def pick_up() -> np.ndarray:
+        env.reset()
+        env.step({"id": "drive_to_pallet", "payload": {"speed_mps": 0.8}})
+        env.step({"id": "raise_forks", "payload": {"lift_m": 0.18}})
+        env.step({"id": "engage_pallet", "payload": {"confirm": True}})
+        return env.pallet_position - np.asarray(env.data.xpos[env.carriage_body_id], dtype=float)
+
+    def brake() -> np.ndarray:
+        env.data.ctrl[env.x_actuator_id] = float(env.base_xy[0] - 0.79 - env.START[0])
+        for _ in range(1200):
+            mujoco.mj_step(env.model, env.data)
+        return env.pallet_position - np.asarray(env.data.xpos[env.carriage_body_id], dtype=float)
+
+    welded = pick_up()
+    welded_slip = float(np.linalg.norm(brake() - welded))
+    if welded_slip > 0.005:
+        raise AssertionError(f"welded pallet slid {welded_slip * 1000:.3f} mm along the tines")
+    released = pick_up()
+    env._release_grasp()
+    released_slip = float(np.linalg.norm(brake() - released))
+    if released_slip < 0.02:
+        raise AssertionError(
+            f"released pallet stayed within {released_slip * 1000:.3f} mm of the carriage: "
+            "the grasp is not a real constraint"
+        )
+    env.reset()
+    return {
+        "welded_slip_mm": round(welded_slip * 1000.0, 3),
+        "released_slip_mm": round(released_slip * 1000.0, 3),
+        "minimum_released_slip_mm": 20.0,
+        "result": "PASS",
+    }
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     if os.environ.get("MUJOCO_GL") != "disable":
         raise AssertionError("physics_smoke.py must run with MUJOCO_GL=disable")
@@ -209,6 +274,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     reset = env.observe()
     if reset["history"] or reset["state"]["pallet_state"] != "loaded" or reset["fork_lift_qpos_m"] != 0.0:
         raise AssertionError("reset did not restore initial state")
+    grasp_constraint = grasp_constraint_audit(env)
     return {
         "status": "PASS",
         "mujoco_executed": True,
@@ -219,7 +285,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "static_checks": checks,
         "physics": {"initial_contact": "PASS", "mj_step": "PASS", "finite_state": "PASS"},
         "interaction_sequence": ["drive_to_pallet", "raise_forks", "engage_pallet", "carry_to_drop_zone", "lower_forks_release"],
-        "pallet_sync": "PASS",
+        "pallet_grasp": grasp_constraint,
         "sequence_contact": sequence_contact,
         "route_collision_count": env.rack_collision_count,
         "delivery_zone": "PASS",

@@ -155,6 +155,17 @@ class ForkliftPalletEnvironment:
         np.asarray([0.25, 0.35], dtype=float),
         np.asarray([0.45, 0.35], dtype=float),
     )
+    # Every segment ends by holding its command until the truck has actually
+    # stopped there. At kp 1800 / kv 150 the closed loop runs at 10.3 rad/s with
+    # damping ratio 0.44, so the 68 mm the servo is behind a 0.8 m/s command
+    # decays by 1/e every 217 steps; 500 steps is a little over two of those and
+    # the loaded truck settles inside 2 mm well before the budget runs out.
+    ARRIVAL_STEPS = 500
+    ARRIVAL_TOLERANCE_M = 0.002
+    # The lift stops early once it is within this of its command. It cannot be
+    # tighter than the droop of the load it is holding (9.6 mm with the pallet
+    # welded on), or a loaded move would always run the full 900 steps.
+    LIFT_SETTLE_M = 0.012
 
     def __init__(self, model_path: Path, spec_path: Path):
         self.model_path = Path(model_path).resolve()
@@ -181,6 +192,14 @@ class ForkliftPalletEnvironment:
             raise EnvironmentError("required MuJoCo object is missing")
         return object_id
 
+    def _require_weld(self, name: str) -> int:
+        equality_id = int(mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_EQUALITY, name))
+        if equality_id < 0:
+            raise EnvironmentError("required equality constraint is missing")
+        if int(self.model.eq_type[equality_id]) != int(mujoco.mjtEq.mjEQ_WELD):
+            raise EnvironmentError("pallet grasp must be a weld")
+        return equality_id
+
     def _resolve_contract_names(self) -> None:
         self.base_body_id = self.require_id("body", "forklift_base")
         self.pallet_body_id = self.require_id("body", "pallet")
@@ -194,6 +213,8 @@ class ForkliftPalletEnvironment:
         self.yaw_actuator_id = self.require_id("actuator", "forklift_yaw_motor")
         self.lift_actuator_id = self.require_id("actuator", "fork_lift_motor")
         self.pallet_joint_id = self.require_id("joint", "pallet_free")
+        self.carriage_body_id = self.require_id("body", "fork_carriage")
+        self.grasp_eq_id = self._require_weld("pallet_grasp")
         self.delivery_bottom_geom_id = self.require_id("geom", "delivery_zone_bottom")
         self.fork_tip_site_id = self.require_id("site", "fork_tip_site")
         camera = next(sensor for sensor in self.spec["sensors"] if sensor.get("type") == "camera")
@@ -268,6 +289,7 @@ class ForkliftPalletEnvironment:
         self.data.qpos[self.qpos_adr["pallet"] + 3 : self.qpos_adr["pallet"] + 7] = [1.0, 0.0, 0.0, 0.0]
         for actuator_id in (self.x_actuator_id, self.y_actuator_id, self.yaw_actuator_id, self.lift_actuator_id):
             self.data.ctrl[actuator_id] = 0.0
+        self.data.eq_active[self.grasp_eq_id] = 0
         mujoco.mj_forward(self.model, self.data)
         self.completed: list[str] = []
         self.state = {
@@ -275,8 +297,6 @@ class ForkliftPalletEnvironment:
             "pallet_state": "loaded",
             "inspection_state": "pending",
         }
-        self.engaged = False
-        self.engaged_lift_target = 0.0
         self.rack_collision_count = 0
         self.route_trace: list[list[float]] = [self.base_xy.tolist()]
         self.last_capture: dict[str, Any] | None = None
@@ -294,15 +314,20 @@ class ForkliftPalletEnvironment:
     def fork_lift_qpos(self) -> float:
         return float(self.data.qpos[self.qpos_adr["lift"]])
 
+    @property
+    def engaged(self) -> bool:
+        return bool(self.data.eq_active[self.grasp_eq_id])
+
     def fork_anchor(self) -> np.ndarray:
-        # The pallet is lifted with the carriage after engagement, resting on the
-        # tine top. Before the hold is enabled ``engaged_lift_target`` is zero and
-        # only the xy components are read, by the alignment checks.
+        # Where a pallet riding the tines has its centre: the tine top plus the
+        # deck half-height, which is ``PALLET_CARRY_Z0`` at zero lift and rises
+        # with the lift joint. Read from the joint rather than from a commanded
+        # target, so the alignment checks see where the steel actually is.
         return np.asarray(
             [
                 self.base_xy[0] + self.FORK_OFFSET[0],
                 self.base_xy[1] + self.FORK_OFFSET[1],
-                self.PALLET_CARRY_Z0 + self.engaged_lift_target,
+                self.PALLET_CARRY_Z0 + self.fork_lift_qpos,
             ],
             dtype=float,
         )
@@ -318,52 +343,80 @@ class ForkliftPalletEnvironment:
                 count += 1
         return count
 
-    def _sync_engaged_pallet(self) -> None:
-        if not self.engaged:
-            return
-        self.data.qpos[self.qpos_adr["lift"]] = self.engaged_lift_target
-        self.data.qvel[self.dof_adr["lift"]] = 0.0
-        self.data.ctrl[self.lift_actuator_id] = self.engaged_lift_target
-        anchor = self.fork_anchor()
-        self.data.qpos[self.qpos_adr["pallet"] : self.qpos_adr["pallet"] + 3] = anchor
-        self.data.qpos[self.qpos_adr["pallet"] + 3 : self.qpos_adr["pallet"] + 7] = [1.0, 0.0, 0.0, 0.0]
-        self.data.qvel[self.dof_adr["pallet"] : self.dof_adr["pallet"] + 6] = 0.0
-        mujoco.mj_forward(self.model, self.data)
+    def _engage_grasp(self) -> None:
+        """Weld the pallet to the carriage at the offset it is already sitting at.
+
+        The tines have picked the load up by contact before this runs, so the
+        relative pose is measured instead of assumed and the constraint starts
+        satisfied: no impulse, no snap to a nominal carry pose. Everything after
+        it is ordinary constrained dynamics - the pallet still has mass, it still
+        loads the mast servo, and dropping the weld hands it back to whatever the
+        tines alone can hold, which is what ``grasp_constraint_audit`` measures.
+        """
+        carriage_position = np.asarray(self.data.xpos[self.carriage_body_id], dtype=float)
+        carriage_frame = np.asarray(self.data.xmat[self.carriage_body_id], dtype=float).reshape(3, 3)
+        pallet_frame = np.asarray(self.data.xmat[self.pallet_body_id], dtype=float).reshape(3, 3)
+        relative = carriage_frame.T @ (self.pallet_position - carriage_position)
+        relative_quat = np.zeros(4, dtype=float)
+        mujoco.mju_mat2Quat(relative_quat, np.ascontiguousarray(carriage_frame.T @ pallet_frame).reshape(9))
+        self.model.eq_data[self.grasp_eq_id, 3:6] = relative
+        self.model.eq_data[self.grasp_eq_id, 6:10] = relative_quat
+        self.data.eq_active[self.grasp_eq_id] = 1
+
+    def _release_grasp(self) -> None:
+        self.data.eq_active[self.grasp_eq_id] = 0
+
+    def _pallet_on_delivery_deck(self) -> bool:
+        pallet_geom_ids = {
+            self.require_id("geom", name)
+            for name in ("pallet_runner_left", "pallet_runner_center", "pallet_runner_right")
+        }
+        for contact in self.data.contact[: self.data.ncon]:
+            pair = {int(contact.geom1), int(contact.geom2)}
+            if pair & pallet_geom_ids and self.delivery_bottom_geom_id in pair:
+                return True
+        return False
 
     def _drive_segment(self, target: np.ndarray, speed_mps: float) -> None:
         target = np.asarray(target, dtype=float)
         start = self.base_xy
         distance = float(np.linalg.norm(target - start))
-        increments = max(1, int(math.ceil(distance / 0.10)))
+        # Advance the command one integration step at a time at the requested
+        # speed. The old loop jumped it 0.10 m at a time and then stepped 63
+        # times; at kp 1800 each of those jumps is a 180 N step change on a 20 kg
+        # truck, which the servo answers with 9 m/s^2 of jerk and the pallet weld
+        # answers by stretching. A per-step command is the same total travel time
+        # (0.10 / (0.8 * 0.002) = 63 steps per 0.10 m either way) with a
+        # continuous demand instead of a staircase.
+        step_length = max(speed_mps, 0.1) * float(self.model.opt.timestep)
+        increments = max(1, int(math.ceil(distance / step_length)))
         for fraction in np.linspace(1.0 / increments, 1.0, increments):
             command = start + (target - start) * fraction
             self.data.ctrl[self.x_actuator_id] = float(command[0] - self.START[0])
             self.data.ctrl[self.y_actuator_id] = float(command[1] - self.START[1])
             self.data.ctrl[self.yaw_actuator_id] = 0.0
-            steps = max(12, int(math.ceil(0.10 / (max(speed_mps, 0.1) * self.model.opt.timestep))))
-            for _ in range(steps):
-                mujoco.mj_step(self.model, self.data)
-                self._sync_engaged_pallet()
-                self.rack_collision_count += self._rack_contacts()
-                self.route_trace.append(self.base_xy.tolist())
-                if not np.all(np.isfinite(self.data.qpos)) or not np.all(np.isfinite(self.data.qvel)):
-                    raise EnvironmentError("non-finite state during forklift motion")
-            if float(np.linalg.norm(self.base_xy - command)) > 0.12:
-                # Correct small solver-dependent residuals while retaining the
-                # actuator command and physical integration above.
-                self.data.qpos[self.qpos_adr["x"]] = float(command[0] - self.START[0])
-                self.data.qpos[self.qpos_adr["y"]] = float(command[1] - self.START[1])
-                self.data.qvel[self.dof_adr["x"]] = 0.0
-                self.data.qvel[self.dof_adr["y"]] = 0.0
-                mujoco.mj_forward(self.model, self.data)
-                self._sync_engaged_pallet()
+            mujoco.mj_step(self.model, self.data)
+            self.rack_collision_count += self._rack_contacts()
+            self.route_trace.append(self.base_xy.tolist())
+            if not np.all(np.isfinite(self.data.qpos)) or not np.all(np.isfinite(self.data.qvel)):
+                raise EnvironmentError("non-finite state during forklift motion")
+        # Hold the final command until the servos have caught up, instead of
+        # writing the residual away. A position servo is always behind a moving
+        # command - 68 mm at 0.8 m/s here - so the truck has to be given the time
+        # to stop, which at kp 1800 is a few hundred steps.
+        for _ in range(self.ARRIVAL_STEPS):
+            mujoco.mj_step(self.model, self.data)
+            self.rack_collision_count += self._rack_contacts()
+            self.route_trace.append(self.base_xy.tolist())
+            if float(np.linalg.norm(self.base_xy - target)) < self.ARRIVAL_TOLERANCE_M:
+                break
 
     def _drive_to(self, target: np.ndarray, speed_mps: float) -> None:
         self._drive_segment(np.asarray(target, dtype=float), speed_mps)
         if float(np.linalg.norm(self.base_xy - target)) > 0.13:
             raise EnvironmentError("forklift controller did not reach target")
 
-    def _set_lift(self, target: float) -> None:
+    def _set_lift(self, target: float, release_on_deck_contact: bool = False) -> None:
         target = float(np.clip(target, 0.0, 0.35))
         # Ramp the command at roughly 0.25 m/s instead of stepping it. A stiff
         # mast servo handed a 0.18 m step accelerates the tines to about 1.7 m/s
@@ -375,46 +428,28 @@ class ForkliftPalletEnvironment:
             self.data.ctrl[self.lift_actuator_id] = float(start + (target - start) * fraction)
             for _ in range(10):
                 mujoco.mj_step(self.model, self.data)
-                self._sync_engaged_pallet()
+                if release_on_deck_contact and self.engaged and self._pallet_on_delivery_deck():
+                    self._release_grasp()
         self.data.ctrl[self.lift_actuator_id] = target
         for _ in range(900):
             mujoco.mj_step(self.model, self.data)
-            self._sync_engaged_pallet()
-            if abs(self.fork_lift_qpos - target) < 0.008:
+            if release_on_deck_contact and self.engaged and self._pallet_on_delivery_deck():
+                self._release_grasp()
+            if abs(self.fork_lift_qpos - target) < self.LIFT_SETTLE_M:
                 break
-        if abs(self.fork_lift_qpos - target) > 0.06:
-            self.data.qpos[self.qpos_adr["lift"]] = target
-            self.data.qvel[self.dof_adr["lift"]] = 0.0
-            mujoco.mj_forward(self.model, self.data)
-            self._sync_engaged_pallet()
-        if abs(self.fork_lift_qpos - target) > 0.07:
+        # A loaded carriage hangs below its command by weight/kp, so the window
+        # has to cover the heaviest case the sequence produces: carriage, tines
+        # and pallet together are 1.6 + 0.9 + 3.35 = 5.85 kg, which is
+        # 5.85 * 9.81 / 6000 = 9.6 mm of droop. Anything past 30 mm is the servo
+        # failing, not carrying.
+        if abs(self.fork_lift_qpos - target) > 0.03:
             raise EnvironmentError("fork lift actuator did not reach target")
-
-    def _lower_engaged_to(self, target: float) -> None:
-        """Walk the loaded carriage down in 10 mm increments.
-
-        ``_sync_engaged_pallet`` re-pins the lift to ``engaged_lift_target`` after
-        every step, so the position servo cannot move a loaded carriage at all;
-        the target itself has to be walked down. Stepping it keeps the tine top
-        and the deck bottom locked together for the whole descent, which is what
-        stops a single jump from putting the runners through the stand deck.
-        """
-        start = float(self.engaged_lift_target)
-        target = float(np.clip(target, 0.0, 0.35))
-        increments = max(1, int(math.ceil(abs(target - start) / 0.01)))
-        for fraction in np.linspace(1.0 / increments, 1.0, increments):
-            self.engaged_lift_target = float(start + (target - start) * fraction)
-            self.data.ctrl[self.lift_actuator_id] = self.engaged_lift_target
-            for _ in range(6):
-                mujoco.mj_step(self.model, self.data)
-                self._sync_engaged_pallet()
 
     def run_physics(self, steps: int) -> None:
         if isinstance(steps, bool) or not isinstance(steps, int) or steps < 0:
             raise EnvironmentError("steps must be a non-negative integer")
         for _ in range(steps):
             mujoco.mj_step(self.model, self.data)
-            self._sync_engaged_pallet()
         if not np.all(np.isfinite(self.data.qpos)) or not np.all(np.isfinite(self.data.qvel)):
             raise EnvironmentError("non-finite MuJoCo state")
 
@@ -471,9 +506,15 @@ class ForkliftPalletEnvironment:
                 raise EnvironmentError("engage action requires confirm=true")
             if float(np.linalg.norm(self.fork_anchor()[:2] - self.pallet_position[:2])) > 0.14:
                 raise EnvironmentError("fork anchor is too far from pallet")
-            self.engaged = True
-            self.engaged_lift_target = self.fork_lift_qpos
-            self._sync_engaged_pallet()
+            # The tines have already taken the load by contact, so the pallet
+            # centre must be sitting on the anchor the weld is about to hold it
+            # at. If it is still on the loading pad there is nothing to weld to.
+            if abs(float(self.pallet_position[2]) - float(self.fork_anchor()[2])) > 0.02:
+                raise EnvironmentError("pallet is not riding on the tines")
+            self._engage_grasp()
+            self.run_physics(40)
+            if not self.engaged:
+                raise EnvironmentError("pallet weld did not engage")
             self.state["pallet_state"] = "engaged"
         elif point_id == "carry_to_drop_zone":
             if self.state["forklift_state"] != "raised" or self.state["pallet_state"] != "engaged":
@@ -481,6 +522,8 @@ class ForkliftPalletEnvironment:
             for waypoint in self.CARRY_WAYPOINTS:
                 self._drive_to(waypoint, float(payload.get("speed_mps", 0.8)))
             target = self.PALLET_DROP[:2] - self.FORK_OFFSET
+            if float(np.linalg.norm(self.base_xy - target)) > 0.13:
+                raise EnvironmentError("forklift did not reach the drop pose")
             if float(np.linalg.norm(self.fork_anchor()[:2] - self.PALLET_DROP[:2])) > 0.14:
                 raise EnvironmentError("forklift did not reach delivery zone")
             if self.rack_collision_count:
@@ -496,18 +539,22 @@ class ForkliftPalletEnvironment:
             # Lower the load until the runners take the weight, break tine-to-deck
             # contact, reverse clear of the stand, and only then bring the empty
             # carriage down.
-            self._lower_engaged_to(self.RELEASE_LIFT_M)
-            self.engaged = False
-            self.engaged_lift_target = 0.0
+            #
+            # The weld is dropped the step the runners first touch the stand deck,
+            # which is what a real fork does: past that point the carriage is
+            # still descending while the load is not, so holding the weld would
+            # have the mast pulling the pallet into 0.04 m of steel it is already
+            # resting on.
+            self._set_lift(self.RELEASE_LIFT_M, release_on_deck_contact=True)
+            if self.engaged:
+                raise EnvironmentError("pallet did not land on the delivery deck")
             self._set_lift(self.WITHDRAW_LIFT_M)
             self.run_physics(60)
             self._drive_to(np.asarray([self.WITHDRAW_X, self.PALLET_DROP[1]], dtype=float), 0.8)
             self._set_lift(0.0)
             self.run_physics(120)
             if not self._pallet_inside_delivery():
-                self.data.qpos[self.qpos_adr["pallet"] : self.qpos_adr["pallet"] + 3] = self.PALLET_DROP
-                self.data.qvel[self.dof_adr["pallet"] : self.dof_adr["pallet"] + 6] = 0.0
-                mujoco.mj_forward(self.model, self.data)
+                raise EnvironmentError("pallet did not come to rest inside the delivery zone")
             self.state["forklift_state"] = "released"
             self.state["pallet_state"] = "delivered"
         elif point_id == "inspect_forklift_delivery":
@@ -534,6 +581,7 @@ class ForkliftPalletEnvironment:
             "fork_anchor_position": self.fork_anchor().tolist(),
             "pallet_position": self.pallet_position.tolist(),
             "pallet_speed_mps": self._pallet_speed(),
+            "pallet_grasp_active": self.engaged,
             "pallet_inside_delivery": self._pallet_inside_delivery(),
             "rack_collision_count": self.rack_collision_count,
             "route_trace": copy.deepcopy(self.route_trace),

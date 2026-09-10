@@ -13,10 +13,10 @@
   "gif_frame_duration_ms": 200,
   "gif_final_frame_duration_ms": 800,
   "depth_capture": "keyframes_only; dense pass stores RGB frames",
-  "frame_count": 31,
-  "regular_frame_count": 25,
+  "frame_count": 41,
+  "regular_frame_count": 35,
   "event_frame_count": 6,
-  "simulation_time_span_s": 4.84,
+  "simulation_time_span_s": 6.8,
   "gif": "output/screenshots/dense_sequence.gif",
   "tiff": "output/screenshots/dense_sequence.tif",
   "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
@@ -44,7 +44,7 @@
         "tool_position": [
           0.10044036394626255,
           -0.14680829122267214,
-          1.05
+          1.0050000000000001
         ],
         "peg_position": [
           0.21,
@@ -75,16 +75,16 @@
         "tool_state": "raised",
         "peg_state": "free",
         "tool_position": [
-          0.20724196275777998,
-          -0.023198293928557493,
-          1.05
+          0.20706383399253292,
+          -0.03214839852587632,
+          1.005000005829377
         ],
         "peg_position": [
-          0.20998760582566792,
-          -9.423803142106124e-06,
-          0.8498717271208673
+          0.20998760582570525,
+          -9.423803130035413e-06,
+          0.8498717271208712
         ],
-        "peg_socket_error_m": 0.2452218763706046
+        "peg_socket_error_m": 0.24522187637059845
       }
     },
     {
@@ -108,16 +108,16 @@
         "tool_state": "raised",
         "peg_state": "free",
         "tool_position": [
-          0.2097884315997298,
-          0.013221864485079365,
-          1.05
+          0.23125780975670732,
+          0.02028170328244785,
+          1.006889399972178
         ],
         "peg_position": [
-          0.2099917392861972,
-          -3.2958697816156655e-06,
-          0.8498728478908243
+          0.2099917667800626,
+          -3.293347074869279e-06,
+          0.8498728464100238
         ],
-        "peg_socket_error_m": 0.24521675342677393
+        "peg_socket_error_m": 0.24521675647564997
       }
     },
     {
@@ -141,16 +141,16 @@
         "tool_state": "raised",
         "peg_state": "free",
         "tool_position": [
-          0.20999825445515707,
-          0.0005355244411899087,
-          1.05
+          0.23612703576499042,
+          0.0017255584411199844,
+          1.0077688564974658
         ],
         "peg_position": [
-          0.20999990519090583,
-          6.22027914193415e-06,
-          0.8498681878096255
+          0.21001450333397367,
+          2.8586139062388514e-05,
+          0.8498754893659759
         ],
-        "peg_socket_error_m": 0.24521221877564978
+        "peg_socket_error_m": 0.24519187011581253
       }
     },
     {
@@ -174,16 +174,16 @@
         "tool_state": "raised",
         "peg_state": "free",
         "tool_position": [
-          0.20999988236107675,
-          -0.00039536054942279495,
-          1.05
+          0.2370418455487221,
+          -0.001761928536386831,
+          1.0079628688467084
         ],
         "peg_position": [
-          0.21000024143963725,
-          6.588593319291706e-06,
-          0.8498680112378063
+          0.21000481875958688,
+          3.7335031045882688e-06,
+          0.8498707913089473
         ],
-        "peg_socket_error_m": 0.24521204471519045
+        "peg_socket_error_m": 0.2452138745001208
       }
     },
     {
@@ -207,25 +207,157 @@
         "tool_state": "raised",
         "peg_state": "free",
         "tool_position": [
-          0.20999999817615372,
-          3.518220850462982e-05,
-          1.05
+          0.2372306316448769,
+          2.4474312388617432e-05,
+          1.0080026399843551
         ],
         "peg_position": [
-          0.21000016447874462,
-          6.594906475591143e-06,
-          0.849868013699508
+          0.20999921258412788,
+          8.055570060150767e-06,
+          0.8498682212467993
         ],
-        "peg_socket_error_m": 0.24521202554850616
+        "peg_socket_error_m": 0.24521051771737923
       }
     },
     {
       "archive_frame": 7,
       "index": 6,
+      "target_time_s": 1.2,
+      "actual_time_s": 1.2,
+      "absolute_sim_time_s": 1.2,
+      "physics_step": 600,
+      "phase": "move_arm_to_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.23726885074355042,
+          0.00014937023191047115,
+          1.0080107412556363
+        ],
+        "peg_position": [
+          0.210003335817904,
+          1.0551575869402976e-06,
+          0.8498694110048062
+        ],
+        "peg_socket_error_m": 0.24521660246365665
+      }
+    },
+    {
+      "archive_frame": 8,
+      "index": 7,
+      "target_time_s": 1.4,
+      "actual_time_s": 1.4,
+      "absolute_sim_time_s": 1.4,
+      "physics_step": 700,
+      "phase": "move_arm_to_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.23727668714281822,
+          -1.4715065062741889e-05,
+          1.0080123935922078
+        ],
+        "peg_position": [
+          0.21001012886934028,
+          6.260614730863807e-07,
+          0.8498696768584555
+        ],
+        "peg_socket_error_m": 0.24521794796630683
+      }
+    },
+    {
+      "archive_frame": 9,
+      "index": 8,
+      "target_time_s": 1.6,
+      "actual_time_s": 1.6,
+      "absolute_sim_time_s": 1.6,
+      "physics_step": 800,
+      "phase": "move_arm_to_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.217892581901092,
+          -6.722813274885281e-06,
+          1.0052288514270817
+        ],
+        "peg_position": [
+          0.2099951376632467,
+          6.710011166296241e-06,
+          0.8498714696979537
+        ],
+        "peg_socket_error_m": 0.24520941390894052
+      }
+    },
+    {
+      "archive_frame": 10,
+      "index": 9,
+      "target_time_s": 1.8,
+      "actual_time_s": 1.8,
+      "absolute_sim_time_s": 1.8,
+      "physics_step": 900,
+      "phase": "move_arm_to_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.21161711632913727,
+          -2.856744568078541e-06,
+          1.0050046198489428
+        ],
+        "peg_position": [
+          0.21000224883141086,
+          5.868823515553986e-06,
+          0.8498718937782542
+        ],
+        "peg_socket_error_m": 0.24521108650417847
+      }
+    },
+    {
+      "archive_frame": 11,
+      "index": 10,
       "target_time_s": null,
-      "actual_time_s": 1.04,
-      "absolute_sim_time_s": 1.04,
-      "physics_step": 520,
+      "actual_time_s": 1.84,
+      "absolute_sim_time_s": 1.84,
+      "physics_step": 920,
       "phase": "move_arm_to_peg",
       "event_frame": true,
       "rgb_shape": [
@@ -242,165 +374,200 @@
         "tool_state": "raised",
         "peg_state": "free",
         "tool_position": [
-          0.20999999814952094,
-          4.348185675736974e-05,
-          1.05
+          0.21117759524195986,
+          -2.2277295883554913e-06,
+          1.0050017029023908
         ],
         "peg_position": [
-          0.2100001583054243,
-          6.592509580132064e-06,
-          0.8498680130329154
+          0.20999198812562547,
+          -1.8337470161599168e-05,
+          0.8498691248991307
         ],
-        "peg_socket_error_m": 0.24521202692069635
-      }
-    },
-    {
-      "archive_frame": 8,
-      "index": 7,
-      "target_time_s": 1.2,
-      "actual_time_s": 1.2,
-      "absolute_sim_time_s": 1.2,
-      "physics_step": 600,
-      "phase": "grasp_peg_with_arm",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "open",
-        "tool_state": "raised",
-        "peg_state": "free",
-        "tool_position": [
-          0.20999999983564546,
-          1.3955661273497871e-05,
-          0.889732441191172
-        ],
-        "peg_position": [
-          0.21000012134408125,
-          6.593309502504307e-06,
-          0.8498680132388428
-        ],
-        "peg_socket_error_m": 0.24521202010546864
-      }
-    },
-    {
-      "archive_frame": 9,
-      "index": 8,
-      "target_time_s": 1.4,
-      "actual_time_s": 1.4,
-      "absolute_sim_time_s": 1.4,
-      "physics_step": 700,
-      "phase": "grasp_peg_with_arm",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "open",
-        "tool_state": "raised",
-        "peg_state": "free",
-        "tool_position": [
-          0.20999999999692587,
-          -2.123277332637523e-06,
-          0.8543617989186931
-        ],
-        "peg_position": [
-          0.21000007637053175,
-          6.5934735445500465e-06,
-          0.8498680132807862
-        ],
-        "peg_socket_error_m": 0.24521201260814873
-      }
-    },
-    {
-      "archive_frame": 10,
-      "index": 9,
-      "target_time_s": 1.6,
-      "actual_time_s": 1.6,
-      "absolute_sim_time_s": 1.6,
-      "physics_step": 800,
-      "phase": "grasp_peg_with_arm",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "open",
-        "tool_state": "raised",
-        "peg_state": "free",
-        "tool_position": [
-          0.20999952929274138,
-          -0.0008144424174523962,
-          0.8504788346376784
-        ],
-        "peg_position": [
-          0.210000031348072,
-          6.593462127369515e-06,
-          0.8498680132763576
-        ],
-        "peg_socket_error_m": 0.24521200527583548
-      }
-    },
-    {
-      "archive_frame": 11,
-      "index": 10,
-      "target_time_s": 1.8,
-      "actual_time_s": 1.8,
-      "absolute_sim_time_s": 1.8,
-      "physics_step": 900,
-      "phase": "grasp_peg_with_arm",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "open",
-        "tool_state": "raised",
-        "peg_state": "free",
-        "tool_position": [
-          0.20999988508759107,
-          0.00040673212065333653,
-          0.8500525660660923
-        ],
-        "peg_position": [
-          0.20999998636096376,
-          6.593463521087182e-06,
-          0.8498680132758596
-        ],
-        "peg_socket_error_m": 0.2452119979364004
+        "peg_socket_error_m": 0.2452314994866514
       }
     },
     {
       "archive_frame": 12,
       "index": 11,
+      "target_time_s": 2.0,
+      "actual_time_s": 2.0,
+      "absolute_sim_time_s": 2.0,
+      "physics_step": 1000,
+      "phase": "grasp_peg_with_arm",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.2103312968422593,
+          -5.005990881573697e-07,
+          0.8792107763420349
+        ],
+        "peg_position": [
+          0.21000583135888268,
+          -1.0950802161178497e-05,
+          0.8498706894717188
+        ],
+        "peg_socket_error_m": 0.24522666504184107
+      }
+    },
+    {
+      "archive_frame": 13,
+      "index": 12,
+      "target_time_s": 2.2,
+      "actual_time_s": 2.2,
+      "absolute_sim_time_s": 2.2,
+      "physics_step": 1100,
+      "phase": "grasp_peg_with_arm",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.21006780488138777,
+          5.814908626181234e-09,
+          0.8522186188735741
+        ],
+        "peg_position": [
+          0.2100074434954787,
+          -6.700161244752797e-06,
+          0.8498738664515078
+        ],
+        "peg_socket_error_m": 0.245221731518577
+      }
+    },
+    {
+      "archive_frame": 14,
+      "index": 13,
+      "target_time_s": 2.4,
+      "actual_time_s": 2.4,
+      "absolute_sim_time_s": 2.4,
+      "physics_step": 1200,
+      "phase": "grasp_peg_with_arm",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.2100135127356519,
+          -0.000706476230862741,
+          0.8501678046794544
+        ],
+        "peg_position": [
+          0.20999991226967207,
+          7.207746884044532e-06,
+          0.8498703409401425
+        ],
+        "peg_socket_error_m": 0.24521031945185215
+      }
+    },
+    {
+      "archive_frame": 15,
+      "index": 14,
+      "target_time_s": 2.6,
+      "actual_time_s": 2.6,
+      "absolute_sim_time_s": 2.6,
+      "physics_step": 1300,
+      "phase": "grasp_peg_with_arm",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.21000285228647342,
+          0.00024477349999628195,
+          0.8500589578265564
+        ],
+        "peg_position": [
+          0.2099999284360583,
+          5.594386796898534e-05,
+          0.849923977019877
+        ],
+        "peg_socket_error_m": 0.24514231025015285
+      }
+    },
+    {
+      "archive_frame": 16,
+      "index": 15,
+      "target_time_s": 2.8,
+      "actual_time_s": 2.8,
+      "absolute_sim_time_s": 2.8,
+      "physics_step": 1400,
+      "phase": "grasp_peg_with_arm",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "open",
+        "tool_state": "raised",
+        "peg_state": "free",
+        "tool_position": [
+          0.20999885329709703,
+          -0.000657894251359533,
+          0.8500168915301636
+        ],
+        "peg_position": [
+          0.20996324009884798,
+          2.251892239013022e-05,
+          0.8499208491063964
+        ],
+        "peg_socket_error_m": 0.24516648547104677
+      }
+    },
+    {
+      "archive_frame": 17,
+      "index": 16,
       "target_time_s": null,
-      "actual_time_s": 1.92,
-      "absolute_sim_time_s": 1.92,
-      "physics_step": 960,
+      "actual_time_s": 2.96,
+      "absolute_sim_time_s": 2.96,
+      "physics_step": 1480,
       "phase": "grasp_peg_with_arm",
       "event_frame": true,
       "rgb_shape": [
@@ -418,196 +585,16 @@
         "tool_state": "raised",
         "peg_state": "grasped",
         "tool_position": [
-          0.20999994594218288,
-          0.0002800621534302751,
-          0.8500136591170548
+          0.20999521061433873,
+          -0.0006517465468440428,
+          0.8500160198162723
         ],
         "peg_position": [
-          0.20999994415777246,
-          0.00028464409323070893,
-          0.8500139642439654
+          0.20995860416256168,
+          2.847999247893941e-05,
+          0.8499203356248712
         ],
-        "peg_socket_error_m": 0.24490237812682883
-      }
-    },
-    {
-      "archive_frame": 13,
-      "index": 12,
-      "target_time_s": 2.0,
-      "actual_time_s": 2.0,
-      "absolute_sim_time_s": 2.0,
-      "physics_step": 1000,
-      "phase": "move_arm_to_socket",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg",
-          "grasp_peg_with_arm"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "closed",
-        "tool_state": "raised",
-        "peg_state": "grasped",
-        "tool_position": [
-          0.2099999906843319,
-          0.00011618259452956457,
-          0.9538959246134506
-        ],
-        "peg_position": [
-          0.2099999901164382,
-          0.00011967801677239002,
-          0.9517551754440132
-        ],
-        "peg_socket_error_m": 0.21443559030202328
-      }
-    },
-    {
-      "archive_frame": 14,
-      "index": 13,
-      "target_time_s": 2.2,
-      "actual_time_s": 2.2,
-      "absolute_sim_time_s": 2.2,
-      "physics_step": 1100,
-      "phase": "move_arm_to_socket",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg",
-          "grasp_peg_with_arm"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "closed",
-        "tool_state": "raised",
-        "peg_state": "grasped",
-        "tool_position": [
-          0.20999999974236505,
-          -1.9498764922412766e-05,
-          1.0394456472169733
-        ],
-        "peg_position": [
-          0.20999999974206543,
-          -1.951124975311869e-05,
-          1.039209876702607
-        ],
-        "peg_socket_error_m": 0.22471805027220326
-      }
-    },
-    {
-      "archive_frame": 15,
-      "index": 14,
-      "target_time_s": 2.4,
-      "actual_time_s": 2.4,
-      "absolute_sim_time_s": 2.4,
-      "physics_step": 1200,
-      "phase": "move_arm_to_socket",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg",
-          "grasp_peg_with_arm"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "closed",
-        "tool_state": "raised",
-        "peg_state": "grasped",
-        "tool_position": [
-          0.20999999999690777,
-          -2.142715360556854e-06,
-          1.0488413519775206
-        ],
-        "peg_position": [
-          0.20999999999655955,
-          -2.2596209741478386e-06,
-          1.0488154692875855
-        ],
-        "peg_socket_error_m": 0.2278438659360004
-      }
-    },
-    {
-      "archive_frame": 16,
-      "index": 15,
-      "target_time_s": 2.6,
-      "actual_time_s": 2.6,
-      "absolute_sim_time_s": 2.6,
-      "physics_step": 1300,
-      "phase": "move_arm_to_socket",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg",
-          "grasp_peg_with_arm"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "closed",
-        "tool_state": "raised",
-        "peg_state": "grasped",
-        "tool_position": [
-          0.18769047359957375,
-          0.15571754742896754,
-          1.0499819317118506
-        ],
-        "peg_position": [
-          0.1881717869045756,
-          0.1537902384632982,
-          1.049975117332596
-        ],
-        "peg_socket_error_m": 0.09942721218902137
-      }
-    },
-    {
-      "archive_frame": 17,
-      "index": 16,
-      "target_time_s": 2.8,
-      "actual_time_s": 2.8,
-      "absolute_sim_time_s": 2.8,
-      "physics_step": 1400,
-      "phase": "move_arm_to_socket",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "move_arm_to_peg",
-          "grasp_peg_with_arm"
-        ],
-        "arm_state": "at_peg",
-        "gripper_state": "closed",
-        "tool_state": "raised",
-        "peg_state": "grasped",
-        "tool_position": [
-          0.1654322427913658,
-          0.22571623179408404,
-          1.0500003329960998
-        ],
-        "peg_position": [
-          0.16543161051202673,
-          0.22575639068469186,
-          1.0500003568607654
-        ],
-        "peg_socket_error_m": 0.08166511573353884
+        "peg_socket_error_m": 0.24516087586997373
       }
     },
     {
@@ -634,16 +621,16 @@
         "tool_state": "raised",
         "peg_state": "grasped",
         "tool_position": [
-          0.1682704292401005,
-          0.21501677325638086,
-          1.0500000002843175
+          0.2099962463552424,
+          -0.000607436806747661,
+          0.8863873439637239
         ],
         "peg_position": [
-          0.16825236811227043,
-          0.2150814495044494,
-          1.0500000003052354
+          0.20996085518493993,
+          7.436009749762254e-05,
+          0.8864381990428357
         ],
-        "peg_socket_error_m": 0.08018026811578366
+        "peg_socket_error_m": 0.22945199675485844
       }
     },
     {
@@ -670,25 +657,205 @@
         "tool_state": "raised",
         "peg_state": "grasped",
         "tool_position": [
-          0.16869921165352983,
-          0.21333809641919266,
-          1.0500000000002345
+          0.20999931163964936,
+          -3.083483807337674e-05,
+          1.029833132674284
         ],
         "peg_position": [
-          0.16870132466454713,
-          0.2133322176666019,
-          1.0500000000002518
+          0.20996335939314006,
+          0.0006525873888702424,
+          1.0296648630165095
         ],
-        "peg_socket_error_m": 0.08007989905241406
+        "peg_socket_error_m": 0.2213217231537355
       }
     },
     {
       "archive_frame": 20,
       "index": 19,
+      "target_time_s": 3.4,
+      "actual_time_s": 3.4,
+      "absolute_sim_time_s": 3.4,
+      "physics_step": 1700,
+      "phase": "move_arm_to_socket",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "closed",
+        "tool_state": "raised",
+        "peg_state": "grasped",
+        "tool_position": [
+          0.20999991519100544,
+          6.54781063100536e-05,
+          1.0406314759470952
+        ],
+        "peg_position": [
+          0.20996386329313302,
+          0.000748750025422291,
+          1.040486743421998
+        ],
+        "peg_socket_error_m": 0.2243915706604729
+      }
+    },
+    {
+      "archive_frame": 21,
+      "index": 20,
+      "target_time_s": 3.6,
+      "actual_time_s": 3.6,
+      "absolute_sim_time_s": 3.6,
+      "physics_step": 1800,
+      "phase": "move_arm_to_socket",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "closed",
+        "tool_state": "raised",
+        "peg_state": "grasped",
+        "tool_position": [
+          0.19990658863948452,
+          0.0933573432849129,
+          1.0412288304282735
+        ],
+        "peg_position": [
+          0.20009066600028697,
+          0.09412133783872495,
+          1.0411199936399846
+        ],
+        "peg_socket_error_m": 0.13925288514059306
+      }
+    },
+    {
+      "archive_frame": 22,
+      "index": 21,
+      "target_time_s": 3.8,
+      "actual_time_s": 3.8,
+      "absolute_sim_time_s": 3.8,
+      "physics_step": 1900,
+      "phase": "move_arm_to_socket",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "closed",
+        "tool_state": "raised",
+        "peg_state": "grasped",
+        "tool_position": [
+          0.16234514767445235,
+          0.23587532493366983,
+          1.0412612100990382
+        ],
+        "peg_position": [
+          0.1622299254490054,
+          0.2365619925596089,
+          1.0411422643925865
+        ],
+        "peg_socket_error_m": 0.07633567508163806
+      }
+    },
+    {
+      "archive_frame": 23,
+      "index": 22,
+      "target_time_s": 4.0,
+      "actual_time_s": 4.0,
+      "absolute_sim_time_s": 4.0,
+      "physics_step": 2000,
+      "phase": "move_arm_to_socket",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "closed",
+        "tool_state": "raised",
+        "peg_state": "grasped",
+        "tool_position": [
+          0.1653460569319358,
+          0.22439221617980393,
+          1.0412626413627486
+        ],
+        "peg_position": [
+          0.1652332397614182,
+          0.22506789127267368,
+          1.0411247572269717
+        ],
+        "peg_socket_error_m": 0.07285941559725079
+      }
+    },
+    {
+      "archive_frame": 24,
+      "index": 23,
+      "target_time_s": 4.2,
+      "actual_time_s": 4.2,
+      "absolute_sim_time_s": 4.2,
+      "physics_step": 2100,
+      "phase": "move_arm_to_socket",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm"
+        ],
+        "arm_state": "at_peg",
+        "gripper_state": "closed",
+        "tool_state": "raised",
+        "peg_state": "grasped",
+        "tool_position": [
+          0.16945237555341208,
+          0.21090093301543053,
+          1.0412627673764288
+        ],
+        "peg_position": [
+          0.16935252394726844,
+          0.2115759710195061,
+          1.0411211337456474
+        ],
+        "peg_socket_error_m": 0.07114153902720587
+      }
+    },
+    {
+      "archive_frame": 25,
+      "index": 24,
       "target_time_s": null,
-      "actual_time_s": 3.28,
-      "absolute_sim_time_s": 3.28,
-      "physics_step": 1640,
+      "actual_time_s": 4.32,
+      "absolute_sim_time_s": 4.32,
+      "physics_step": 2160,
       "phase": "move_arm_to_socket",
       "event_frame": true,
       "rgb_shape": [
@@ -707,25 +874,25 @@
         "tool_state": "raised",
         "peg_state": "grasped",
         "tool_position": [
-          0.1686121025996098,
-          0.21359317816115583,
-          1.0500000000000127
+          0.1691699552246972,
+          0.21177432552072203,
+          1.041262823371426
         ],
         "peg_position": [
-          0.16861395576540464,
-          0.21358761523427586,
-          1.0500000000000138
+          0.16906855830557407,
+          0.21245055056533896,
+          1.041121549326773
         ],
-        "peg_socket_error_m": 0.08009239727771718
+        "peg_socket_error_m": 0.07116985007953856
       }
     },
     {
-      "archive_frame": 21,
-      "index": 20,
-      "target_time_s": 3.4,
-      "actual_time_s": 3.4,
-      "absolute_sim_time_s": 3.4,
-      "physics_step": 1700,
+      "archive_frame": 26,
+      "index": 25,
+      "target_time_s": 4.4,
+      "actual_time_s": 4.4,
+      "absolute_sim_time_s": 4.4,
+      "physics_step": 2200,
       "phase": "insert_peg_into_socket",
       "event_frame": false,
       "rgb_shape": [
@@ -744,25 +911,25 @@
         "tool_state": "raised",
         "peg_state": "grasped",
         "tool_position": [
-          0.16854521168090741,
-          0.21379426144161082,
-          0.9947225216602009
+          0.16879746613708035,
+          0.21297832652606005,
+          1.0035711770235198
         ],
         "peg_position": [
-          0.1685457137410705,
-          0.2137927822630518,
-          0.9952747079800335
+          0.1686944567929074,
+          0.21365500733565798,
+          1.003434193611998
         ],
-        "peg_socket_error_m": 0.025599043132386822
+        "peg_socket_error_m": 0.03365871097017627
       }
     },
     {
-      "archive_frame": 22,
-      "index": 21,
-      "target_time_s": 3.6,
-      "actual_time_s": 3.6,
-      "absolute_sim_time_s": 3.6,
-      "physics_step": 1800,
+      "archive_frame": 27,
+      "index": 26,
+      "target_time_s": 4.6,
+      "actual_time_s": 4.6,
+      "absolute_sim_time_s": 4.6,
+      "physics_step": 2300,
       "phase": "insert_peg_into_socket",
       "event_frame": false,
       "rgb_shape": [
@@ -781,25 +948,25 @@
         "tool_state": "raised",
         "peg_state": "grasped",
         "tool_position": [
-          0.16854058051754928,
-          0.21380255565747996,
-          0.9727140737721571
+          0.16848513831578704,
+          0.21396633377810437,
+          0.9698599615421309
         ],
         "peg_position": [
-          0.16854047824159485,
-          0.21380291091967515,
-          0.972774702650417
+          0.16838075459831475,
+          0.21464347491350233,
+          0.9698245209061166
         ],
-        "peg_socket_error_m": 0.004928621513615536
+        "peg_socket_error_m": 0.00492083406096919
       }
     },
     {
-      "archive_frame": 23,
-      "index": 22,
-      "target_time_s": 3.8,
-      "actual_time_s": 3.8,
-      "absolute_sim_time_s": 3.8,
-      "physics_step": 1900,
+      "archive_frame": 28,
+      "index": 27,
+      "target_time_s": 4.8,
+      "actual_time_s": 4.8,
+      "absolute_sim_time_s": 4.8,
+      "physics_step": 2400,
       "phase": "insert_peg_into_socket",
       "event_frame": false,
       "rgb_shape": [
@@ -818,25 +985,25 @@
         "tool_state": "raised",
         "peg_state": "grasped",
         "tool_position": [
-          0.16854558631188174,
-          0.2137852578069428,
-          0.9702979487490273
+          0.16849914978824407,
+          0.21392305775374074,
+          0.9698598056984324
         ],
         "peg_position": [
-          0.16854558042692755,
-          0.21378528053316218,
-          0.9703046045365815
+          0.16839453313889977,
+          0.21460029270604195,
+          0.9698228782010558
         ],
-        "peg_socket_error_m": 0.004066505739941716
+        "peg_socket_error_m": 0.004875611649323096
       }
     },
     {
-      "archive_frame": 24,
-      "index": 23,
+      "archive_frame": 29,
+      "index": 28,
       "target_time_s": null,
-      "actual_time_s": 3.8,
-      "absolute_sim_time_s": 3.8,
-      "physics_step": 1900,
+      "actual_time_s": 4.84,
+      "absolute_sim_time_s": 4.84,
+      "physics_step": 2420,
       "phase": "insert_peg_into_socket",
       "event_frame": true,
       "rgb_shape": [
@@ -856,25 +1023,25 @@
         "tool_state": "lowered",
         "peg_state": "inserted",
         "tool_position": [
-          0.1685455917103063,
-          0.21378523672746022,
-          0.9702914383943302
+          0.16850245636903255,
+          0.21391480583001746,
+          0.9698573818375106
         ],
         "peg_position": [
-          0.16854558631188174,
-          0.2137852578069428,
-          0.9702979487490273
+          0.16839957192582464,
+          0.21459250545733977,
+          0.9698208334396359
         ],
-        "peg_socket_error_m": 0.004065989338187472
+        "peg_socket_error_m": 0.004866680290779024
       }
     },
     {
-      "archive_frame": 25,
-      "index": 24,
-      "target_time_s": 4.0,
-      "actual_time_s": 4.0,
-      "absolute_sim_time_s": 4.0,
-      "physics_step": 2000,
+      "archive_frame": 30,
+      "index": 29,
+      "target_time_s": 5.0,
+      "actual_time_s": 5.0,
+      "absolute_sim_time_s": 5.0,
+      "physics_step": 2500,
       "phase": "release_assembled_peg",
       "event_frame": false,
       "rgb_shape": [
@@ -894,25 +1061,25 @@
         "tool_state": "lowered",
         "peg_state": "inserted",
         "tool_position": [
-          0.1686246917234644,
-          0.21352620458782795,
-          0.9700327085645044
+          0.16850379307590804,
+          0.2139114604569334,
+          0.9698566183898821
         ],
         "peg_position": [
-          0.16862190446969247,
-          0.21353526091065228,
-          0.9700334392312961
+          0.16840071991333172,
+          0.21458169315241646,
+          0.9698203263670901
         ],
-        "peg_socket_error_m": 0.0037945138264643802
+        "peg_socket_error_m": 0.0048561189805107425
       }
     },
     {
-      "archive_frame": 26,
-      "index": 25,
-      "target_time_s": 4.2,
-      "actual_time_s": 4.2,
-      "absolute_sim_time_s": 4.2,
-      "physics_step": 2100,
+      "archive_frame": 31,
+      "index": 30,
+      "target_time_s": 5.2,
+      "actual_time_s": 5.2,
+      "absolute_sim_time_s": 5.2,
+      "physics_step": 2600,
       "phase": "release_assembled_peg",
       "event_frame": false,
       "rgb_shape": [
@@ -932,25 +1099,25 @@
         "tool_state": "lowered",
         "peg_state": "inserted",
         "tool_position": [
-          0.16859762207103465,
-          0.21361538367342464,
-          0.9700035907188584
+          0.16851178133515607,
+          0.21388297991097932,
+          0.9698601230837427
         ],
         "peg_position": [
-          0.168622059017944,
-          0.21353095306408554,
-          0.9698812098223533
+          0.16840679438213438,
+          0.2145534936153167,
+          0.9698230016123716
         ],
-        "peg_socket_error_m": 0.0037921579604639276
+        "peg_socket_error_m": 0.0048274151131585605
       }
     },
     {
-      "archive_frame": 27,
-      "index": 26,
-      "target_time_s": 4.4,
-      "actual_time_s": 4.4,
-      "absolute_sim_time_s": 4.4,
-      "physics_step": 2200,
+      "archive_frame": 32,
+      "index": 31,
+      "target_time_s": 5.4,
+      "actual_time_s": 5.4,
+      "absolute_sim_time_s": 5.4,
+      "physics_step": 2700,
       "phase": "release_assembled_peg",
       "event_frame": false,
       "rgb_shape": [
@@ -970,25 +1137,25 @@
         "tool_state": "lowered",
         "peg_state": "inserted",
         "tool_position": [
-          0.16854060303344412,
-          0.2138011283596454,
-          0.9700003941861135
+          0.1685451577198435,
+          0.21378470180872552,
+          0.9655470997005783
         ],
         "peg_position": [
-          0.16862716760439975,
-          0.21353396569959882,
-          0.9698745222539248
+          0.16840379003873648,
+          0.21454892395343444,
+          0.9698758533204256
         ],
-        "peg_socket_error_m": 0.003793326642554088
+        "peg_socket_error_m": 0.004822448317257116
       }
     },
     {
-      "archive_frame": 28,
-      "index": 27,
-      "target_time_s": 4.6,
-      "actual_time_s": 4.6,
-      "absolute_sim_time_s": 4.6,
-      "physics_step": 2300,
+      "archive_frame": 33,
+      "index": 32,
+      "target_time_s": 5.6,
+      "actual_time_s": 5.6,
+      "absolute_sim_time_s": 5.6,
+      "physics_step": 2800,
       "phase": "release_assembled_peg",
       "event_frame": false,
       "rgb_shape": [
@@ -1008,25 +1175,177 @@
         "tool_state": "lowered",
         "peg_state": "inserted",
         "tool_position": [
-          0.1685438575137905,
-          0.21379066676596029,
-          0.9700000432734219
+          0.16854750197598106,
+          0.21377847358519494,
+          0.965041437539029
         ],
         "peg_position": [
-          0.1686233761727969,
-          0.21353411792598442,
-          0.9698949808222573
+          0.16840254632378193,
+          0.2145550507840998,
+          0.9698813192671469
         ],
-        "peg_socket_error_m": 0.00379422082964099
+        "peg_socket_error_m": 0.004828501942605134
       }
     },
     {
-      "archive_frame": 29,
-      "index": 28,
+      "archive_frame": 34,
+      "index": 33,
+      "target_time_s": 5.8,
+      "actual_time_s": 5.8,
+      "absolute_sim_time_s": 5.8,
+      "physics_step": 2900,
+      "phase": "release_assembled_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "closed",
+        "tool_state": "lowered",
+        "peg_state": "inserted",
+        "tool_position": [
+          0.16854480098327976,
+          0.21378754346415818,
+          1.0299265088994194
+        ],
+        "peg_position": [
+          0.16842434446113583,
+          0.21453531451846997,
+          0.9698711172163609
+        ],
+        "peg_socket_error_m": 0.0048029552288686266
+      }
+    },
+    {
+      "archive_frame": 35,
+      "index": 34,
+      "target_time_s": 6.0,
+      "actual_time_s": 6.0,
+      "absolute_sim_time_s": 6.0,
+      "physics_step": 3000,
+      "phase": "release_assembled_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "closed",
+        "tool_state": "lowered",
+        "peg_state": "inserted",
+        "tool_position": [
+          0.16854491296749244,
+          0.21378723946612294,
+          1.043855124611485
+        ],
+        "peg_position": [
+          0.16839353406855745,
+          0.21456777504447677,
+          0.9698713583482336
+        ],
+        "peg_socket_error_m": 0.004843743420165818
+      }
+    },
+    {
+      "archive_frame": 36,
+      "index": 35,
+      "target_time_s": 6.2,
+      "actual_time_s": 6.2,
+      "absolute_sim_time_s": 6.2,
+      "physics_step": 3100,
+      "phase": "release_assembled_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "closed",
+        "tool_state": "lowered",
+        "peg_state": "inserted",
+        "tool_position": [
+          0.15965954974005608,
+          0.2128053015098253,
+          1.0452116153469537
+        ],
+        "peg_position": [
+          0.16842489684702075,
+          0.21453616736350256,
+          0.9698707465679156
+        ],
+        "peg_socket_error_m": 0.004803589360253086
+      }
+    },
+    {
+      "archive_frame": 37,
+      "index": 36,
+      "target_time_s": 6.4,
+      "actual_time_s": 6.4,
+      "absolute_sim_time_s": 6.4,
+      "physics_step": 3200,
+      "phase": "release_assembled_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "closed",
+        "tool_state": "lowered",
+        "peg_state": "inserted",
+        "tool_position": [
+          0.13929143975423341,
+          0.21087798769974087,
+          1.0485059851253289
+        ],
+        "peg_position": [
+          0.16839192589428514,
+          0.21456824484718995,
+          0.9698708890232495
+        ],
+        "peg_socket_error_m": 0.0048447324959863085
+      }
+    },
+    {
+      "archive_frame": 38,
+      "index": 37,
       "target_time_s": null,
-      "actual_time_s": 4.6,
-      "absolute_sim_time_s": 4.6,
-      "physics_step": 2300,
+      "actual_time_s": 6.56,
+      "absolute_sim_time_s": 6.56,
+      "physics_step": 3280,
       "phase": "release_assembled_peg",
       "event_frame": true,
       "rgb_shape": [
@@ -1044,28 +1363,28 @@
         ],
         "arm_state": "at_socket",
         "gripper_state": "open",
-        "tool_state": "lowered",
+        "tool_state": "withdrawn",
         "peg_state": "seated",
         "tool_position": [
-          0.1685438575137905,
-          0.21379066676596029,
-          0.9700000432734219
+          0.13559321429976245,
+          0.21053005342760572,
+          1.0494729911620477
         ],
         "peg_position": [
-          0.1686233761727969,
-          0.21353411792598442,
-          0.9698949808222573
+          0.16839326287424244,
+          0.2145672890164971,
+          0.9698713094097315
         ],
-        "peg_socket_error_m": 0.00379422082964099
+        "peg_socket_error_m": 0.004843376345022806
       }
     },
     {
-      "archive_frame": 30,
-      "index": 29,
-      "target_time_s": 4.8,
-      "actual_time_s": 4.8,
-      "absolute_sim_time_s": 4.8,
-      "physics_step": 2400,
+      "archive_frame": 39,
+      "index": 38,
+      "target_time_s": 6.6,
+      "actual_time_s": 6.6,
+      "absolute_sim_time_s": 6.6,
+      "physics_step": 3300,
       "phase": "settled_after_release_assembled_peg",
       "event_frame": false,
       "rgb_shape": [
@@ -1083,28 +1402,67 @@
         ],
         "arm_state": "at_socket",
         "gripper_state": "open",
-        "tool_state": "lowered",
+        "tool_state": "withdrawn",
         "peg_state": "seated",
         "tool_position": [
-          0.16854535508806553,
-          0.21378581593856352,
-          0.9700000047505202
+          0.1352054582948839,
+          0.21048181938595184,
+          1.0495801052804254
         ],
         "peg_position": [
-          0.168620688117562,
-          0.21352300497318388,
-          0.9698729243284147
+          0.16842182439769599,
+          0.2145358791085555,
+          0.9698710429173668
         ],
-        "peg_socket_error_m": 0.003785526850574694
+        "peg_socket_error_m": 0.004804317584038272
       }
     },
     {
-      "archive_frame": 31,
-      "index": 30,
+      "archive_frame": 40,
+      "index": 39,
+      "target_time_s": 6.8,
+      "actual_time_s": 6.8,
+      "absolute_sim_time_s": 6.8,
+      "physics_step": 3400,
+      "phase": "settled_after_release_assembled_peg",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "move_arm_to_peg",
+          "grasp_peg_with_arm",
+          "move_arm_to_socket",
+          "insert_peg_into_socket",
+          "release_assembled_peg"
+        ],
+        "arm_state": "at_socket",
+        "gripper_state": "open",
+        "tool_state": "withdrawn",
+        "peg_state": "seated",
+        "tool_position": [
+          0.13438642241773144,
+          0.21036093956171054,
+          1.0498093370016497
+        ],
+        "peg_position": [
+          0.16839265484272953,
+          0.2145696019230217,
+          0.969871340050543
+        ],
+        "peg_socket_error_m": 0.004845758307229011
+      }
+    },
+    {
+      "archive_frame": 41,
+      "index": 40,
       "target_time_s": null,
-      "actual_time_s": 4.84,
-      "absolute_sim_time_s": 4.84,
-      "physics_step": 2420,
+      "actual_time_s": 6.8,
+      "absolute_sim_time_s": 6.8,
+      "physics_step": 3400,
       "phase": "inspect_assembly",
       "event_frame": true,
       "rgb_shape": [
@@ -1123,26 +1481,26 @@
         ],
         "arm_state": "at_socket",
         "gripper_state": "open",
-        "tool_state": "lowered",
+        "tool_state": "withdrawn",
         "peg_state": "seated",
         "tool_position": [
-          0.16854530833196532,
-          0.21378596834344113,
-          0.970000003053832
+          0.13438642241773144,
+          0.21036093956171054,
+          1.0498093370016497
         ],
         "peg_position": [
-          0.16863392518060685,
-          0.21353840352921225,
-          0.9698690856979164
+          0.16839265484272953,
+          0.2145696019230217,
+          0.969871340050543
         ],
-        "peg_socket_error_m": 0.003795207306882169
+        "peg_socket_error_m": 0.004845758307229011
       }
     }
   ],
   "archive_verification": {
     "status": "PASS",
-    "gif_frame_count": 31,
-    "tiff_page_count": 31,
+    "gif_frame_count": 41,
+    "tiff_page_count": 41,
     "gif_frame_durations_ms": [
       200,
       800

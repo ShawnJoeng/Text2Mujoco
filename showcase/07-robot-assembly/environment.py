@@ -129,12 +129,18 @@ class RobotAssemblyEnvironment:
     # Socket floor top (0.900) + peg half-height (0.070): the seated peg rests on
     # the socket floor instead of sinking into it.
     SOCKET_POSITION = np.asarray([0.17, 0.21, 0.97], dtype=float)
-    # tool_z that puts tool_center_site (0.125 below the tool frame) on the resting
-    # peg center, bench top 0.780 + 0.070 = 0.850, with the arm plane at 1.175.
-    GRASP_TOOL_Z = -0.20
-    # Parked lift: the carried peg's lowest surface sits at 1.050 - 0.070 = 0.980,
-    # 40 mm above the 0.940 fixture guide rims it has to cross.
-    TRANSPORT_TOOL_Z = 0.0
+    # The carried peg's centre rides at world 1.005 + tool_z, so:
+    #   pick   bench top 0.780 + 0.070 = 0.850
+    #   cross  peg bottom 0.975, 35 mm over the 0.940 fixture rims
+    #   insert socket floor top 0.900 + 0.070 = 0.970
+    GRASP_TOOL_Z = -0.155
+    TRANSPORT_TOOL_Z = 0.040
+    INSERT_TOOL_Z = -0.035
+    # The wrist pitch is what makes the hand a hand rather than a fixture on the
+    # end of a lift: it tips forward on the way in and tips back to leave the
+    # seated peg alone, so nothing has to drag the whole tool column down.
+    APPROACH_PITCH = -0.22
+    WITHDRAW_PITCH = 0.28
 
     def __init__(self, model_path: Path, spec: Mapping[str, Any]):
         self.model_path = Path(model_path).resolve()
@@ -159,11 +165,15 @@ class RobotAssemblyEnvironment:
         ]
         self.tool_joint_id = self.require_id("joint", "tool_z")
         self.tool_actuator_id = self.require_id("actuator", "tool_lift_motor")
+        self.pitch_joint_id = self.require_id("joint", "tool_pitch")
+        self.pitch_actuator_id = self.require_id("actuator", "tool_pitch_motor")
         self.gripper_joint_id = self.require_id("joint", "gripper_slide")
         self.gripper_actuator_id = self.require_id("actuator", "gripper_motor")
         self.peg_joint_id = self.require_id("joint", "peg_free")
         self.peg_body_id = self.require_id("body", "red_peg")
         self.peg_geom_id = self.require_id("geom", "red_peg_geom")
+        self.tool_body_id = self.require_id("body", "arm_tool")
+        self.grasp_eq_id = self._require_weld("peg_grasp")
         self.socket_floor_geom_id = self.require_id("geom", "socket_floor_geom")
         self.tool_site_id = self.require_id("site", "tool_center_site")
         camera = next(sensor for sensor in self.spec["sensors"] if sensor.get("type") == "camera")
@@ -176,10 +186,19 @@ class RobotAssemblyEnvironment:
 
         self.arm_qpos_adrs = [int(self.model.jnt_qposadr[joint_id]) for joint_id in self.arm_joint_ids]
         self.tool_qpos_adr = int(self.model.jnt_qposadr[self.tool_joint_id])
+        self.pitch_qpos_adr = int(self.model.jnt_qposadr[self.pitch_joint_id])
         self.gripper_qpos_adr = int(self.model.jnt_qposadr[self.gripper_joint_id])
         self.peg_qpos_adr = int(self.model.jnt_qposadr[self.peg_joint_id])
         self.peg_dof_adr = int(self.model.jnt_dofadr[self.peg_joint_id])
         self.reset()
+
+    def _require_weld(self, name: str) -> int:
+        equality_id = int(mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_EQUALITY, name))
+        if equality_id < 0:
+            raise EnvironmentError("required equality constraint is missing")
+        if int(self.model.eq_type[equality_id]) != int(mujoco.mjtEq.mjEQ_WELD):
+            raise EnvironmentError("grasp constraint must be a weld")
+        return equality_id
 
     def require_id(self, object_type: str, name: str) -> int:
         if object_type not in OBJECT_TYPES:
@@ -228,8 +247,10 @@ class RobotAssemblyEnvironment:
         for adr, value in zip(self.arm_qpos_adrs, self.HOME):
             self.data.qpos[adr] = value
         self.data.qpos[self.tool_qpos_adr] = 0.0
+        self.data.qpos[self.pitch_qpos_adr] = 0.0
         self.data.qpos[self.gripper_qpos_adr] = 0.0
         self.data.ctrl[:] = 0.0
+        self.data.eq_active[self.grasp_eq_id] = 0
         mujoco.mj_forward(self.model, self.data)
         self.completed: list[str] = []
         self.held_peg = False
@@ -248,20 +269,33 @@ class RobotAssemblyEnvironment:
         if not isinstance(steps, int) or isinstance(steps, bool) or steps < 0:
             raise EnvironmentError("steps must be a non-negative integer")
         for _ in range(steps):
-            if self.held_peg:
-                self._pin_peg_to_tool()
             mujoco.mj_step(self.model, self.data)
-        if self.held_peg:
-            self._pin_peg_to_tool()
         if not np.isfinite(self.data.qpos).all() or not np.isfinite(self.data.qvel).all():
             raise EnvironmentError("MuJoCo state contains non-finite values")
 
-    def _pin_peg_to_tool(self) -> None:
-        position = np.asarray(self.data.site_xpos[self.tool_site_id], dtype=float)
-        self.data.qpos[self.peg_qpos_adr : self.peg_qpos_adr + 3] = position
-        self.data.qpos[self.peg_qpos_adr + 3 : self.peg_qpos_adr + 7] = [1.0, 0.0, 0.0, 0.0]
-        self.data.qvel[self.peg_dof_adr : self.peg_dof_adr + 6] = 0.0
-        mujoco.mj_forward(self.model, self.data)
+    def _engage_grasp(self) -> None:
+        """Weld the peg to the tool at the offset it is actually sitting at.
+
+        The relative pose is measured rather than assumed, so the constraint
+        starts satisfied: the peg is not snapped to a nominal grasp pose and no
+        impulse is injected at the moment the jaws close. Everything after this
+        is ordinary constrained dynamics - the peg has mass, it swings, and if
+        the weld is released in mid-air it falls.
+        """
+        tool_position = np.asarray(self.data.xpos[self.tool_body_id], dtype=float)
+        tool_frame = np.asarray(self.data.xmat[self.tool_body_id], dtype=float).reshape(3, 3)
+        peg_frame = np.asarray(self.data.xmat[self.peg_body_id], dtype=float).reshape(3, 3)
+        relative = tool_frame.T @ (np.asarray(self.data.xpos[self.peg_body_id], dtype=float) - tool_position)
+        relative_quat = np.zeros(4, dtype=float)
+        mujoco.mju_mat2Quat(relative_quat, np.ascontiguousarray(tool_frame.T @ peg_frame).reshape(9))
+        self.model.eq_data[self.grasp_eq_id, 3:6] = relative
+        self.model.eq_data[self.grasp_eq_id, 6:10] = relative_quat
+        self.data.eq_active[self.grasp_eq_id] = 1
+        self.held_peg = True
+
+    def _release_grasp(self) -> None:
+        self.data.eq_active[self.grasp_eq_id] = 0
+        self.held_peg = False
 
     def _set_arm_targets(self, target: np.ndarray, speed_rad_s: float) -> None:
         target = np.asarray(target, dtype=float)
@@ -282,6 +316,12 @@ class RobotAssemblyEnvironment:
         self.run_physics(260)
         if abs(float(self.data.qpos[self.tool_qpos_adr]) - target) > 0.012:
             raise EnvironmentError("tool lift actuator did not reach its target")
+
+    def _set_pitch_target(self, target: float) -> None:
+        self.data.ctrl[self.pitch_actuator_id] = float(target)
+        self.run_physics(200)
+        if abs(float(self.data.qpos[self.pitch_qpos_adr]) - target) > 0.03:
+            raise EnvironmentError("tool pitch actuator did not reach its target")
 
     def _set_gripper_target(self, target: float) -> None:
         self.data.ctrl[self.gripper_actuator_id] = float(target)
@@ -311,7 +351,9 @@ class RobotAssemblyEnvironment:
             "seed": self.seed,
             "arm_joint_qpos": [float(self.data.qpos[adr]) for adr in self.arm_qpos_adrs],
             "tool_z_qpos": float(self.data.qpos[self.tool_qpos_adr]),
+            "tool_pitch_qpos": float(self.data.qpos[self.pitch_qpos_adr]),
             "gripper_qpos": float(self.data.qpos[self.gripper_qpos_adr]),
+            "grasp_weld_active": bool(self.data.eq_active[self.grasp_eq_id]),
             "tool_position": self._tool_position().tolist(),
             "peg_position": self._peg_position().tolist(),
             "peg_speed_mps": self._peg_speed(),
@@ -342,7 +384,12 @@ class RobotAssemblyEnvironment:
         if point_id == "move_arm_to_peg":
             if self.state["arm_state"] != "home":
                 raise EnvironmentError("arm is not at home")
+            # Tip the hand forward for the traverse and level it again before the
+            # jaws have to meet the peg: the pitch axis is exercised on every run
+            # rather than being decoration in the model file.
+            self._set_pitch_target(self.APPROACH_PITCH)
             self._set_arm_targets(self.AT_PEG, float(payload.get("speed_rad_s", 1.0)))
+            self._set_pitch_target(0.0)
             self.state["arm_state"] = "at_peg"
         elif point_id == "grasp_peg_with_arm":
             if self.state["arm_state"] != "at_peg" or self.state["peg_state"] != "free":
@@ -350,15 +397,13 @@ class RobotAssemblyEnvironment:
             if payload.get("close") is not True:
                 raise EnvironmentError("grasp requires close=true")
             self._set_tool_target(self.GRASP_TOOL_Z)
-            self._set_gripper_target(-0.040)
-            # The attachment is a documented task-level grasp abstraction. It
-            # is updated at every physics step, so subsequent arm motion and
-            # the physical peg share one deterministic state trajectory. The
-            # lift is commanded to the pose where tool_center_site already
-            # coincides with the resting peg center, so the hold does not
-            # teleport the peg and does not press it into the bench.
-            self.held_peg = True
-            self._pin_peg_to_tool()
+            self._set_gripper_target(-0.043)
+            # The jaws are closed on to the peg and a weld constraint now carries
+            # it. Nothing overwrites the peg's coordinates: the solver holds the
+            # measured tool-to-peg offset, so the peg's trajectory is the result
+            # of the arm's own motion.
+            self._engage_grasp()
+            self.run_physics(120)
             self.state["gripper_state"] = "closed"
             self.state["peg_state"] = "grasped"
         elif point_id == "move_arm_to_socket":
@@ -366,20 +411,24 @@ class RobotAssemblyEnvironment:
                 raise EnvironmentError("peg must be grasped before transport")
             # Lift before traversing. The hinge targets are interpolated in joint
             # space, so the tool bows through an arbitrary arc between the two
-            # valid end poses; at the grasp depth the peg's lowest surface
-            # (0.780) is below the fixture guide rims (0.940) and the arc drives
-            # it through the front guide. Parking the lift first raises that
-            # surface to 0.980 for the whole arc.
+            # valid end poses; at the grasp depth the peg's lowest surface is
+            # below the fixture guide rims (0.940) and the arc would drive it
+            # through the front guide. Parking the lift first raises that surface
+            # to 0.975 for the whole arc.
             self._set_tool_target(self.TRANSPORT_TOOL_Z)
             self._set_arm_targets(self.AT_SOCKET, float(payload.get("speed_rad_s", 1.0)))
             self.state["arm_state"] = "at_socket"
         elif point_id == "insert_peg_into_socket":
             if self.state["arm_state"] != "at_socket" or self.state["peg_state"] != "grasped":
                 raise EnvironmentError("arm must be at socket with a grasped peg")
-            depth = float(payload.get("depth_m", 0.08))
-            self._set_tool_target(-depth)
+            # depth_m is the descent from the transit height, so the default
+            # 0.075 lands the lift on INSERT_TOOL_Z and the peg on the socket
+            # floor rather than through it.
+            depth = float(payload.get("depth_m", 0.075))
+            target = self.TRANSPORT_TOOL_Z - depth
+            self._set_tool_target(target)
             self.state["tool_state"] = "lowered"
-            if float(self.data.qpos[self.tool_qpos_adr]) > -0.06:
+            if float(self.data.qpos[self.tool_qpos_adr]) > self.INSERT_TOOL_Z + 0.045:
                 raise EnvironmentError("tool did not lower into insertion position")
             self.state["peg_state"] = "inserted"
         elif point_id == "release_assembled_peg":
@@ -388,20 +437,19 @@ class RobotAssemblyEnvironment:
             if payload.get("open") is not True:
                 raise EnvironmentError("release requires open=true")
             self._set_gripper_target(0.0)
-            self.held_peg = False
+            self._release_grasp()
             self.run_physics(220)
-            if float(np.linalg.norm(self._peg_position() - self.SOCKET_POSITION)) > 0.075:
-                # Resolve the final seated pose at the socket center after the
-                # release trajectory. This is a deterministic insertion
-                # tolerance, while the peg still experienced collision/gravity
-                # dynamics during the settling steps above.
-                self.data.qpos[self.peg_qpos_adr : self.peg_qpos_adr + 3] = self.SOCKET_POSITION
-                self.data.qpos[self.peg_qpos_adr + 3 : self.peg_qpos_adr + 7] = [1.0, 0.0, 0.0, 0.0]
-                self.data.qvel[self.peg_dof_adr : self.peg_dof_adr + 6] = 0.0
-                mujoco.mj_forward(self.model, self.data)
-            if float(np.linalg.norm(self._peg_position() - self.SOCKET_POSITION)) > 0.075:
+            # Withdraw by raising the lift and tipping the hand back. The peg is
+            # standing in the socket under its own weight from here on, and no
+            # coordinate of it is written by this code: where it ends up is where
+            # the solver left it.
+            self._set_tool_target(self.TRANSPORT_TOOL_Z)
+            self._set_pitch_target(self.WITHDRAW_PITCH)
+            seated_error = float(np.linalg.norm(self._peg_position() - self.SOCKET_POSITION))
+            if seated_error > 0.075:
                 raise EnvironmentError("released peg did not seat in socket")
             self.state["gripper_state"] = "open"
+            self.state["tool_state"] = "withdrawn"
             self.state["peg_state"] = "seated"
         elif point_id == "inspect_assembly":
             if self.state["peg_state"] != "seated":
@@ -536,7 +584,7 @@ class RobotAssemblyEnvironment:
             self.completed == list(self.points)
             and self.state["arm_state"] == "at_socket"
             and self.state["gripper_state"] == "open"
-            and self.state["tool_state"] == "lowered"
+            and self.state["tool_state"] == "withdrawn"
             and self.state["peg_state"] == "seated"
             and self.state["task_state"] == "verified"
             and self.last_capture is not None

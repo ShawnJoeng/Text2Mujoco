@@ -45,12 +45,12 @@
       403.22067039106145
     ],
     "after_centroid_px": [
-      390.46014492753625,
-      213.3731884057971
+      390.92857142857144,
+      214.42857142857142
     ],
-    "movement_px": 282.9543847002243,
+    "movement_px": 282.59574758825096,
     "before_pixels": 358,
-    "after_pixels": 276
+    "after_pixels": 280
   },
   "reset_render": {
     "status": "PASS",

@@ -8,7 +8,8 @@
     "mjcf_compile": "PASS",
     "conveyor_hinge": "PASS",
     "parcel_free_joint": "PASS",
-    "explicit_actuators": 7,
+    "grasp_constraint": "weld",
+    "explicit_actuators": 8,
     "visible_markers": 6
   },
   "physics": {
@@ -18,9 +19,10 @@
     "conveyor_delivery": "PASS",
     "held_parcel_transport": "PASS",
     "target_bin_settle": "PASS",
+    "weld_release_drop_mm": 153.571,
     "sequence_contact": {
-      "steps": 2740,
-      "deepest_overlap_mm": 0.0175,
+      "steps": 4857,
+      "deepest_overlap_mm": 0.8182,
       "limit_mm": 1.0,
       "result": "PASS"
     }

@@ -9,12 +9,12 @@
   "rgb_verified": "PASS",
   "depth_verified": "PASS",
   "visible_markers": {
-    "blue": 7363,
-    "red": 4795,
-    "yellow": 1928,
-    "cyan": 2092,
-    "magenta": 490,
-    "green": 241
+    "blue": 8265,
+    "red": 4703,
+    "yellow": 2034,
+    "cyan": 2463,
+    "magenta": 128,
+    "green": 76
   },
   "interaction_sequence": [
     "approach_blue_part",
@@ -24,15 +24,15 @@
     "inspect_sorting_result"
   ],
   "task_success": true,
-  "blue_part_motion_m": 0.550022099036538,
-  "rgb_mean_absolute_delta": 4.122873263888889,
+  "blue_part_motion_m": 0.5462594934626228,
+  "rgb_mean_absolute_delta": 4.672659505208333,
   "depth": {
     "before": {
       "shape": [
         480,
         640
       ],
-      "finite_geometry_pixels": 199860,
+      "finite_geometry_pixels": 200398,
       "min_m": 3.4163074493408203,
       "max_m": 8.736580848693848
     },
@@ -41,7 +41,7 @@
         480,
         640
       ],
-      "finite_geometry_pixels": 196691,
+      "finite_geometry_pixels": 197224,
       "min_m": 3.4163074493408203,
       "max_m": 8.736580848693848
     }

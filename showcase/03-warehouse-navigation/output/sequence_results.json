@@ -56,7 +56,7 @@
         640,
         3
       ],
-      "rgb_std": 107.39737630413532,
+      "rgb_std": 107.40166859242107,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -71,12 +71,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.533334604796508,
-          0.7937466624091662,
+          -1.5441237915486616,
+          0.7654250471847632,
           0.14
         ],
-        "distance_to_a_m": 0.046813522290361106,
-        "distance_to_b_m": 3.0833409460140246,
+        "distance_to_a_m": 0.01650642015749487,
+        "distance_to_b_m": 3.0943169625605003,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -91,7 +91,7 @@
         640,
         3
       ],
-      "rgb_std": 107.49125500078647,
+      "rgb_std": 107.50089768867782,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -107,12 +107,12 @@
         ],
         "robot_state": "at_checkpoint_b",
         "robot_position": [
-          1.5596321650165361,
-          0.8459603219645082,
+          1.5536230516617535,
+          0.8161343386636695,
           0.14
         ],
-        "distance_to_a_m": 3.1111124353029997,
-        "distance_to_b_m": 0.046958809588692016,
+        "distance_to_a_m": 3.1043275918557147,
+        "distance_to_b_m": 0.01653612371318359,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -127,7 +127,7 @@
         640,
         3
       ],
-      "rgb_std": 107.49125500078647,
+      "rgb_std": 107.50089768867782,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -144,12 +144,12 @@
         ],
         "robot_state": "at_checkpoint_b",
         "robot_position": [
-          1.5596321650165361,
-          0.8459603219645082,
+          1.5536230516617535,
+          0.8161343386636695,
           0.14
         ],
-        "distance_to_a_m": 3.1111124353029997,
-        "distance_to_b_m": 0.046958809588692016,
+        "distance_to_a_m": 3.1043275918557147,
+        "distance_to_b_m": 0.01653612371318359,
         "shelf_collision_count": 0,
         "camera_inspection_complete": true
       }

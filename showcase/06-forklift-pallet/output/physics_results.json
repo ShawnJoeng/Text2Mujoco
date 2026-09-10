@@ -31,10 +31,15 @@
     "carry_to_drop_zone",
     "lower_forks_release"
   ],
-  "pallet_sync": "PASS",
+  "pallet_grasp": {
+    "welded_slip_mm": 0.303,
+    "released_slip_mm": 73.287,
+    "minimum_released_slip_mm": 20.0,
+    "result": "PASS"
+  },
   "sequence_contact": {
-    "steps": 5277,
-    "deepest_overlap_mm": 0.1454,
+    "steps": 5164,
+    "deepest_overlap_mm": 0.4821,
     "limit_mm": 1.0,
     "result": "PASS"
   },

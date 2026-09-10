@@ -32,21 +32,26 @@
   </asset>
 
   <!-- Collision classes. A pair is tested when
-       (contype1 & conaffinity2) || (contype2 & conaffinity1), so these masks
-       give world-mechanism, world-ball and mechanism-ball contacts while
-       filtering mechanism self-collision, which the lever and the gate never
-       need: they stand 0.17 m apart and are coupled through their position
-       actuators, not through contact. Every moving body carries a collidable
-       geom. The lever used to be contype="0" conaffinity="0", which renders and
-       weighs exactly the same while sweeping through the bench and its own
-       mount without reporting a single contact. -->
+       (contype1 & conaffinity2) || (contype2 & conaffinity1), and every class
+       here carries conaffinity 7, so no pair is filtered by a mask at all:
+       world-mechanism, world-ball, mechanism-ball and mechanism-mechanism are
+       all tested. The lever/gate pair is the one the old robot_part mask (2/5)
+       swallowed. Opening it costs nothing measurable, because a hinge about Y
+       keeps the lever capsule inside y = -0.29 +- 0.0225 = [-0.3125, -0.2675]
+       while the gate spans y = [-0.135, 0.135], so the two can never meet - but
+       a mask that hides that pair would equally hide a mechanism that did meet.
+       World-against-world pairs stay filtered structurally, by the weld every
+       static body shares with the world, not by a mask. Every moving body
+       carries a collidable geom. The lever used to be contype="0"
+       conaffinity="0", which renders and weighs exactly the same while sweeping
+       through the bench and its own mount without reporting a single contact. -->
   <default>
     <geom friction="0.65 0.01 0.002" condim="6" solref="0.002 1" solimp="0.98 0.999 0.0005"/>
     <default class="world_part">
-      <geom contype="1" conaffinity="6"/>
+      <geom contype="1" conaffinity="7"/>
     </default>
     <default class="robot_part">
-      <geom contype="2" conaffinity="5"/>
+      <geom contype="2" conaffinity="7"/>
     </default>
     <default class="payload_part">
       <geom contype="4" conaffinity="7"/>
@@ -93,16 +98,20 @@
          overlapped by 20 mm at rest, and MuJoCo does not filter that pair - the
          parent-child filter is skipped when the parent's weld root is the world,
          which lever_mount is. The mount is therefore a yoke: two cheeks whose
-         inner faces stand 0.03 - 0.0225 = 7.5 mm clear of the capsule radius (a
-         hinge about Y keeps the capsule inside |y| = 0.0225 at every angle),
+         inner faces stand 0.0375 - 0.0125 - 0.0225 = 2.5 mm clear of the capsule
+         radius (a hinge about Y keeps the capsule inside |y| = 0.0225 at every
+         angle, so 2.5 mm is clearance for the whole stroke, not just at rest),
          plus a foot plate whose top face (0.805) stays 12.7 mm below the lowest
          point the swept capsule reaches (pivot 0.83 + 0.0225*cos(1.1) - 0.0225 =
-         0.8177 at the -1.1 rad end stop). Both parts stand on the bench top
-         (0.75) instead of floating 40 mm above it. -->
+         0.8177 at the -1.1 rad end stop). The cheeks used to sit at y = +-0.0425
+         for a 7.5 mm gap, which is a seam wide enough to read in a render as a
+         lever pivoting in thin air; the foot half-width follows them in from
+         0.03 to 0.05 so it still carries both cheeks. Both parts stand on the
+         bench top (0.75) instead of floating 40 mm above it. -->
     <body name="lever_mount" pos="-0.48 -0.29 0.79">
-      <geom name="lever_mount_foot" class="world_part" type="box" pos="0 0 -0.0125" size="0.052 0.03 0.0275" material="frame_mat"/>
-      <geom name="lever_mount_left_cheek" class="world_part" type="box" pos="0 0.0425 0.015" size="0.052 0.0125 0.055" material="frame_mat"/>
-      <geom name="lever_mount_right_cheek" class="world_part" type="box" pos="0 -0.0425 0.015" size="0.052 0.0125 0.055" material="frame_mat"/>
+      <geom name="lever_mount_foot" class="world_part" type="box" pos="0 0 -0.0125" size="0.052 0.05 0.0275" material="frame_mat"/>
+      <geom name="lever_mount_left_cheek" class="world_part" type="box" pos="0 0.0375 0.015" size="0.052 0.0125 0.055" material="frame_mat"/>
+      <geom name="lever_mount_right_cheek" class="world_part" type="box" pos="0 -0.0375 0.015" size="0.052 0.0125 0.055" material="frame_mat"/>
       <body name="blue_lever" pos="0 0 0.04">
         <joint name="lever_hinge" type="hinge" axis="0 1 0" range="-1.1 0.05" damping="1.2" armature="0.01"/>
         <geom name="blue_lever_geom" class="robot_part" type="capsule" pos="0 0 0.11" size="0.0225 0.0875" mass="0.12" material="lever_blue_mat"/>
@@ -145,7 +154,27 @@
       <site name="target_zone_marker" type="cylinder" pos="0 0.105 0.026" size="0.035 0.008" rgba="0.02 1 0.9 1" group="2"/>
     </body>
 
-    <site name="release_zone_marker" type="ellipsoid" pos="-0.42 0.1 1.045" size="0.035 0.016 0.009" rgba="1 0.08 0.62 1" group="2"/>
+    <!-- The release zone is painted on the ramp, not hung above it. As an
+         ellipsoid at (-0.42, 0.1, 1.045) it hovered 53.2 mm over the track and
+         sat uphill of the closed gate, which is why the first rendered frame
+         counted zero magenta pixels: the camera's elevation from here is about
+         12 deg, shallower than the track's 14 deg incline, so the gate's bottom
+         edge (1.036 - 0.065 = 0.971) hides everything uphill of x = -0.31.
+         It is now a disc lying on the track surface downhill of the gate, where
+         the ball has to pass for "ball_position_x > -0.25" to become true.
+         Track top face: z(x) = 0.9145544 - 0.2493280*(x + 0.1463712), so at
+         x = -0.22 the surface is 0.9329122. Tilt the disc with the track's own
+         quat, and offset the centre by its 0.006 half-height along the track
+         normal (sin14, 0, cos14) = (0.2419219, 0, 0.9702957):
+           -0.22 + 0.006*0.2419219 = -0.2185485
+           0.9329122 + 0.006*0.9702957 = 0.9387339
+         The underside is then flush with the track and the audit's downward ray
+         travels 0.006/cos(14 deg) = 6.184 mm, i.e. 0.18 mm more than the disc's
+         own reach. y = 0.09 with radius 0.045 spans 0.045 .. 0.135: 10 mm inside
+         the left rail's inner face (0.14) and 10 mm clear of the ball's own
+         0.035 m radius at y = 0, so the ball rolls past the decal instead of
+         burying it. -->
+    <site name="release_zone_marker" type="cylinder" pos="-0.2185485 0.09 0.9387339" quat="0.9925461516 0 0.1218693434 0" size="0.045 0.006" rgba="1 0.08 0.62 1" group="2"/>
     <site name="camera_checkpoint_marker" type="sphere" pos="0.54 0.28 0.98" size="0.028" rgba="1 0.22 0.02 1" group="2"/>
     <!-- The checkpoint post is real scenery, so it collides like the rest of the
          world: it now runs from the bench top (0.75) to the marker it carries

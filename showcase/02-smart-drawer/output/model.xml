@@ -40,7 +40,17 @@
       <geom name="cabinet_divider_geom" type="box" pos="0 0 0.035" size="0.26 0.215 0.012" material="cabinet_mat"/>
       <geom name="upper_drawer_false_front" type="box" pos="0 -0.217 0.125" size="0.25 0.012 0.075" material="drawer_mat"/>
       <geom name="upper_handle" type="capsule" fromto="-0.10 -0.242 0.125 0.10 -0.242 0.125" size="0.012" material="handle_mat"/>
-      <site name="camera_check_marker" type="sphere" pos="0.24 -0.235 0.235" size="0.027" rgba="1 0.05 0.78 1" group="2"/>
+      <!-- The camera-check marker was a 0.027 m sphere at local z 0.235, hanging off
+           the front edge of the cabinet top with 208 mm of air under it. It is now a
+           decal on the upper drawer's false front, the largest surface the fixed
+           camera looks straight at: that face is at local y = -0.217 - 0.012 =
+           -0.229, so a 2 mm half-height disc centred at -0.231 has its underside on
+           the panel. A decal on a vertical face has to stay within the 3 mm the
+           audit allows, because the audit only ray-casts straight down and there is
+           nothing under a wall decal; 2 mm leaves 1 mm of margin. The 0.030 m radius
+           spans x 0.17..0.23 inside the panel's +-0.25 and z 0.095..0.155 inside its
+           0.050..0.200, and x = 0.20 clears the handle, which ends at x = 0.10. -->
+      <site name="camera_check_marker" type="cylinder" pos="0.20 -0.231 0.125" size="0.030 0.002" zaxis="0 -1 0" rgba="1 0.05 0.78 1" group="2"/>
     </body>
     <!-- The unlock button is an actuated body, so it collides, and its housing
          has to leave the 0.012 m stroke somewhere to go. A solid bezel cylinder
@@ -61,7 +71,16 @@
       <body name="unlock_button" pos="0 0 0.018">
         <joint name="unlock_button_slide" type="slide" axis="0 0 -1" range="0 0.012" damping="8" solreflimit="0.004 1" solimplimit="0.99 0.999 0.0005"/>
         <geom name="unlock_button_geom" type="cylinder" size="0.0275 0.011" mass="0.04" material="green_mat"/>
-        <site name="unlock_point_marker" type="sphere" pos="0 0 0.035" size="0.023" rgba="1 0.82 0.02 1" group="2"/>
+        <!-- The press point was a 0.023 m sphere 0.035 m in front of the cap with
+             442 mm of air under it. It is now painted on the cap face. The mount's
+             90 deg rotation about x already carries local +z into world -y, so this
+             disc needs no zaxis: its own axis is the face normal, and it stands
+             vertical. The cap face is at local z = +0.011, so a 2 mm half-height
+             disc centred at 0.013 sits flush on it and 2 mm outside the cap, inside
+             the 3 mm the audit allows before a marker counts as detached. Its
+             0.020 m radius stays inside the 0.0275 m cap, and the cap protrudes
+             12 mm past the bezel collar (local z 0.017), so nothing shadows it. -->
+        <site name="unlock_point_marker" type="cylinder" pos="0 0 0.013" size="0.020 0.002" rgba="1 0.82 0.02 1" group="2"/>
       </body>
     </body>
     <body name="tool_drawer" pos="0 -0.005 0.86">
@@ -74,7 +93,16 @@
       <!-- The handle is the outermost surface of a body that moves 0.22 m, and
            the tools ride in the open tray, so all three collide. -->
       <geom name="drawer_handle_geom" type="capsule" fromto="-0.105 -0.235 0.03 0.105 -0.235 0.03" size="0.014" mass="0.1" material="handle_mat"/>
-      <site name="drawer_handle_marker" type="sphere" pos="0 -0.265 0.03" size="0.026" rgba="0.02 0.95 1 1" group="2"/>
+      <!-- The pull marker was a 0.026 m sphere floating 16 mm in front of the handle
+           capsule and 84 mm above nothing. It is now a decal on the drawer front
+           panel, whose outer face is at local y = -0.202 - 0.014 = -0.216; the disc
+           centre is 2 mm out from that face and 2 mm thick, so its underside is
+           flush and it stays inside the 3 mm the audit allows on a vertical face.
+           It goes above the handle rather than behind it: the handle reaches
+           z = 0.03 + 0.014 = 0.044 and the panel top is z = 0.03 + 0.08 = 0.11, so a
+           0.028 m disc centred at 0.077 spans 0.049..0.105 and clears both by 5 mm
+           while staying out of the capsule's line of sight from the overhead camera. -->
+      <site name="drawer_handle_marker" type="cylinder" pos="0 -0.218 0.077" size="0.028 0.002" zaxis="0 -1 0" rgba="0.02 0.95 1 1" group="2"/>
       <geom name="tool_red" type="box" pos="-0.11 0.02 0.037" size="0.055 0.075 0.025" rgba="0.82 0.08 0.06 1" mass="0.0"/>
       <geom name="tool_yellow" type="cylinder" pos="0.09 0.03 0.052" size="0.035 0.04" rgba="0.94 0.62 0.03 1" mass="0.0"/>
     </body>

@@ -30,16 +30,31 @@ def expect_error(callback: Callable[[], Any], label: str) -> None:
 def static_checks(env) -> dict[str, Any]:
     ET.parse(env.model_path)
     names = {
-        "joint": ["arm_shoulder", "arm_elbow", "arm_wrist", "gripper_left_slide", "gripper_right_slide", "blue_part_free"],
-        "actuator": ["arm_shoulder_motor", "arm_elbow_motor", "arm_wrist_motor", "gripper_left_motor", "gripper_right_motor"],
-        "body": ["arm_base", "arm_upper_link", "arm_forearm_link", "arm_wrist_link", "gripper", "blue_part", "blue_bin"],
+        "joint": ["arm_shoulder", "arm_elbow", "arm_wrist", "tool_roll", "gripper_left_slide", "gripper_right_slide", "blue_part_free"],
+        "actuator": ["arm_shoulder_motor", "arm_elbow_motor", "arm_wrist_motor", "tool_roll_motor", "gripper_left_motor", "gripper_right_motor"],
+        "body": ["arm_base", "arm_upper_link", "arm_forearm_link", "arm_wrist_link", "gripper", "tool_turret", "left_finger", "right_finger", "blue_part", "blue_bin"],
         "site": [point["marker_site"] for point in env.spec["interaction_points"]] + ["arm_tcp"],
     }
     for object_type, values in names.items():
         for value in values:
             env.require_id(object_type, value)
-    if env.model.nq < 19 or env.model.nu < 5:
+    # Six actuated joints (three arm hinges, the tool roll, two jaw slides) and
+    # two free payloads: 6 + 7 + 7 = 20 generalized coordinates.
+    if env.model.nq < 20 or env.model.nu < 6:
         raise AssertionError("articulated arm model has too few degrees of freedom/actuators")
+    if env.model.jnt_type[env.roll_joint_id] != mujoco.mjtJoint.mjJNT_HINGE:
+        raise AssertionError("tool_roll must be a hinge joint")
+    if int(env.model.jnt_axis[env.roll_joint_id][2]) == 0:
+        raise AssertionError("tool_roll must turn about the tool's own z axis")
+    # The roll axis must not be one of the three planar hinges, or the tool has no
+    # orientation freedom of its own.
+    for joint_id in (env.shoulder_joint_id, env.elbow_joint_id, env.wrist_joint_id):
+        if abs(float(np.dot(env.model.jnt_axis[joint_id], env.model.jnt_axis[env.roll_joint_id]))) > 1e-9:
+            raise AssertionError("tool_roll duplicates a planar arm axis")
+    if int(env.model.eq_type[env.grasp_eq_id]) != int(mujoco.mjtEq.mjEQ_WELD):
+        raise AssertionError("the grasp must be a weld equality constraint")
+    if bool(env.data.eq_active[env.grasp_eq_id]):
+        raise AssertionError("the grasp weld must start inactive")
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
         raise AssertionError("quaternion conversion failed")
     points = env.list_interaction_points()
@@ -57,8 +72,9 @@ def static_checks(env) -> dict[str, Any]:
     return {
         "xml_parse": "PASS",
         "mjcf_compile": "PASS",
-        "articulated_joints": 5,
-        "arm_actuators": 5,
+        "articulated_joints": 6,
+        "arm_actuators": 6,
+        "grasp_constraint": "weld",
         "typed_targets": "PASS",
         "visible_markers": "PASS",
         "quaternion_conversion": "PASS",
@@ -190,6 +206,25 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             raise AssertionError("inspection must be required for success")
     sequence_contact = sequence_audit.report()
 
+    # Prove the carry is the weld and nothing else. Re-run up to the bin, then
+    # deactivate the equality constraint in mid-air with the jaws still closed: a
+    # coordinate-write "carry" would keep the part glued under the tool, and the
+    # 1.5 mm jaw bite alone only develops 260 N/m * 0.0015 m = 0.39 N of clamp per
+    # side, i.e. 0.78 N of friction against the part's 0.16 * 9.81 = 1.57 N of
+    # weight, so a real weld release must let it go. From BLUE_BIN_HOVER the drop
+    # to the bin floor is 0.24 m, an order of magnitude over the 0.02 m floor.
+    env.reset()
+    env.step({"id": "approach_blue_part", "payload": {"speed_rad_s": 1.0}})
+    env.step({"id": "grasp_blue_part", "payload": {"close": True}})
+    carried = env.step({"id": "transfer_to_blue_bin", "payload": {"speed_rad_s": 1.0}})
+    carried_height = float(carried["blue_part_position"][2])
+    env._release_grasp()
+    env.run_physics(400)
+    dropped_height = float(env.blue_part_position[2])
+    if carried_height - dropped_height < 0.02:
+        raise AssertionError("released blue part did not fall: the grasp is not a real constraint")
+    weld_drop_mm = round((carried_height - dropped_height) * 1000.0, 3)
+
     artifact_root = env.package_root / "output"
     artifact_root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="text2mujoco-arm-", dir=artifact_root) as temp_dir:
@@ -223,6 +258,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "sequence_contact": sequence_contact,
         "interaction_sequence": ["approach_blue_part", "grasp_blue_part", "transfer_to_blue_bin", "release_blue_part"],
         "grasp_sync": "PASS",
+        "weld_release_drop_mm": weld_drop_mm,
         "release_inside_bin": "PASS",
         "dependency_enforcement": "PASS",
         "deterministic_reset": "PASS",

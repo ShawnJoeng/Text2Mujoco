@@ -16,10 +16,11 @@
     "timestep_s": 0.001,
     "cube_mass_kg": 0.2,
     "quaternion_conversion": "PASS",
-    "declared_pose_consistency": "PASS"
+    "declared_pose_consistency": "PASS",
+    "marker_attachment": "PASS"
   },
   "sequence_contact": {
-    "steps": 1550,
+    "steps": 2710,
     "deepest_overlap_mm": 0.1754,
     "limit_mm": 1.0,
     "result": "PASS"
@@ -32,11 +33,11 @@
     "open_box_contact": "PASS",
     "finite_state": "PASS",
     "cube_position": [
-      0.300000000000063,
-      0.17999999999993593,
+      0.3000491754567116,
+      0.1800245877283561,
       0.8449997860059927
     ],
-    "cube_linear_speed_mps": 4.878872844619673e-14
+    "cube_linear_speed_mps": 4.878692865145164e-14
   },
   "interaction_sequence": [
     "press_start_button",
@@ -47,6 +48,7 @@
   "invalid_step_count_checks": 4,
   "invalid_reset_seed_checks": 4,
   "grasp_hold": "PASS",
+  "weld_release_fall_m": 0.225,
   "deterministic_reset": "PASS",
   "mjcf_reload": "PASS",
   "mjb_reload": "PASS",

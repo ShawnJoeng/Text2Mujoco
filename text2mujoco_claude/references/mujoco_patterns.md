@@ -67,10 +67,10 @@ A pair of geoms is tested only when `(contype1 & conaffinity2) || (contype2 & co
 ```xml
 <default>
   <default class="world_part">   <!-- tables, bins, walls, rails, belts -->
-    <geom contype="1" conaffinity="6"/>
+    <geom contype="1" conaffinity="7"/>
   </default>
   <default class="robot_part">   <!-- links, gripper, fingers, mast, forks, wheels -->
-    <geom contype="2" conaffinity="5"/>
+    <geom contype="2" conaffinity="7"/>
   </default>
   <default class="payload_part"> <!-- free bodies the task moves -->
     <geom contype="4" conaffinity="7"/>
@@ -78,17 +78,54 @@ A pair of geoms is tested only when `(contype1 & conaffinity2) || (contype2 & co
 </default>
 ```
 
-That yields world-robot, world-payload, robot-payload, and payload-payload collisions while filtering robot self-collision, which a short primitive chain does not need. When one specific pair must be suppressed, say so explicitly and keep everything else live:
+Every class carries `conaffinity="7"`, so world-robot, world-payload, robot-payload, payload-payload **and robot-robot** are all tested. Do not narrow a robot class to filter self-collision. `contype="2" conaffinity="5"` looks harmless and is the single most common cause of a robot that folds through its own forearm: `2 & 5 == 0`, so no pair of robot geoms is ever tested, and the arm has no boundary against itself. The audit cannot see the defect either, because no contact is generated to report.
+
+Switching robot-robot on turns previously invisible self-penetration into real contacts, and the links that nest at a joint — a hinge hub drawn inside the link it turns, a ram inside its sleeve — will immediately fight each other. Name those pairs, and only those, one at a time:
 
 ```xml
 <contact>
-  <exclude body1="gripper" body2="held_part"/>
+  <exclude name="elbow_wrist_nest" body1="arm_link2" body2="arm_link3"/>
+  <exclude name="lift_sleeve_nest" body1="arm_link3" body2="arm_lift"/>
 </contact>
 ```
+
+The distinction that matters is between a *declared* overlap and a *hidden* one. An overlap named in `<contact><exclude>` is a design decision a reader can check. An overlap that a contype/conaffinity mask silently swallowed is a defect nothing reports. So: accept an overlapping pair when it is a welded neighbour or a declared `<exclude>`, and reject any pair whose overlap only survives because a mask filtered it. `model.exclude_signature` holds the declarations, one `(body1 << 16) + body2` per entry, so the check is mechanical:
+
+```python
+signatures = {(int(s) >> 16, int(s) & 0xFFFF) for s in np.asarray(model.exclude_signature).ravel()}
+declared = (body_a, body_b) in signatures or (body_b, body_a) in signatures
+```
+
+Measure the geometry itself with `mujoco.mj_geomDistance(model, data, geom_a, geom_b, distmax, None)`, which returns a signed distance whether or not the pair is filtered. If a *non-adjacent* pair now collides — a closed jaw clipping into the forearm capsule above it — that is a genuine defect, not a pair to exclude. Change the geometry or tighten the joint range, and write the arithmetic into a comment next to the range.
 
 MuJoCo already excludes direct parent-child body pairs and any pair whose bodies are both welded to the world, so static scenery never reports contact against other static scenery. Overlapping static geoms are therefore invisible to a contact audit and have to be checked by arithmetic: a pedestal that starts at `z=0` and a table slab at the same `x, y` interpenetrate in every rendered frame without a single contact being generated.
 
 A visual-only geom is acceptable only for detail that lies inside the collidable envelope of the same body, such as a hub, a stripe, or a heading marker. If a geom is the outermost surface in any direction another body can approach from, it collides.
+
+## Drawn Axes and Link Continuity
+
+A joint is a coordinate, not a shape. A slide joint whose moving body carries geometry but whose *travel* carries none opens a gap under the parent link that grows with the joint value — at full extension a 0.165 m stroke leaves the hand hanging 165 mm below the forearm with nothing in between. It reads in a render as the gripper having fallen off before it was attached, and no contact, pose, or task assertion sees it, because kinematically the chain is intact.
+
+Give the axis a body of its own and two geoms that always overlap: a sleeve fixed to the parent that covers the travel, and a ram on the moving body that stays inside the sleeve at every joint value. Check both end stops by arithmetic, then declare the sleeve/ram pair with `<exclude>`:
+
+```xml
+<geom name="lift_sleeve" class="robot_part" type="cylinder" pos="0.16 0 0.012" size="0.048 0.052" mass="0.22"/>
+<body name="arm_lift" pos="0.16 0 -0.075" gravcomp="1">
+  <joint name="tool_z" type="slide" axis="0 0 1" range="-0.17 0.045" damping="3.0" armature="0.008"/>
+  <geom name="lift_ram" class="robot_part" type="cylinder" pos="0 0 0.125" size="0.026 0.125" mass="0.20"/>
+```
+
+The check to run is continuity, not contact: for every jointed body, measure the widest gap between it and the nearest drawn ancestor over the whole replay, and reject anything above `5e-3`. A seam that is closed at both end stops but opens in between still renders as a broken arm.
+
+## Declared Mass
+
+A geom with neither `mass` nor `density` compiles at density 1000 — water. A decorative 0.058 m hinge hub then weighs 1.1 kg and can outweigh the entire arm it decorates, which changes every inertia, every servo gain, and every settling time in the scene while looking like a cosmetic detail. Put an explicit `mass` on every geom of every jointed body, and sanity-check the total against `model.body_mass`.
+
+## Servos That Hold Still
+
+A position servo holding a load against gravity settles at a steady-state error of `weight / kp`, and that error is a droop the render shows. A 0.08 kg fingertip on a `kp="420"` lift servo sags exactly 1.87 mm; the same servo carrying a 2 kg tool column sags 47 mm. Command every position servo to hold `qpos0` for two seconds and reject more than 2 mm or 1 degree of drift.
+
+Two fixes, in order of preference: raise `kp` until the droop is below tolerance, or add `gravcomp="1"` to the bodies the axis carries. `gravcomp` models a real counterbalance and is the honest choice for a lift column, but it must be on **every** carried body including the leaves — a fingertip left without it reintroduces the whole droop on its own. Never absorb the droop by moving the geometry down to meet it, because every clearance measured against the nominal pose then becomes wrong.
 
 ## Resting Poses and Initial Contact
 
@@ -140,6 +177,32 @@ A joint `range` is a soft constraint, not a wall, so the declared stroke is not 
 At `timestep="0.002"` that took the overshoot to 0.677 mm, and the raised damping took it to 0.025 mm. Do not instead move the housing back to clear the overrun: that hides a stroke the model claims it does not have, and every clearance measured against the declared range stays wrong.
 
 The same floor bounds contact stiffness. A contact's time constant cannot go below `2 * timestep`, so at `timestep="0.002"` the stiffest reachable contact still let a 0.2 kg cube dropped 0.25 m compress about 1.372 mm; halving the step let `solref="0.002 1"` resolve the identical impact inside 0.818 mm. When an impact transient trips the audit, lower the timestep rather than raise the tolerance — the tolerance is what tells you the geometry is sound.
+
+## Grasps as Constraints
+
+Carrying a payload by writing its free-joint `qpos` every step is not a grasp. Nothing can make the payload slip, releasing it is a teleport, and a part lying on the bench is indistinguishable from a part in the hand — which is why a dropped part keeps being treated as the object under manipulation. Use an equality constraint that is declared inactive and toggled at runtime:
+
+```xml
+<equality>
+  <weld name="peg_grasp" body1="arm_tool" body2="red_peg" relpose="0 0 -0.125 1 0 0 0"
+        active="false" solref="0.01 1" solimp="0.96 0.99 0.001"/>
+</equality>
+```
+
+A weld's `eq_data` row is `[anchor(3), relpose_pos(3), relpose_quat(4), torquescale(1)]`. Measure the actual tool-to-payload offset at the instant the jaws close and write it in, so the constraint engages already satisfied — no jolt, no snap into place:
+
+```python
+tool_frame = data.xmat[tool_body].reshape(3, 3)
+relative = tool_frame.T @ (data.xpos[payload_body] - data.xpos[tool_body])
+mujoco.mju_mat2Quat(quat, np.ascontiguousarray(tool_frame.T @ data.xmat[payload_body].reshape(3, 3)).reshape(9))
+model.eq_data[eq_id, 3:6] = relative
+model.eq_data[eq_id, 6:10] = quat
+data.eq_active[eq_id] = 1          # 0 to let go
+```
+
+Close the jaws *onto* the payload — a small negative clearance, e.g. an inner face 1.5 mm inside the payload radius — rather than around a gap the constraint spans invisibly. Then delete every `qpos`/`qvel` write that fakes a carry, and every "resolve the final pose" assignment that fakes a release; let the payload settle under gravity and contacts instead. Do the same for the robot's own coordinates: a `data.qpos[joint] = target` write papers over actuator tracking error and makes the servo tuning untestable.
+
+The regression that proves the grasp is real is a mid-air release: grasp, carry, drop the constraint with the payload still above the surface, and require it to fall at least 20 mm. A welded payload falls; a `qpos`-driven one hangs in the air.
 
 ## Offscreen RGB-D
 

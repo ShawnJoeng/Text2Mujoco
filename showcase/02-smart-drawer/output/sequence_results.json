@@ -23,13 +23,13 @@
         640,
         3
       ],
-      "rgb_std": 62.105896550309204,
+      "rgb_std": 62.410697727704964,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 191644,
+      "finite_depth_pixels": 191573,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -55,13 +55,13 @@
         640,
         3
       ],
-      "rgb_std": 62.098816567295714,
+      "rgb_std": 62.40093058814416,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 191607,
+      "finite_depth_pixels": 191573,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -89,13 +89,13 @@
         640,
         3
       ],
-      "rgb_std": 60.816767151501104,
+      "rgb_std": 61.107960439341724,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 192812,
+      "finite_depth_pixels": 192778,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -124,13 +124,13 @@
         640,
         3
       ],
-      "rgb_std": 60.79975053949083,
+      "rgb_std": 61.092417047346856,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 192827,
+      "finite_depth_pixels": 192793,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {
@@ -159,13 +159,13 @@
         640,
         3
       ],
-      "rgb_std": 60.79975053949083,
+      "rgb_std": 61.092417047346856,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 192827,
+      "finite_depth_pixels": 192793,
       "finite_depth_min_m": 1.206748604774475,
       "finite_depth_max_m": 3.8670196533203125,
       "observation": {

@@ -152,6 +152,24 @@ def _validate_payload(payload: Any, schema: Mapping[str, Any]) -> dict[str, Any]
 
 
 class MujocoEnvironment:
+    # The hold is a weld constraint whose target pose is walked, not jumped, so
+    # these are travel times. At timestep 0.001 the lift covers 0.075 m in 0.22 s
+    # (0.34 m/s), the raise to carry height 0.21 m in 0.25 s (0.84 m/s) and the
+    # transfer 0.47 m in 0.45 s (1.04 m/s). A weld lags 10-20 mm behind a target
+    # moving at that speed, so every leg is followed by a settle long enough for
+    # the residual to fall back under 0.05 mm before anything is measured or let
+    # go of - 0.12 s is measured at 0.015 mm.
+    LIFT_STEPS = 220
+    RAISE_STEPS = 250
+    TRANSFER_STEPS = 450
+    SETTLE_STEPS = 120
+    # The box rim tops out at 0.775 + 0.11 + 0.09 = 0.975 and the cube is 0.05
+    # half-height, so releasing 0.25 m above the placement centre of 0.86 puts the
+    # cube's underside at 1.06, clearing the rim by 85 mm on the way in. The cube
+    # then falls 0.265 m onto the box floor at 2.28 m/s, which is the impact the
+    # 0.001 s timestep in model.xml exists to resolve.
+    RELEASE_CLEARANCE_M = 0.25
+
     def __init__(self, model_path: Path, spec: Mapping[str, Any]):
         self.model_path = Path(model_path).resolve()
         self.package_root = self.model_path.parent
@@ -186,6 +204,7 @@ class MujocoEnvironment:
         self.box_bottom_geom_id = self.require_id(
             "geom", box_asset["geometry"]["part_geom_names"][0]
         )
+        self.grasp_eq_id = self._require_weld("cube_grasp")
         self.camera_id = self.require_id("camera", camera_sensor["camera_name"])
         for point in self.points.values():
             if point.get("marker_site"):
@@ -194,7 +213,6 @@ class MujocoEnvironment:
             self.require_id(target["type"], target["name"])
 
         self.button_qpos_adr = int(self.model.jnt_qposadr[self.button_joint_id])
-        self.cube_qpos_adr = int(self.model.jnt_qposadr[self.cube_joint_id])
         self.cube_dof_adr = int(self.model.jnt_dofadr[self.cube_joint_id])
         self.box_asset = box_asset
         self.reset()
@@ -241,6 +259,14 @@ class MujocoEnvironment:
             raise EnvironmentError(f"missing MuJoCo {object_type}: {name}")
         return value
 
+    def _require_weld(self, name: str) -> int:
+        equality_id = int(mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_EQUALITY, name))
+        if equality_id < 0:
+            raise EnvironmentError(f"missing MuJoCo equality constraint: {name}")
+        if int(self.model.eq_type[equality_id]) != int(mujoco.mjtEq.mjEQ_WELD):
+            raise EnvironmentError(f"{name} must be a weld constraint")
+        return equality_id
+
     def list_interaction_points(self) -> list[dict[str, Any]]:
         return [copy.deepcopy(point) for point in self.spec["interaction_points"]]
 
@@ -260,6 +286,7 @@ class MujocoEnvironment:
         self.seed = self.default_seed if seed is None else seed
         self.rng = np.random.default_rng(self.seed)
         mujoco.mj_resetData(self.model, self.data)
+        self.data.eq_active[self.grasp_eq_id] = 0
         mujoco.mj_forward(self.model, self.data)
         self.completed: set[str] = set()
         self.state: dict[str, Any] = {
@@ -270,42 +297,64 @@ class MujocoEnvironment:
             "history": [],
         }
         self.last_sensor_observation: dict[str, Any] | None = None
-        self.held_cube_qpos: np.ndarray | None = None
         return self.observe()
 
     def run_physics(self, steps: int) -> None:
         if not isinstance(steps, int) or isinstance(steps, bool) or steps < 0:
             raise EnvironmentError("steps must be a non-negative integer")
         for _ in range(steps):
-            if self.held_cube_qpos is not None:
-                self.data.qpos[self.cube_qpos_adr : self.cube_qpos_adr + 7] = (
-                    self.held_cube_qpos
-                )
-                self.data.qvel[self.cube_dof_adr : self.cube_dof_adr + 6] = 0.0
             mujoco.mj_step(self.model, self.data)
-        if self.held_cube_qpos is not None:
-            self.data.qpos[self.cube_qpos_adr : self.cube_qpos_adr + 7] = (
-                self.held_cube_qpos
-            )
-            self.data.qvel[self.cube_dof_adr : self.cube_dof_adr + 6] = 0.0
-            mujoco.mj_forward(self.model, self.data)
         self._require_finite_state()
 
     def _require_finite_state(self) -> None:
         if not np.isfinite(self.data.qpos).all() or not np.isfinite(self.data.qvel).all():
             raise EnvironmentError("MuJoCo state contains non-finite values")
 
-    def _set_cube_pose(self, position: list[float]) -> None:
-        if len(position) != 3 or not all(math.isfinite(float(value)) for value in position):
-            raise EnvironmentError("cube position must contain three finite numbers")
-        qpos = self.cube_qpos_adr
-        dof = self.cube_dof_adr
-        self.data.qpos[qpos : qpos + 3] = np.asarray(position, dtype=float)
-        self.data.qpos[qpos + 3 : qpos + 7] = np.asarray(
-            xyzw_to_wxyz([0.0, 0.0, 0.0, 1.0]), dtype=float
+    def _engage_grasp(self) -> None:
+        """Hold the cube with the weld, at the pose it is already in.
+
+        The target is measured rather than assumed, so the constraint starts
+        satisfied and closing on the cube injects no impulse. There is no
+        manipulator in this scene, so the weld's other end is the world and the
+        target is a plain world pose; what makes this a hold rather than a
+        coordinate assignment is that the cube keeps its mass and its contacts,
+        and the solver - not the script - decides where it ends up.
+        """
+        self.model.eq_data[self.grasp_eq_id, 0:3] = 0.0
+        self.model.eq_data[self.grasp_eq_id, 3:6] = np.asarray(
+            self.data.xpos[self.cube_body_id], dtype=float
         )
-        self.data.qvel[dof : dof + 6] = 0.0
-        mujoco.mj_forward(self.model, self.data)
+        self.model.eq_data[self.grasp_eq_id, 6:10] = np.asarray(
+            self.data.xquat[self.cube_body_id], dtype=float
+        )
+        self.data.eq_active[self.grasp_eq_id] = 1
+
+    def _release_grasp(self) -> None:
+        self.data.eq_active[self.grasp_eq_id] = 0
+
+    def _move_hold_target(self, destination: list[float] | np.ndarray, steps: int) -> None:
+        """Walk the weld's target from where it is now to ``destination``.
+
+        Only the constraint target is interpolated. The cube is never assigned a
+        position: it is accelerated towards the target, it lags behind it, and it
+        still collides with anything on the path, so a route that clips the box
+        rim shows up as a contact instead of passing through.
+        """
+        if not self.data.eq_active[self.grasp_eq_id]:
+            raise EnvironmentError("the cube is not held, so there is no hold target to move")
+        start = np.asarray(self.model.eq_data[self.grasp_eq_id, 3:6], dtype=float).copy()
+        end = np.asarray(destination, dtype=float)
+        if end.shape != (3,) or not np.isfinite(end).all():
+            raise EnvironmentError("hold target must contain three finite numbers")
+        for index in range(1, int(steps) + 1):
+            self.model.eq_data[self.grasp_eq_id, 3:6] = start + (end - start) * (index / steps)
+            mujoco.mj_step(self.model, self.data)
+        self._require_finite_state()
+
+    def _hold_error_m(self) -> float:
+        """How far the cube is from the pose the weld is holding it at."""
+        target = np.asarray(self.model.eq_data[self.grasp_eq_id, 3:6], dtype=float)
+        return float(np.linalg.norm(np.asarray(self.data.xpos[self.cube_body_id]) - target))
 
     def _box_world_bounds(self) -> tuple[np.ndarray, np.ndarray]:
         center = np.asarray(self.box_asset["pose"]["position"], dtype=float)
@@ -379,11 +428,22 @@ class MujocoEnvironment:
         elif point_id == "grasp_red_cube":
             if payload.get("close") is not True:
                 raise EnvironmentError("grasp_red_cube requires close=true")
-            grasp_position = self.points["grasp_red_cube"]["pose"]["position"]
-            self._set_cube_pose([float(value) for value in grasp_position])
-            self.held_cube_qpos = self.data.qpos[
-                self.cube_qpos_adr : self.cube_qpos_adr + 7
-            ].copy()
+            self._engage_grasp()
+            # The declared grasp pose is the pose the cube is held at once it has
+            # been picked up: 0.9 against a resting centre of 0.825, so the lift is
+            # 0.075 m and the cube's underside ends 0.025 m clear of the table.
+            # The hold is what raises it - the cube is not placed there - so the
+            # lift is followed by a settle and then checked.
+            self._move_hold_target(
+                [float(value) for value in self.points["grasp_red_cube"]["pose"]["position"]],
+                self.LIFT_STEPS,
+            )
+            self.run_physics(self.SETTLE_STEPS)
+            if self._hold_error_m() > 0.002:
+                raise EnvironmentError(
+                    f"hold constraint did not lift the cube to the grasp pose: "
+                    f"{self._hold_error_m():.4f} m short"
+                )
             self.state["cube_state"] = "grasped"
             self.state["cube_released"] = False
         elif point_id == "place_cube_in_box":
@@ -395,11 +455,23 @@ class MujocoEnvironment:
                 raise EnvironmentError(
                     f"placement pose {desired.tolist()} is outside target bounds"
                 )
-            self.held_cube_qpos = None
-            # The requested z is the target center; release from above it so gravity
-            # and the open-box colliders still determine the final resting pose.
-            release_height = float(desired[2]) + 0.25
-            self._set_cube_pose([float(desired[0]), float(desired[1]), release_height])
+            # The requested z is the target center; the cube is carried to above it
+            # and dropped, so gravity and the open-box colliders still determine the
+            # final resting pose. The carry is two legs on purpose: a straight line
+            # from the lift pose to the release pose crosses the box's left wall at
+            # z = 1.020, which puts the cube's underside 5 mm inside a rim that
+            # tops out at 0.975. Rising first and translating at height clears it
+            # by 85 mm.
+            release_height = float(desired[2]) + self.RELEASE_CLEARANCE_M
+            held = np.asarray(self.data.xpos[self.cube_body_id], dtype=float)
+            self._move_hold_target(
+                [float(held[0]), float(held[1]), release_height], self.RAISE_STEPS
+            )
+            self._move_hold_target(
+                [float(desired[0]), float(desired[1]), release_height], self.TRANSFER_STEPS
+            )
+            self.run_physics(self.SETTLE_STEPS)
+            self._release_grasp()
             self.run_physics(900)
             if not self.cube_is_inside_box():
                 raise EnvironmentError(
@@ -428,6 +500,7 @@ class MujocoEnvironment:
             "cube_position": [float(value) for value in self.data.xpos[self.cube_body_id]],
             "cube_linear_speed_mps": self.cube_linear_speed(),
             "cube_contacts_box_bottom": self.cube_contacts_box_bottom(),
+            "grasp_weld_active": bool(self.data.eq_active[self.grasp_eq_id]),
             "state": copy.deepcopy(self.state),
             "sensor": copy.deepcopy(self.last_sensor_observation),
             "mujoco_gl": os.environ.get("MUJOCO_GL", "unset"),

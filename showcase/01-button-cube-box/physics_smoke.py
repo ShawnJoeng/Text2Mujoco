@@ -80,16 +80,44 @@ def check_model(environment) -> dict[str, Any]:
         raise AssertionError("red cube mass does not match the scene specification")
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
         raise AssertionError("xyzw to wxyz quaternion conversion is incorrect")
+    # This loop used to assert that every marker site sits exactly at its
+    # interaction's declared pose. Those are two different things, and the old
+    # assertion is why all three markers were floating: a pose is where the action
+    # happens - a press point above the cap, a placement centre 0.065 m above the
+    # box floor - while a marker has to be a decal lying flush on a real surface,
+    # so equality can only hold by hanging the marker in mid-air. The placement
+    # pose cannot be a marker position at all: it has to stay inside the box's
+    # declared interior bounds, whose floor starts 0.025 m higher than the decal.
+    # What is genuinely meant to be equal is the body. A marker annotates the
+    # thing its interaction acts on, so it belongs on that body or on something
+    # welded rigidly to it, and then it moves with it in a render: the press decal
+    # rides the cap down its stroke, the grasp decal travels with the cube, and
+    # the inspect decal is fixed to the table like the camera is fixed to the
+    # world.
     for point in environment.spec["interaction_points"]:
         marker_site = point.get("marker_site")
         if not marker_site:
             continue
         site_id = environment.require_id("site", marker_site)
-        np.testing.assert_allclose(
-            environment.data.site_xpos[site_id],
-            point["pose"]["position"],
-            atol=1e-9,
-        )
+        if int(model.site_group[site_id]) != 2:
+            raise AssertionError(f"{marker_site} is not in the drawn marker group")
+        target = point["target"]
+        target_id = environment.require_id(target["type"], target["name"])
+        if target["type"] == "body":
+            target_body = target_id
+        elif target["type"] == "joint":
+            target_body = int(model.jnt_bodyid[target_id])
+        elif target["type"] == "camera":
+            target_body = int(model.cam_bodyid[target_id])
+        elif target["type"] == "site":
+            target_body = int(model.site_bodyid[target_id])
+        else:
+            raise AssertionError(f"unsupported interaction target type: {target['type']}")
+        marker_weld = int(model.body_weldid[int(model.site_bodyid[site_id])])
+        if marker_weld != int(model.body_weldid[target_body]):
+            raise AssertionError(
+                f"{marker_site} is not attached to what {point['id']} acts on"
+            )
     camera_spec = next(
         sensor for sensor in environment.spec["sensors"] if sensor.get("type") == "camera"
     )
@@ -109,6 +137,7 @@ def check_model(environment) -> dict[str, Any]:
         "cube_mass_kg": float(model.body_mass[environment.cube_body_id]),
         "quaternion_conversion": "PASS",
         "declared_pose_consistency": "PASS",
+        "marker_attachment": "PASS",
     }
 
 
@@ -270,8 +299,15 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         environment.step({"id": "grasp_red_cube", "payload": {"close": True}})
         held_position = np.asarray(environment.observe()["cube_position"])
         environment.run_physics(50)
+        # A weld is a solved constraint, not an assignment, so the held cube is
+        # allowed to breathe: the 0.2 kg payload sags 0.0425 mm below the commanded
+        # hold pose and then creeps 0.0009 mm over these 50 steps. atol=1e-9 m was
+        # only satisfiable by the qpos write this hold replaced. 1e-5 m is eleven
+        # times the measured creep and still two orders of magnitude tighter than
+        # the 2 mm hold guard in the grasp handler, so a hold that actually let go
+        # cannot pass it.
         np.testing.assert_allclose(
-            environment.observe()["cube_position"], held_position, atol=1e-9
+            environment.observe()["cube_position"], held_position, atol=1e-5
         )
         expect_environment_error(
             lambda: environment.step(
@@ -355,6 +391,27 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if environment.is_success():
         raise AssertionError("physics-only/reset state must not report full RGB-D task success")
 
+    # Proof that the carry is a constraint and not bookkeeping. The cube is picked
+    # up, walked to 1.05 m over open table, and then the weld alone is switched
+    # off: nothing writes a coordinate or a velocity, so whatever happens next is
+    # gravity. A welded cube falls the 0.225 m back to the table top (1.05 - 0.05
+    # half-height - 0.775 table surface); a cube whose free joint is assigned every
+    # step hangs in the air, which is exactly the failure this replaces. 500 steps
+    # is 0.5 s against the 0.214 s the fall itself takes.
+    environment.step({"id": "press_start_button", "payload": {"press_depth_m": 0.018}})
+    environment.step({"id": "grasp_red_cube", "payload": {"close": True}})
+    environment._move_hold_target([0.0, -0.03, 1.05], environment.RAISE_STEPS)
+    environment.run_physics(environment.SETTLE_STEPS)
+    carried_height = float(environment.observe()["cube_position"][2])
+    environment._release_grasp()
+    environment.run_physics(500)
+    dropped_height = float(environment.observe()["cube_position"][2])
+    if carried_height - dropped_height < 0.02:
+        raise AssertionError("released cube did not fall: the hold is not a real constraint")
+    if environment.observe()["grasp_weld_active"]:
+        raise AssertionError("release left the grasp weld active")
+    environment.reset()
+
     return {
         "status": "PASS",
         "mujoco_executed": True,
@@ -379,6 +436,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "invalid_step_count_checks": 4,
         "invalid_reset_seed_checks": 4,
         "grasp_hold": "PASS",
+        "weld_release_fall_m": round(carried_height - dropped_height, 4),
         "deterministic_reset": "PASS",
         "mjcf_reload": "PASS" if environment.spec["outputs"].get("save_mjcf", False) else "SKIPPED",
         "mjb_reload": "PASS" if environment.spec["outputs"].get("save_mjb", False) else "SKIPPED",

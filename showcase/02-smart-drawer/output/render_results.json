@@ -17,46 +17,46 @@
   "visible_markers": {
     "yellow": {
       "before_centroid_px": [
-        420.5626621638318,
-        249.38202709937812
+        420.6837402725738,
+        249.70712726973278
       ],
       "after_centroid_px": [
-        461.55001647084663,
-        258.0747227407489
+        461.67746896627483,
+        258.5731077666703
       ],
-      "before_pixels": 24281,
-      "after_pixels": 18214,
-      "movement_px": 41.89899963724996
+      "before_pixels": 24287,
+      "after_pixels": 18206,
+      "movement_px": 41.94152360590688
     },
     "cyan": {
       "before_centroid_px": [
-        315.14659685863876,
-        194.67015706806282
+        325.28333333333336,
+        178.0888888888889
       ],
       "after_centroid_px": [
-        262.9264069264069,
-        209.22510822510822
+        274.6546391752577,
+        190.97938144329896
       ],
-      "before_pixels": 191,
-      "after_pixels": 231,
-      "movement_px": 54.21065245634243
+      "before_pixels": 180,
+      "after_pixels": 194,
+      "movement_px": 52.24394194973483
     },
     "magenta": {
       "before_centroid_px": [
-        394.17518248175185,
-        83.91605839416059
+        382.080701754386,
+        122.41052631578947
       ],
       "after_centroid_px": [
-        394.17518248175185,
-        83.91605839416059
+        382.080701754386,
+        122.41052631578947
       ],
-      "before_pixels": 274,
-      "after_pixels": 274,
+      "before_pixels": 285,
+      "after_pixels": 285,
       "movement_px": 0.0
     }
   },
   "drawer_articulation_m": 0.2180230231609386,
-  "changed_depth_pixels": 13716,
+  "changed_depth_pixels": 13638,
   "task_success": true,
   "interaction_sequence": [
     "press_unlock_button",

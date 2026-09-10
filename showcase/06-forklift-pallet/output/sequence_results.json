@@ -26,14 +26,14 @@
         640,
         3
       ],
-      "rgb_std": 56.60655874233383,
+      "rgb_std": 56.8734494094541,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
       "finite_depth_pixels": 156793,
-      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_min_m": 5.791985988616943,
       "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [],
@@ -64,14 +64,14 @@
         640,
         3
       ],
-      "rgb_std": 56.41592394179277,
+      "rgb_std": 56.77640263494713,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 156183,
-      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_pixels": 156051,
+      "finite_depth_min_m": 5.791985988616943,
       "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
@@ -80,14 +80,14 @@
         "forklift_state": "aligned",
         "pallet_state": "loaded",
         "forklift_position": [
-          -2.189893680923217,
+          -2.1011697454734133,
           -0.9,
           0.03
         ],
         "fork_lift_qpos_m": -0.0003410492148315786,
         "pallet_position": [
-          -1.000000341591423,
-          -0.8999997841337357,
+          -1.0000003416415428,
+          -0.8999997841338432,
           0.8799937349765714
         ],
         "pallet_inside_delivery": false,
@@ -104,14 +104,14 @@
         640,
         3
       ],
-      "rgb_std": 56.470020777846635,
+      "rgb_std": 56.836444908047135,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 156106,
-      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_pixels": 156049,
+      "finite_depth_min_m": 5.791985988616943,
       "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
@@ -121,15 +121,15 @@
         "forklift_state": "raised",
         "pallet_state": "loaded",
         "forklift_position": [
-          -2.137227841978896,
-          -0.9000199288991064,
+          -2.0989546345839027,
+          -0.8999949918006102,
           0.03
         ],
-        "fork_lift_qpos_m": 0.17043534448433675,
+        "fork_lift_qpos_m": 0.16818169503491398,
         "pallet_position": [
-          -0.9832567570845726,
-          -0.8999385144195139,
-          1.025401909433103
+          -1.0251383396163158,
+          -0.8999558415268915,
+          1.0229167340495855
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -145,14 +145,14 @@
         640,
         3
       ],
-      "rgb_std": 56.53715035292154,
+      "rgb_std": 56.83471880656939,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 156106,
-      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_pixels": 156050,
+      "finite_depth_min_m": 5.791985988616943,
       "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
@@ -163,15 +163,15 @@
         "forklift_state": "raised",
         "pallet_state": "engaged",
         "forklift_position": [
-          -2.137224949564553,
-          -0.900019931297101,
+          -2.098420754828414,
+          -0.8999902807517444,
           0.03
         ],
-        "fork_lift_qpos_m": 0.17043534448433675,
+        "fork_lift_qpos_m": 0.17074764479092136,
         "pallet_position": [
-          -1.037227841978896,
-          -0.9000199288991064,
-          1.0254353444843367
+          -1.024604465376201,
+          -0.8999362535876871,
+          1.0257127804008925
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -187,14 +187,14 @@
         640,
         3
       ],
-      "rgb_std": 56.24048517026638,
+      "rgb_std": 56.41503623280144,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 154909,
-      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_pixels": 154914,
+      "finite_depth_min_m": 5.791985988616943,
       "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
@@ -206,15 +206,15 @@
         "forklift_state": "at_delivery",
         "pallet_state": "engaged",
         "forklift_position": [
-          0.4500000000000002,
-          0.35,
+          0.448771079972909,
+          0.34913170963743634,
           0.03
         ],
-        "fork_lift_qpos_m": 0.17043534448433675,
+        "fork_lift_qpos_m": 0.17043525017040598,
         "pallet_position": [
-          1.5500000000000003,
-          0.35,
-          1.0254353444843367
+          1.522580950552317,
+          0.35531227080934324,
+          1.025408135267253
         ],
         "pallet_inside_delivery": false,
         "rack_collision_count": 0
@@ -230,14 +230,14 @@
         640,
         3
       ],
-      "rgb_std": 57.68592206078731,
+      "rgb_std": 57.8400842606163,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 155326,
-      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_pixels": 155316,
+      "finite_depth_min_m": 5.791985988616943,
       "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
@@ -250,15 +250,15 @@
         "forklift_state": "released",
         "pallet_state": "delivered",
         "forklift_position": [
-          -0.750000741469967,
-          0.3499132637919641,
+          -0.7456370651808584,
+          0.3500059068142055,
           0.03
         ],
-        "fork_lift_qpos_m": -0.0003409265866650591,
+        "fork_lift_qpos_m": -0.00034092658666505933,
         "pallet_position": [
-          1.5500001234174832,
-          0.34995824177070384,
-          0.9399887454748261
+          1.5253533612906802,
+          0.33359317152591855,
+          0.9399892474707375
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -274,14 +274,14 @@
         640,
         3
       ],
-      "rgb_std": 57.68627846169317,
+      "rgb_std": 57.845443493192725,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 155326,
-      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_pixels": 155329,
+      "finite_depth_min_m": 5.791985988616943,
       "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
@@ -294,15 +294,15 @@
         "forklift_state": "released",
         "pallet_state": "delivered",
         "forklift_position": [
-          -0.7500011636642907,
-          0.3498586437676484,
+          -0.7492314621450957,
+          0.349998679568721,
           0.03
         ],
-        "fork_lift_qpos_m": -0.0003410492130399021,
+        "fork_lift_qpos_m": -0.0003410492130399022,
         "pallet_position": [
-          1.5500001548969835,
-          0.34995825049842716,
-          0.9399888403472697
+          1.5253533378877098,
+          0.3335931680760403,
+          0.9399892474707433
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0
@@ -318,14 +318,14 @@
         640,
         3
       ],
-      "rgb_std": 57.68627846169317,
+      "rgb_std": 57.845443493192725,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 155326,
-      "finite_depth_min_m": 5.403749465942383,
+      "finite_depth_pixels": 155329,
+      "finite_depth_min_m": 5.791985988616943,
       "finite_depth_max_m": 11.841093063354492,
       "observation": {
         "history": [
@@ -339,15 +339,15 @@
         "forklift_state": "released",
         "pallet_state": "delivered",
         "forklift_position": [
-          -0.7500011636642907,
-          0.3498586437676484,
+          -0.7492314621450957,
+          0.349998679568721,
           0.03
         ],
-        "fork_lift_qpos_m": -0.0003410492130399021,
+        "fork_lift_qpos_m": -0.0003410492130399022,
         "pallet_position": [
-          1.5500001548969835,
-          0.34995825049842716,
-          0.9399888403472697
+          1.5253533378877098,
+          0.3335931680760403,
+          0.9399892474707433
         ],
         "pallet_inside_delivery": true,
         "rack_collision_count": 0

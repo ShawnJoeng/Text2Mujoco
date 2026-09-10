@@ -42,11 +42,19 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     before = load_rgb(env.package_root / before_info["rgb"]["path"], width, height)
     marker_pixels = {color: color_count(before, color) for color in ("yellow", "cyan", "green", "magenta", "orange")}
     before_tool = np.asarray(env.observe()["tool_position"])
-    env.step({"id": "start_conveyor_to_pickup", "payload": {"speed_mps": 0.6}})
-    env.step({"id": "move_arm_to_parcel", "payload": {"speed_rad_s": 1.0}})
-    env.step({"id": "grasp_parcel_with_arm", "payload": {"close": True}})
-    env.step({"id": "move_arm_to_target_bin", "payload": {"speed_rad_s": 1.0}})
-    env.step({"id": "release_parcel_in_target_bin", "payload": {"open": True}})
+    reach = 0.0
+    for point_id, payload in (
+        ("start_conveyor_to_pickup", {"speed_mps": 0.6}),
+        ("move_arm_to_parcel", {"speed_rad_s": 1.0}),
+        ("grasp_parcel_with_arm", {"close": True}),
+        ("move_arm_to_target_bin", {"speed_rad_s": 1.0}),
+        ("release_parcel_in_target_bin", {"open": True}),
+    ):
+        observation = env.step({"id": point_id, "payload": payload})
+        # Peak displacement, not the endpoint delta: the arm withdraws to a pose
+        # near where it started, so comparing first and last frames would report
+        # almost no motion for a tool that crossed the whole cell.
+        reach = max(reach, float(np.linalg.norm(np.asarray(observation["tool_position"]) - before_tool)))
     final_obs = env.step({"id": "inspect_handoff", "payload": {"output_dir": str(args.screenshot_dir / "final")}})
     if not env.is_success():
         raise AssertionError("conveyor-to-arm handoff did not succeed")
@@ -54,7 +62,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     final = load_rgb(env.package_root / final_info["rgb"]["path"], width, height)
     for color in ("yellow", "cyan", "green", "magenta", "orange"):
         color_count(final, color, 8)
-    movement = float(np.linalg.norm(np.asarray(final_obs["tool_position"]) - before_tool))
+    movement = max(reach, float(np.linalg.norm(np.asarray(final_obs["tool_position"]) - before_tool)))
     if movement < 0.10:
         raise AssertionError("arm did not visibly move")
     env.reset()
@@ -73,6 +81,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "interaction_sequence": final_obs["state"]["history"],
         "visible_interaction_markers": {"status": "PASS", "pixels": marker_pixels},
         "tool_movement_m": movement,
+        "tool_movement_metric": "peak displacement from the start pose",
         "screenshots": {
             "initial": {"path": before_info["rgb"]["path"]},
             "final": {"path": final_info["rgb"]["path"]},

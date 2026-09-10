@@ -19,7 +19,7 @@
       "id": "press_unlock_button",
       "target": {"type": "joint", "name": "unlock_button_slide"},
       "marker_site": "unlock_point_marker",
-      "pose": {"position": [-0.20, -0.268, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [-0.20, -0.246, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "press",
       "action": {
         "mode": "direct",
@@ -36,7 +36,7 @@
       "id": "pull_drawer_22cm",
       "target": {"type": "joint", "name": "drawer_slide"},
       "marker_site": "drawer_handle_marker",
-      "pose": {"position": [0, -0.27, 0.89], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0, -0.223, 0.937], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "open",
       "action": {
         "mode": "direct",
@@ -53,7 +53,7 @@
       "id": "inspect_open_drawer",
       "target": {"type": "camera", "name": "fixed_inspection_camera"},
       "marker_site": "camera_check_marker",
-      "pose": {"position": [0.24, -0.195, 1.245], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0.20, -0.191, 1.135], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "inspect",
       "action": {
         "mode": "direct",

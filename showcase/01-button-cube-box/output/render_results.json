@@ -18,16 +18,16 @@
   "task_success": true,
   "red_cube": {
     "initial_centroid_px": [
-      289.8677621283255,
-      213.93896713615024
+      289.88422818791946,
+      214.97902684563758
     ],
     "final_centroid_px": [
-      420.1799844840962,
-      221.26609775019395
+      420.0384286934244,
+      222.31511528608027
     ],
-    "movement_px": 130.5180529211767,
-    "initial_red_pixels": 1278,
-    "final_red_pixels": 1289
+    "movement_px": 130.36078437487703,
+    "initial_red_pixels": 1192,
+    "final_red_pixels": 1171
   },
   "screenshots": {
     "initial": {
@@ -37,8 +37,8 @@
         640,
         3
       ],
-      "mean": 48.78623806423611,
-      "std": 64.85533349731817,
+      "mean": 48.76341362847222,
+      "std": 64.886297647307,
       "dynamic_range": 255
     },
     "final": {
@@ -48,8 +48,8 @@
         640,
         3
       ],
-      "mean": 49.25150824652778,
-      "std": 65.19890957017704,
+      "mean": 49.20639214409722,
+      "std": 65.20942857959233,
       "dynamic_range": 255
     }
   },
@@ -76,6 +76,6 @@
       "max_m": 3.6283583641052246,
       "far_plane_m": 16.0
     },
-    "changed_geometry_pixels": 1801
+    "changed_geometry_pixels": 1707
   }
 }

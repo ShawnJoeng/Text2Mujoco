@@ -148,7 +148,7 @@
       "target": {"type": "joint", "name": "arm_shoulder"},
       "marker_site": "peg_approach_marker",
       "pose": {
-        "position": [0.21, 0.0, 1.01],
+        "position": [0.21, 0.0, 1.045],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {
@@ -173,7 +173,7 @@
       "target": {"type": "joint", "name": "gripper_slide"},
       "marker_site": "grasp_peg_marker",
       "pose": {
-        "position": [0.21, 0.0, 0.94],
+        "position": [0.21, 0.0, 0.85],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {
@@ -198,7 +198,7 @@
       "target": {"type": "joint", "name": "arm_elbow"},
       "marker_site": "socket_approach_marker",
       "pose": {
-        "position": [0.17, 0.21, 1.26],
+        "position": [0.17, 0.21, 1.045],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {
@@ -223,7 +223,7 @@
       "target": {"type": "joint", "name": "tool_z"},
       "marker_site": "insertion_marker",
       "pose": {
-        "position": [0.17, 0.21, 1.14],
+        "position": [0.17, 0.21, 0.97],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {
@@ -237,7 +237,7 @@
         }
       },
       "preconditions": ["arm_state == 'at_socket'", "peg_state == 'grasped'"],
-      "success_conditions": ["tool_z <= -0.06", "peg_state == 'inserted'"],
+      "success_conditions": ["tool_z <= -0.020", "peg_state == 'inserted'"],
       "depends_on": ["move_arm_to_socket"],
       "effects": ["peg_state = 'inserted'", "tool_state = 'lowered'"],
       "reset": {"peg_state": "free", "tool_state": "raised"}
@@ -248,7 +248,7 @@
       "target": {"type": "joint", "name": "gripper_slide"},
       "marker_site": "release_marker",
       "pose": {
-        "position": [0.17, 0.21, 1.08],
+        "position": [0.17, 0.21, 0.97],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {
@@ -264,7 +264,7 @@
       "preconditions": ["peg_state == 'inserted'", "tool_state == 'lowered'"],
       "success_conditions": ["gripper_state == 'open'", "peg_state == 'seated'"],
       "depends_on": ["insert_peg_into_socket"],
-      "effects": ["gripper_state = 'open'", "peg_state = 'seated'"],
+      "effects": ["gripper_state = 'open'", "peg_state = 'seated'", "tool_state = 'withdrawn'"],
       "reset": {"gripper_state": "open"}
     },
     {
@@ -273,7 +273,7 @@
       "target": {"type": "camera", "name": "assembly_camera"},
       "marker_site": "inspection_marker",
       "pose": {
-        "position": [0.48, 0.36, 1.02],
+        "position": [0.48, 0.36, 0.786],
         "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {

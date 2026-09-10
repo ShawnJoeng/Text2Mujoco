@@ -9,10 +9,11 @@
     "释放后小球只由 MuJoCo 重力、碰撞和摩擦驱动，不使用传送或直接修改球 qpos。",
     "释放区和目标区动作是可执行的状态确认/等待契约；相机检查会生成 640 x 480 RGB-D 观测。",
     "固定相机使用 MuJoCo 原生离屏渲染；macOS 上通过 MUJOCO_GL=glfw 选择 CGL 上下文。",
-    "碰撞分类沿用 world_part(contype 1/conaffinity 6)、robot_part(2/5)、payload_part(4/7) 三类 default：世界-机构、世界-球、机构-球都参与碰撞，只过滤机构自碰撞；每个可动体都带真实碰撞几何，不使用 contype=0 或 contact exclude 隐藏接触。",
+    "碰撞分类为 world_part(contype 1/conaffinity 7)、robot_part(2/7)、payload_part(4/7) 三类 default：三个 conaffinity 全取 7，因此世界-机构、世界-球、机构-球以及机构自碰撞全部参与测试，没有任何一对被掩码悄悄吞掉；杠杆绕 Y 铰接始终留在 y=[-0.3125,-0.2675]、挡板占 y=[-0.135,0.135]，两者永不相交，所以打开机构自碰撞不产生新接触；世界体之间由共享 world weld 结构性过滤，而非靠掩码；每个可动体都带真实碰撞几何，不使用 contype=0 或 contact exclude 隐藏接触。",
     "积分步长取 0.001 s：接触时间常数下限是 2*timestep，只有这样 solref 0.002 才能把小球约 1.0 m/s 撞上托盘前壁的冲击压在 1 mm 以内（0.002 s 步长下为 3.14 mm）。",
     "护栏改为坐在斜坡上表面而非埋入板内：轨道局部坐标 (0, ±0.1525, 0.0525)，底面 0.0525-0.0375=0.015 等于轨道上表面，内侧面 0.1525-0.0125=0.14 等于轨道侧面；世界位姿由斜坡 0.244346 rad 绕 Y 旋转推出。",
-    "杠杆支座改为叉架（两片颊板 + 底板）而不是实心圆柱：颊板内表面距胶囊半径 0.03-0.0225=7.5 mm，底板顶面 0.805 低于胶囊全行程最低点 0.8177 共 12.7 mm，因此转轴范围内不与杠杆干涉，支座与相机立柱都落在台面 0.75 上。",
+    "杠杆支座改为叉架（两片颊板 + 底板）而不是实心圆柱：颊板中心内收到 y=±0.0375，内表面 0.0375-0.0125=0.025 距胶囊半径 0.0225 只剩 2.5 mm 接缝（旧的 ±0.0425 留 7.5 mm，在渲染里看着杠杆悬在空中转），底板半宽随之从 0.03 加到 0.05 以继续托住两片颊板；绕 Y 的铰接让胶囊全行程留在 |y|=0.0225 内，因此 2.5 mm 是整个行程的间隙而不只是静止值，底板顶面 0.805 低于胶囊全行程最低点 0.8177 共 12.7 mm，支座与相机立柱都落在台面 0.75 上。",
+    "释放区标记是贴在斜坡上表面的圆盘贴花，不是悬空小球：旧的椭球在 (-0.42, 0.1, 1.045) 悬空 53.2 mm，且位于关闭挡板的上坡侧，相机视线仰角约 12° 小于斜面 14°，被挡板底面 0.971 完全遮住（射线检查显示遮挡 159.6 mm），所以首帧洋红像素为 0。新贴花沿用轨道 quat 倾斜，接触点取 (-0.22, 0.09)，斜坡上表面 z(x)=0.9145544-0.2493280*(x+0.1463712) 给出 0.9329122，再沿法向 (0.2419219, 0, 0.9702957) 抬起半厚 0.006 得中心 (-0.2185485, 0.09, 0.9387339)；向下射线长 0.006/cos14°=6.184 mm，仅比自身厚度多 0.18 mm，半径 0.045 在 y=0.045..0.135 之间，距左护栏内表面 0.14 与球半径 0.035 各留 10 mm。",
     "挡板是站在斜坡表面之上的闸门而非穿板插片：竖直行程遇 14° 斜面需要 88 mm 宽的槽口（比 70 mm 小球还宽），因此关闭位抬到 z=1.036，底面 0.971 距其下方斜坡表面 0.95846 留 12.5 mm 竖直间隙（法向 12.2 mm），关闭高度由 joint 下限而非伺服维持，实测越程 0.22 mm。"
   ],
   "open_questions": [],
@@ -51,7 +52,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 6,
+        "conaffinity": 7,
         "friction": [0.9, 0.01, 0.001]
       },
       "semantic": "support_surface"
@@ -72,7 +73,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 6,
+        "conaffinity": 7,
         "friction": [0.55, 0.01, 0.002]
       },
       "semantic": "inclined_track"
@@ -93,7 +94,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 6,
+        "conaffinity": 7,
         "friction": [0.6, 0.01, 0.002]
       },
       "semantic": "track_guard"
@@ -114,7 +115,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 6,
+        "conaffinity": 7,
         "friction": [0.6, 0.01, 0.002]
       },
       "semantic": "track_guard"
@@ -138,7 +139,7 @@
         "actuator_name": "lever_position",
         "mass_kg": 0.12,
         "contype": 2,
-        "conaffinity": 5,
+        "conaffinity": 7,
         "friction": [0.5, 0.01, 0.001]
       },
       "semantic": "lever"
@@ -162,7 +163,7 @@
         "actuator_name": "gate_position",
         "mass_kg": 0.18,
         "contype": 2,
-        "conaffinity": 5,
+        "conaffinity": 7,
         "friction": [0.5, 0.01, 0.001]
       },
       "semantic": "release_barrier"
@@ -216,7 +217,7 @@
       "physics": {
         "dynamic": false,
         "contype": 1,
-        "conaffinity": 6,
+        "conaffinity": 7,
         "friction": [0.7, 0.01, 0.002]
       },
       "semantic": "target_receptacle"
@@ -255,8 +256,8 @@
       "target": {"type": "site", "name": "release_zone_marker"},
       "marker_site": "release_zone_marker",
       "pose": {
-        "position": [-0.41, 0, 1.06],
-        "orientation_xyzw": [0, 0, 0, 1]
+        "position": [-0.2185485, 0.09, 0.9387339],
+        "orientation_xyzw": [0, 0.1218693434, 0, 0.9925461516]
       },
       "action": {
         "mode": "direct",
@@ -307,8 +308,8 @@
       "target": {"type": "camera", "name": "inspection_camera"},
       "marker_site": "camera_checkpoint_marker",
       "pose": {
-        "position": [1.2, -1.2, 1.42],
-        "orientation_xyzw": [0.5235515583, 0.216862156, 0.3153052722, 0.7612142645]
+        "position": [0.54, 0.28, 0.98],
+        "orientation_xyzw": [0, 0, 0, 1]
       },
       "action": {
         "mode": "direct",

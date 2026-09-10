@@ -1,0 +1,310 @@
+{
+  "static_limit_mm": 0.1,
+  "run_limit_mm": 1.0,
+  "self_overlap_limit_mm": 1.0,
+  "seam_limit_mm": 5.0,
+  "sag_limit_mm": 2.0,
+  "marker_clearance_mm": 3.0,
+  "scenes": [
+    {
+      "scene": "01-button-cube-box",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "uncovered_visual_geoms": [],
+        "passed": true
+      },
+      "declared_mass": {
+        "geoms_without_declared_mass": [],
+        "passed": true
+      },
+      "marker_sites": {
+        "drawn_markers": 4,
+        "grounded": [
+          "press_start_button_marker"
+        ],
+        "floating": [
+          {
+            "site": "inspect_rgbd_marker",
+            "hover_mm": 1399.0
+          },
+          {
+            "site": "grasp_red_cube_marker",
+            "hover_mm": 9.0
+          },
+          {
+            "site": "place_cube_in_box_marker",
+            "hover_mm": 41.0
+          }
+        ],
+        "buried": [],
+        "declared_but_not_drawn": [],
+        "passed": false
+      },
+      "servo_hold": {
+        "held_s": 2.0,
+        "sagging_joints": [],
+        "worst_body": "button_cap",
+        "worst_body_drift_mm": 1.226,
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": 0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": 0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence_contact": {
+        "steps": 1500,
+        "simulated_s": 1.5,
+        "deepest_overlap_mm": 0.4332,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "self_overlap": {
+        "unfilterable_pairs_checked": 0,
+        "penetrating": [],
+        "passed": true
+      },
+      "link_continuity": {
+        "seams_checked": 1,
+        "widest_seam_mm": 3.0,
+        "torn": [],
+        "passed": true
+      },
+      "passed": false
+    },
+    {
+      "scene": "03-warehouse-navigation",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "uncovered_visual_geoms": [],
+        "passed": true
+      },
+      "declared_mass": {
+        "geoms_without_declared_mass": [
+          "mobile_robot/robot_top",
+          "mobile_robot/robot_heading"
+        ],
+        "passed": false
+      },
+      "marker_sites": {
+        "drawn_markers": 4,
+        "grounded": [
+          "start_marker",
+          "checkpoint_a_marker",
+          "checkpoint_b_marker",
+          "inspect_top_camera_marker"
+        ],
+        "floating": [],
+        "buried": [],
+        "declared_but_not_drawn": [],
+        "passed": true
+      },
+      "servo_hold": {
+        "held_s": 2.0,
+        "sagging_joints": [],
+        "worst_body": "mobile_robot",
+        "worst_body_drift_mm": 0.0,
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": -0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": -0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence_contact": {
+        "steps": 3375,
+        "simulated_s": 13.5,
+        "deepest_overlap_mm": -0.0,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "self_overlap": {
+        "unfilterable_pairs_checked": 0,
+        "penetrating": [],
+        "passed": true
+      },
+      "link_continuity": {
+        "seams_checked": 0,
+        "widest_seam_mm": 0.0,
+        "torn": [],
+        "passed": true
+      },
+      "passed": false
+    },
+    {
+      "scene": "04-lever-ball-ramp",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "uncovered_visual_geoms": [],
+        "passed": true
+      },
+      "declared_mass": {
+        "geoms_without_declared_mass": [],
+        "passed": true
+      },
+      "marker_sites": {
+        "drawn_markers": 4,
+        "grounded": [
+          "camera_checkpoint_marker",
+          "lever_interaction_marker",
+          "target_zone_marker"
+        ],
+        "floating": [
+          {
+            "site": "release_zone_marker",
+            "hover_mm": 53.22
+          }
+        ],
+        "buried": [],
+        "declared_but_not_drawn": [],
+        "passed": false
+      },
+      "servo_hold": {
+        "held_s": 2.0,
+        "sagging_joints": [],
+        "worst_body": "release_gate",
+        "worst_body_drift_mm": 0.352,
+        "passed": true
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": -0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": -0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence_contact": {
+        "steps": 1519,
+        "simulated_s": 1.519,
+        "deepest_overlap_mm": 0.3121,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "self_overlap": {
+        "unfilterable_pairs_checked": 1,
+        "penetrating": [],
+        "passed": true
+      },
+      "link_continuity": {
+        "seams_checked": 1,
+        "widest_seam_mm": 7.5,
+        "torn": [
+          {
+            "seam": "lever_mount -> blue_lever",
+            "gap_mm": 7.5,
+            "at_s": 0.0
+          }
+        ],
+        "passed": false
+      },
+      "passed": false
+    },
+    {
+      "scene": "05-robot-arm-sorting",
+      "collision_geometry": {
+        "moving_bodies_without_collision": [],
+        "uncovered_visual_geoms": [],
+        "passed": true
+      },
+      "declared_mass": {
+        "geoms_without_declared_mass": [
+          "arm_upper_link/arm_shoulder_hub",
+          "arm_forearm_link/arm_elbow_hub",
+          "gripper/gripper_palm_geom",
+          "left_finger/left_finger_geom",
+          "right_finger/right_finger_geom"
+        ],
+        "passed": false
+      },
+      "marker_sites": {
+        "drawn_markers": 7,
+        "grounded": [
+          "blue_part_top_site"
+        ],
+        "floating": [
+          {
+            "site": "approach_blue_part_marker",
+            "hover_mm": 130.0
+          },
+          {
+            "site": "transfer_blue_bin_marker",
+            "hover_mm": 298.0
+          },
+          {
+            "site": "release_blue_part_marker",
+            "hover_mm": 485.0
+          },
+          {
+            "site": "inspect_sorting_marker",
+            "hover_mm": 162.0
+          },
+          {
+            "site": "arm_tcp",
+            "hover_mm": 655.0
+          }
+        ],
+        "buried": [
+          {
+            "site": "grasp_blue_part_marker",
+            "inside": "blue_part_geom",
+            "depth_mm": 15.0
+          }
+        ],
+        "declared_but_not_drawn": [],
+        "passed": false
+      },
+      "servo_hold": {
+        "held_s": 2.0,
+        "sagging_joints": [],
+        "worst_body": "right_finger",
+        "worst_body_drift_mm": 10.869,
+        "passed": false
+      },
+      "start_pose": {
+        "qpos0_overlap_mm": 0.0,
+        "qpos0_pair": null,
+        "post_reset_overlap_mm": 0.0,
+        "post_reset_pair": null,
+        "passed": true
+      },
+      "sequence_contact": {
+        "steps": 3988,
+        "simulated_s": 7.976,
+        "deepest_overlap_mm": 0.4052,
+        "deepest_pair": null,
+        "deepest_at_s": null,
+        "passed": true
+      },
+      "self_overlap": {
+        "unfilterable_pairs_checked": 13,
+        "penetrating": [],
+        "passed": true
+      },
+      "link_continuity": {
+        "seams_checked": 5,
+        "widest_seam_mm": 20.0,
+        "torn": [
+          {
+            "seam": "gripper -> left_finger",
+            "gap_mm": 20.0,
+            "at_s": 5.7
+          },
+          {
+            "seam": "gripper -> right_finger",
+            "gap_mm": 20.0,
+            "at_s": 5.7
+          }
+        ],
+        "passed": false
+      },
+      "passed": false
+    }
+  ]
+}

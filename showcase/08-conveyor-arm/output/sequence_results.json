@@ -26,15 +26,15 @@
         640,
         3
       ],
-      "rgb_std": 58.178873290421265,
+      "rgb_std": 76.10038396951929,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 207303,
-      "finite_depth_min_m": 2.3628792762756348,
-      "finite_depth_max_m": 7.519796848297119,
+      "finite_depth_pixels": 207141,
+      "finite_depth_min_m": 2.348231792449951,
+      "finite_depth_max_m": 7.519793510437012,
       "observation": {
         "history": [],
         "conveyor_state": "stopped",
@@ -42,14 +42,14 @@
         "gripper_state": "open",
         "parcel_state": "on_belt",
         "tool_position": [
-          1.1574508240437842,
-          -0.327143870740986,
-          1.1357939143835512
+          1.1571676209836554,
+          -0.3374082753826573,
+          1.0400000039254504
         ],
         "parcel_position": [
           -0.55,
-          8.35575610300325e-18,
-          0.9339650942173529
+          9.760964635630004e-18,
+          0.9439650942173528
         ],
         "parcel_inside_target_bin": false
       }
@@ -64,15 +64,15 @@
         640,
         3
       ],
-      "rgb_std": 58.182946739186455,
+      "rgb_std": 76.1365049226182,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 207303,
-      "finite_depth_min_m": 2.3794240951538086,
-      "finite_depth_max_m": 7.519796848297119,
+      "finite_depth_pixels": 207141,
+      "finite_depth_min_m": 2.370863914489746,
+      "finite_depth_max_m": 7.519793510437012,
       "observation": {
         "history": [
           "start_conveyor_to_pickup"
@@ -82,14 +82,14 @@
         "gripper_state": "open",
         "parcel_state": "at_pickup",
         "tool_position": [
-          1.159999998457528,
-          -0.2999965772390148,
-          1.1356571428571736
+          1.1600000007735327,
+          -0.3000126675053088,
+          1.04
         ],
         "parcel_position": [
-          -0.08,
-          0.0,
-          0.934
+          -0.08355959268046596,
+          1.3273584066552845e-17,
+          0.943964546841839
         ],
         "parcel_inside_target_bin": false
       }
@@ -104,15 +104,15 @@
         640,
         3
       ],
-      "rgb_std": 60.48309348763804,
+      "rgb_std": 78.17925640341349,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 207303,
-      "finite_depth_min_m": 2.7154018878936768,
-      "finite_depth_max_m": 7.519796848297119,
+      "finite_depth_pixels": 207141,
+      "finite_depth_min_m": 2.3929803371429443,
+      "finite_depth_max_m": 7.519793510437012,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -123,14 +123,14 @@
         "gripper_state": "open",
         "parcel_state": "at_pickup",
         "tool_position": [
-          -0.08000025112248499,
-          2.1921797135806415e-07,
-          0.9436574454439992
+          -0.08354356832839639,
+          3.459155453737196e-07,
+          0.9440003682195701
         ],
         "parcel_position": [
-          -0.08,
-          8.375676920203555e-17,
-          0.9339650361752595
+          -0.08355927789757353,
+          1.4936118045651734e-16,
+          0.9439650361752594
         ],
         "parcel_inside_target_bin": false
       }
@@ -145,15 +145,15 @@
         640,
         3
       ],
-      "rgb_std": 60.449543376044176,
+      "rgb_std": 78.16099546217042,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 207303,
-      "finite_depth_min_m": 2.7154018878936768,
-      "finite_depth_max_m": 7.519796848297119,
+      "finite_depth_pixels": 207141,
+      "finite_depth_min_m": 2.3929803371429443,
+      "finite_depth_max_m": 7.519793510437012,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -165,14 +165,14 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          -0.08000000456536743,
-          4.046989140506219e-09,
-          0.9436571428588254
+          -0.08354875615425593,
+          9.295278247115571e-05,
+          0.943999010426204
         ],
         "parcel_position": [
-          -0.08000000465375678,
-          4.1370738224078e-09,
-          0.9436571428589312
+          -0.08355701494685823,
+          7.561972366675856e-06,
+          0.9439650505850571
         ],
         "parcel_inside_target_bin": false
       }
@@ -187,15 +187,15 @@
         640,
         3
       ],
-      "rgb_std": 59.928169824888165,
+      "rgb_std": 78.43395073915967,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 207303,
-      "finite_depth_min_m": 2.7154018878936768,
-      "finite_depth_max_m": 7.519796848297119,
+      "finite_depth_pixels": 207184,
+      "finite_depth_min_m": 2.3929803371429443,
+      "finite_depth_max_m": 7.519793510437012,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -208,14 +208,14 @@
         "gripper_state": "closed",
         "parcel_state": "grasped",
         "tool_position": [
-          0.2499999975067059,
-          0.1800000549402037,
-          0.9496574340279493
+          0.24999980761826018,
+          0.17999987586552696,
+          0.9276022346370107
         ],
         "parcel_position": [
-          0.24999999745783746,
-          0.18000005605405184,
-          0.949657451747892
+          0.2499437029632921,
+          0.17993578659044393,
+          0.9275371771111225
         ],
         "parcel_inside_target_bin": true
       }
@@ -230,15 +230,15 @@
         640,
         3
       ],
-      "rgb_std": 59.92596199723319,
+      "rgb_std": 77.04290630730051,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 207303,
-      "finite_depth_min_m": 2.7154018878936768,
-      "finite_depth_max_m": 7.519796848297119,
+      "finite_depth_pixels": 207141,
+      "finite_depth_min_m": 2.374955415725708,
+      "finite_depth_max_m": 7.519793510437012,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -248,18 +248,18 @@
           "release_parcel_in_target_bin"
         ],
         "conveyor_state": "stopped",
-        "arm_state": "over_target_bin",
+        "arm_state": "withdrawn",
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999999923206,
-          0.18000000001214703,
-          0.949657142857143
+          0.9815315454879718,
+          -0.40679712892113834,
+          1.1051364903091427
         ],
         "parcel_position": [
-          0.25,
-          0.18,
-          0.9399650361752595
+          0.24994205049785395,
+          0.1799357135423521,
+          0.9199650361752579
         ],
         "parcel_inside_target_bin": true
       }
@@ -274,15 +274,15 @@
         640,
         3
       ],
-      "rgb_std": 59.92596199723319,
+      "rgb_std": 77.04337876210957,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 207303,
-      "finite_depth_min_m": 2.7154018878936768,
-      "finite_depth_max_m": 7.519796848297119,
+      "finite_depth_pixels": 207141,
+      "finite_depth_min_m": 2.3746767044067383,
+      "finite_depth_max_m": 7.519793510437012,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -292,18 +292,18 @@
           "release_parcel_in_target_bin"
         ],
         "conveyor_state": "stopped",
-        "arm_state": "over_target_bin",
+        "arm_state": "withdrawn",
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999999992695,
-          0.18000000000109012,
-          0.949657142857143
+          0.9814689483740127,
+          -0.40719806159087885,
+          1.1051362974808445
         ],
         "parcel_position": [
-          0.25,
-          0.18,
-          0.9399650361752595
+          0.24994205049785395,
+          0.1799357135423521,
+          0.9199650361752579
         ],
         "parcel_inside_target_bin": true
       }
@@ -318,15 +318,15 @@
         640,
         3
       ],
-      "rgb_std": 59.92596199723319,
+      "rgb_std": 77.04337876210957,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 207303,
-      "finite_depth_min_m": 2.7154018878936768,
-      "finite_depth_max_m": 7.519796848297119,
+      "finite_depth_pixels": 207141,
+      "finite_depth_min_m": 2.3746767044067383,
+      "finite_depth_max_m": 7.519793510437012,
       "observation": {
         "history": [
           "start_conveyor_to_pickup",
@@ -337,18 +337,18 @@
           "inspect_handoff"
         ],
         "conveyor_state": "stopped",
-        "arm_state": "over_target_bin",
+        "arm_state": "withdrawn",
         "gripper_state": "open",
         "parcel_state": "inside_target_bin",
         "tool_position": [
-          0.24999999999992695,
-          0.18000000000109012,
-          0.949657142857143
+          0.9814689483740127,
+          -0.40719806159087885,
+          1.1051362974808445
         ],
         "parcel_position": [
-          0.25,
-          0.18,
-          0.9399650361752595
+          0.24994205049785395,
+          0.1799357135423521,
+          0.9199650361752579
         ],
         "parcel_inside_target_bin": true
       }

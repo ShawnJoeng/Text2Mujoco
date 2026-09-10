@@ -4,11 +4,13 @@
   "source_prompt": "Create a tabletop robotic arm sorting cell. A three-joint arm approaches a blue part on a conveyor, closes its parallel gripper, transfers the part to a blue bin beside a red distractor bin, releases it, and verifies the result with an RGB-D camera. Every robot and object interaction must be visible and executable.",
   "assumptions": [
     "The scene uses SI meters, a Z-up frame, gravity [0, 0, -9.81], and a deterministic seed of 53.",
-    "The arm is an articulated planar pick-and-place robot with shoulder, elbow, and wrist hinge joints plus two powered gripper slides.",
-    "The generated controller interpolates the tool centre point along straight Cartesian segments through declared lift-traverse-lower waypoints and uses a task-level grasp attachment at the measured grasp offset while the gripper is closed; MuJoCo still advances dynamics at every control step.",
+    "The arm is an articulated planar pick-and-place robot with shoulder, elbow, and wrist hinge joints, a tool roll hinge that sets the part's yaw about the tool axis, and two powered gripper slides.",
+    "The generated controller interpolates the tool centre point along straight Cartesian segments through declared lift-traverse-lower waypoints and carries the part with a weld equality constraint that is activated from the measured turret-to-part offset when the jaws close and deactivated on release; MuJoCo still advances dynamics at every control step and no object pose is ever written by hand.",
+    "Each gripper slide is drawn along its whole travel: a carriage geom rides inside the turret rail sleeve, so the prismatic axis never shows as a gap under the tool flange.",
     "The blue part is the commanded object and the red part is a collidable distractor that remains in the neighboring bin lane.",
     "The blue bin is an open five-piece receptacle with local interior bounds; the inspection action writes 640 x 480 RGB-D evidence under the package output directory.",
-    "Collision classes give world-robot, world-payload, robot-payload, and payload-payload contacts; robot self-collision is filtered because the links nest inside their hubs by design, and the pedestal-to-shoulder mount pair is excluded for the same reason."
+    "Every collision class carries conaffinity 7, so world-robot, world-payload, robot-payload, payload-payload and robot-robot pairs are all tested; the pedestal-to-shoulder mount is the only excluded pair, because the shoulder hub is bolted 115 mm inside the pedestal cap it turns on.",
+    "Interaction markers are flush cylinder decals painted on the bench or the bin floor, not floating spheres; the tool centre point is a group 4 kinematic reference and is not drawn."
   ],
   "open_questions": [],
   "scene": {
@@ -35,7 +37,7 @@
       "body_name": "worktable",
       "geometry": {"shape": "box", "dimensions": [2.7, 1.64, 0.12], "geom_name": "worktable_top_geom"},
       "pose": {"position": [0, 0, 0.62], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.9, 0.01, 0.001]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 7, "friction": [0.9, 0.01, 0.001]},
       "semantic": "support_surface"
     },
     {
@@ -44,7 +46,7 @@
       "body_name": "conveyor_frame",
       "geometry": {"shape": "box", "dimensions": [1.44, 0.46, 0.05], "geom_name": "conveyor_belt_geom"},
       "pose": {"position": [0.26, 0, 0.76], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.7, 0.01, 0.001]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 7, "friction": [0.7, 0.01, 0.001]},
       "semantic": "conveyor"
     },
     {
@@ -53,7 +55,7 @@
       "body_name": "arm_base",
       "geometry": {"shape": "cylinder", "dimensions": [0.48, 0.48, 0.84], "geom_name": "arm_base_geom"},
       "pose": {"position": [-0.35, 0, 0.70], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.6, 0.01, 0.001]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 7, "friction": [0.6, 0.01, 0.001]},
       "semantic": "robot_mount"
     },
     {
@@ -62,7 +64,7 @@
       "body_name": "arm_upper_link",
       "geometry": {"shape": "capsule", "dimensions": [0.15, 0.15, 0.72], "geom_name": "arm_upper_geom"},
       "pose": {"position": [-0.35, 0, 1.52], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "arm_shoulder", "actuator_name": "arm_shoulder_motor", "mass_kg": 1.2, "contype": 2, "conaffinity": 5, "friction": [0.5, 0.01, 0.001]},
+      "physics": {"dynamic": true, "joint_name": "arm_shoulder", "actuator_name": "arm_shoulder_motor", "mass_kg": 3.60, "contype": 2, "conaffinity": 7, "friction": [0.5, 0.01, 0.001]},
       "semantic": "robot_upper_arm"
     },
     {
@@ -71,7 +73,7 @@
       "body_name": "arm_forearm_link",
       "geometry": {"shape": "capsule", "dimensions": [0.13, 0.13, 0.62], "geom_name": "arm_forearm_geom"},
       "pose": {"position": [0.37, 0, 1.52], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "arm_elbow", "actuator_name": "arm_elbow_motor", "mass_kg": 0.9, "contype": 2, "conaffinity": 5, "friction": [0.5, 0.01, 0.001]},
+      "physics": {"dynamic": true, "joint_name": "arm_elbow", "actuator_name": "arm_elbow_motor", "mass_kg": 2.30, "contype": 2, "conaffinity": 7, "friction": [0.5, 0.01, 0.001]},
       "semantic": "robot_forearm"
     },
     {
@@ -80,34 +82,43 @@
       "body_name": "arm_wrist_link",
       "geometry": {"shape": "capsule", "dimensions": [0.10, 0.10, 0.13], "geom_name": "arm_wrist_geom"},
       "pose": {"position": [0.99, 0, 1.52], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "arm_wrist", "actuator_name": "arm_wrist_motor", "mass_kg": 0.25, "contype": 2, "conaffinity": 5, "friction": [0.5, 0.01, 0.001]},
+      "physics": {"dynamic": true, "joint_name": "arm_wrist", "actuator_name": "arm_wrist_motor", "mass_kg": 0.25, "contype": 2, "conaffinity": 7, "friction": [0.5, 0.01, 0.001]},
       "semantic": "robot_wrist"
     },
     {
       "id": "gripper",
       "kind": "primitive",
       "body_name": "gripper",
-      "geometry": {"shape": "box", "dimensions": [0.18, 0.28, 0.07], "geom_name": "gripper_palm_geom"},
-      "pose": {"position": [1.12, 0, 1.52], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 2, "conaffinity": 5, "friction": [0.5, 0.01, 0.001]},
+      "geometry": {"shape": "box", "dimensions": [0.18, 0.34, 0.14], "geom_name": "gripper_palm_geom"},
+      "pose": {"position": [1.12, 0, 1.49], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": false, "mass_kg": 2.20, "contype": 2, "conaffinity": 7, "friction": [0.5, 0.01, 0.001]},
       "semantic": "parallel_gripper"
+    },
+    {
+      "id": "tool_turret",
+      "kind": "primitive",
+      "body_name": "tool_turret",
+      "geometry": {"shape": "box", "dimensions": [0.11, 0.34, 0.08], "geom_name": "gripper_rail_geom"},
+      "pose": {"position": [1.12, 0, 1.395], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "tool_roll", "actuator_name": "tool_roll_motor", "mass_kg": 0.90, "contype": 2, "conaffinity": 7, "friction": [0.5, 0.01, 0.001]},
+      "semantic": "tool_roll_axis"
     },
     {
       "id": "left_finger",
       "kind": "primitive",
       "body_name": "left_finger",
-      "geometry": {"shape": "box", "dimensions": [0.07, 0.05, 0.15], "geom_name": "left_finger_geom"},
-      "pose": {"position": [1.12, 0.135, 1.50], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "gripper_left_slide", "actuator_name": "gripper_left_motor", "mass_kg": 0.08, "contype": 2, "conaffinity": 5, "friction": [0.5, 0.01, 0.001]},
+      "geometry": {"shape": "box", "dimensions": [0.07, 0.05, 0.17], "geom_name": "left_finger_geom"},
+      "pose": {"position": [1.12, 0.135, 1.32], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "gripper_left_slide", "actuator_name": "gripper_left_motor", "mass_kg": 0.46, "contype": 2, "conaffinity": 7, "friction": [0.5, 0.01, 0.001]},
       "semantic": "gripper_finger"
     },
     {
       "id": "right_finger",
       "kind": "primitive",
       "body_name": "right_finger",
-      "geometry": {"shape": "box", "dimensions": [0.07, 0.05, 0.15], "geom_name": "right_finger_geom"},
-      "pose": {"position": [1.12, -0.135, 1.50], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": true, "joint_name": "gripper_right_slide", "actuator_name": "gripper_right_motor", "mass_kg": 0.08, "contype": 2, "conaffinity": 5, "friction": [0.5, 0.01, 0.001]},
+      "geometry": {"shape": "box", "dimensions": [0.07, 0.05, 0.17], "geom_name": "right_finger_geom"},
+      "pose": {"position": [1.12, -0.135, 1.32], "orientation_xyzw": [0, 0, 0, 1]},
+      "physics": {"dynamic": true, "joint_name": "gripper_right_slide", "actuator_name": "gripper_right_motor", "mass_kg": 0.46, "contype": 2, "conaffinity": 7, "friction": [0.5, 0.01, 0.001]},
       "semantic": "gripper_finger"
     },
     {
@@ -139,7 +150,7 @@
         "part_geom_names": ["blue_bin_bottom", "blue_bin_left", "blue_bin_right", "blue_bin_front", "blue_bin_back"]
       },
       "pose": {"position": [0.78, 0, 0.70], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.72, 0.01, 0.002]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 7, "friction": [0.72, 0.01, 0.002]},
       "semantic": "target_receptacle"
     },
     {
@@ -153,7 +164,7 @@
         "part_geom_names": ["red_bin_bottom", "red_bin_left", "red_bin_right", "red_bin_front", "red_bin_back"]
       },
       "pose": {"position": [0.78, 0.48, 0.70], "orientation_xyzw": [0, 0, 0, 1]},
-      "physics": {"dynamic": false, "contype": 1, "conaffinity": 6, "friction": [0.72, 0.01, 0.002]},
+      "physics": {"dynamic": false, "contype": 1, "conaffinity": 7, "friction": [0.72, 0.01, 0.002]},
       "semantic": "distractor_receptacle"
     }
   ],
@@ -162,11 +173,11 @@
       "id": "approach_blue_part",
       "target": {"type": "joint", "name": "arm_shoulder"},
       "marker_site": "approach_blue_part_marker",
-      "pose": {"position": [0.23, 0, 1.10], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0.23, -0.42, 0.686], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "approach",
       "action": {"mode": "direct", "command": "approach_blue_part", "schema": {"type": "object", "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}}, "required": [], "additionalProperties": false}},
       "preconditions": ["arm_state == 'home'", "blue_part_state == 'on_conveyor'"],
-      "success_conditions": ["distance(arm_tcp, blue_part) <= 0.08 m"],
+      "success_conditions": ["distance(arm_tcp, blue_part) <= 0.10 m"],
       "depends_on": [],
       "effects": ["arm_state = 'at_pick_pose'"],
       "reset": {"arm_state": "home"}
@@ -175,7 +186,7 @@
       "id": "grasp_blue_part",
       "target": {"type": "actuator", "name": "gripper_left_motor"},
       "marker_site": "grasp_blue_part_marker",
-      "pose": {"position": [0.23, 0, 0.91], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0.23, -0.28, 0.686], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "grasp",
       "action": {"mode": "direct", "command": "grasp_blue_part", "schema": {"type": "object", "properties": {"close": {"type": "boolean"}}, "required": ["close"], "additionalProperties": false}},
       "preconditions": ["arm_state == 'at_pick_pose'", "blue_part_state == 'on_conveyor'"],
@@ -188,11 +199,11 @@
       "id": "transfer_to_blue_bin",
       "target": {"type": "joint", "name": "arm_elbow"},
       "marker_site": "transfer_blue_bin_marker",
-      "pose": {"position": [0.78, 0, 1.10], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0.78, -0.42, 0.686], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "transfer",
       "action": {"mode": "direct", "command": "transfer_to_blue_bin", "schema": {"type": "object", "properties": {"speed_rad_s": {"type": "number", "minimum": 0.2, "maximum": 2.0}}, "required": [], "additionalProperties": false}},
       "preconditions": ["blue_part_state == 'grasped'", "gripper_state == 'closed'"],
-      "success_conditions": ["distance(arm_tcp, transfer_blue_bin_marker) <= 0.12 m", "blue_part_state == 'grasped'"],
+      "success_conditions": ["distance(arm_tcp, blue_bin_hover) <= 0.12 m", "abs(tool_roll_qpos - 1.5708) <= 0.02 rad", "blue_part_state == 'grasped'"],
       "depends_on": ["grasp_blue_part"],
       "effects": ["arm_state = 'over_blue_bin'"],
       "reset": {"arm_state": "home"}
@@ -201,7 +212,7 @@
       "id": "release_blue_part",
       "target": {"type": "actuator", "name": "gripper_left_motor"},
       "marker_site": "release_blue_part_marker",
-      "pose": {"position": [0.78, -0.34, 1.22], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [0.78, 0.15, 0.796], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "release",
       "action": {"mode": "direct", "command": "release_blue_part", "schema": {"type": "object", "properties": {"open": {"type": "boolean"}}, "required": ["open"], "additionalProperties": false}},
       "preconditions": ["arm_state == 'over_blue_bin'", "blue_part_state == 'grasped'"],
@@ -214,7 +225,7 @@
       "id": "inspect_sorting_result",
       "target": {"type": "camera", "name": "sorting_camera"},
       "marker_site": "inspect_sorting_marker",
-      "pose": {"position": [1.12, -0.62, 0.86], "orientation_xyzw": [0, 0, 0, 1]},
+      "pose": {"position": [1.12, -0.62, 0.686], "orientation_xyzw": [0, 0, 0, 1]},
       "affordance": "inspect",
       "action": {"mode": "direct", "command": "inspect_sorting_result", "schema": {"type": "object", "properties": {"output_dir": {"type": "string"}}, "required": ["output_dir"], "additionalProperties": false}},
       "preconditions": ["blue_part_state == 'inside_blue_bin'"],

@@ -113,11 +113,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     initial_contact_audit(env)
     if xyzw_to_wxyz([0, 0, 0, 1]) != [1.0, 0.0, 0.0, 0.0]:
         raise AssertionError("quaternion conversion failed")
-    for name in ("arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "gripper_slide", "peg_free"):
+    for name in ("arm_shoulder", "arm_elbow", "arm_wrist", "tool_z", "tool_pitch", "gripper_slide", "peg_free"):
         env.require_id("joint", name)
-    for name in ("shoulder_motor", "elbow_motor", "wrist_motor", "tool_lift_motor", "gripper_motor"):
+    for name in ("shoulder_motor", "elbow_motor", "wrist_motor", "tool_lift_motor", "tool_pitch_motor", "gripper_motor"):
         env.require_id("actuator", name)
-    if any(env.model.jnt_type[env.require_id("joint", name)] != mujoco.mjtJoint.mjJNT_HINGE for name in ("arm_shoulder", "arm_elbow", "arm_wrist")):
+    if any(env.model.jnt_type[env.require_id("joint", name)] != mujoco.mjtJoint.mjJNT_HINGE for name in ("arm_shoulder", "arm_elbow", "arm_wrist", "tool_pitch")):
         raise AssertionError("arm joints must be hinge joints")
     if env.model.jnt_type[env.tool_joint_id] != mujoco.mjtJoint.mjJNT_SLIDE:
         raise AssertionError("tool_z must be a slide joint")
@@ -147,8 +147,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         held_after = np.asarray(env.observe()["peg_position"])
         if float(np.linalg.norm(held_after - held_before)) < 0.05:
             raise AssertionError("held peg did not follow arm transport")
-        env.step({"id": "insert_peg_into_socket", "payload": {"depth_m": 0.08}})
-        if env.observe()["tool_z_qpos"] > -0.06:
+        env.step({"id": "insert_peg_into_socket", "payload": {"depth_m": 0.075}})
+        if env.observe()["tool_z_qpos"] > env.INSERT_TOOL_Z + 0.045:
             raise AssertionError("tool did not lower")
         expect_error(lambda: env.step({"id": "release_assembled_peg", "payload": {"open": False}}), "release boolean")
         env.step({"id": "release_assembled_peg", "payload": {"open": True}})
@@ -168,6 +168,23 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if reset["seed"] != 107 or reset["state"]["arm_state"] != "home":
         raise AssertionError("default reset did not restore initial state")
 
+    # The grasp has to be a constraint, not a coordinate assignment. Pick the peg
+    # up, carry it, then drop the weld with the peg still in the air: a welded
+    # peg falls, a peg whose qpos is being overwritten hangs there. This is the
+    # difference between a part that is held and a part that is merely drawn in
+    # the right place.
+    env.step({"id": "move_arm_to_peg", "payload": {"speed_rad_s": 1.0}})
+    env.step({"id": "grasp_peg_with_arm", "payload": {"close": True}})
+    env.step({"id": "move_arm_to_socket", "payload": {"speed_rad_s": 1.0}})
+    carried_height = float(env.observe()["peg_position"][2])
+    env._release_grasp()
+    env.run_physics(400)
+    dropped_height = float(env.observe()["peg_position"][2])
+    if carried_height - dropped_height < 0.02:
+        raise AssertionError("released peg did not fall: the grasp is not a real constraint")
+    weld_drop_mm = round((carried_height - dropped_height) * 1000.0, 3)
+    env.reset()
+
     return {
         "status": "PASS",
         "mujoco_executed": True,
@@ -177,11 +194,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "xml_parse": "PASS",
             "mjcf_compile": "PASS",
             "quaternion_conversion": "PASS",
-            "arm_hinge_joints": 3,
-            "explicit_actuators": 5,
+            "arm_hinge_joints": 4,
+            "explicit_actuators": 6,
             "visible_markers": len(env.points),
         },
-        "physics": {"initial_contact": "PASS", "sequence_contact": audit.report(), "mj_step": "PASS", "finite_state": "PASS", "held_peg_transport": "PASS", "socket_release_tolerance_m": peg_error},
+        "physics": {"initial_contact": "PASS", "sequence_contact": audit.report(), "mj_step": "PASS", "finite_state": "PASS", "held_peg_transport": "PASS", "weld_release_drop_mm": weld_drop_mm, "socket_release_tolerance_m": peg_error},
         "dependency_enforcement": "PASS",
         "deterministic_reset": "PASS",
         "interaction_sequence": [

@@ -13,10 +13,10 @@
   "gif_frame_duration_ms": 200,
   "gif_final_frame_duration_ms": 800,
   "depth_capture": "keyframes_only; dense pass stores RGB frames",
-  "frame_count": 45,
-  "regular_frame_count": 40,
+  "frame_count": 62,
+  "regular_frame_count": 57,
   "event_frame_count": 5,
-  "simulation_time_span_s": 7.976,
+  "simulation_time_span_s": 11.322,
   "gif": "output/screenshots/dense_sequence.gif",
   "tiff": "output/screenshots/dense_sequence.tif",
   "frame_storage": "GIF and TIFF only; dense source PNGs are removed after encoding",
@@ -43,7 +43,7 @@
         "arm_tcp_position": [
           0.7698696406957849,
           0.0,
-          1.704219791216986
+          1.604219791216986
         ],
         "blue_part_position": [
           0.23,
@@ -73,14 +73,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.7691701565810742,
+          0.7698696406957849,
           0.0,
-          1.6977553527296698
+          1.604219791216986
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592580678
+          0.8549539392705318
         ],
         "blue_part_inside_bin": false
       }
@@ -105,14 +105,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.7237647361401357,
-          0.0,
-          1.6413017245495465
+          0.7560165642320201,
+          6.112570624275895e-39,
+          1.5907286637017564
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -137,14 +137,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.6795363666970115,
-          0.0,
-          1.5931884614402936
+          0.7219189448374332,
+          -1.9101783200862173e-40,
+          1.5589735368198323
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -169,14 +169,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.63435048700843,
+          0.6842479422963492,
           0.0,
-          1.5448554597474666
+          1.5237808209211845
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -201,14 +201,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.5898837275381652,
+          0.6453644487012848,
           0.0,
-          1.496718513315698
+          1.4875123016971905
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -233,14 +233,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.5459084862337158,
+          0.6044337578710409,
           0.0,
-          1.4487549712408943
+          1.44944868551368
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -265,14 +265,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.501092309815213,
-          0.0,
-          1.4002685821431076
+          0.5634841090025502,
+          4.775445800215543e-41,
+          1.4112845669478398
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -297,14 +297,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.4571362339636739,
-          0.0,
-          1.3521373026659045
+          0.5234796806077554,
+          -1.5281426560689738e-39,
+          1.3740659821456427
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -329,14 +329,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.4134431616829663,
-          0.0,
-          1.3040307418080364
+          0.48521678942902474,
+          3.8203566401724345e-40,
+          1.3384054880276954
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -361,14 +361,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.3689865119201925,
+          0.44824961035180405,
           0.0,
-          1.2552717570542875
+          1.3039569396411073
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -393,14 +393,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.3256060346429628,
-          0.0,
-          1.2069578188157657
+          0.4122859232730807,
+          -7.640713280344869e-40,
+          1.2704891312100761
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -425,14 +425,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.28216575456221915,
-          0.0,
-          1.1584754565004929
+          0.3780933804467989,
+          3.8203566401724345e-40,
+          1.238515079109754
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -457,14 +457,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.2378033974919522,
-          0.0,
-          1.1091351618981367
+          0.34516920116602967,
+          3.8203566401724345e-40,
+          1.207838790766706
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -489,14 +489,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.23277497332906005,
+          0.31347239880523653,
           0.0,
-          1.047771678538904
+          1.178110131980797
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -521,14 +521,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.23207057659161573,
-          0.0,
-          0.982142311239435
+          0.2824720629616665,
+          4.775445800215543e-41,
+          1.1491547906790531
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -553,14 +553,14 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.2319064337530978,
+          0.25228773467068444,
           0.0,
-          0.915695054923604
+          1.120962615154768
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -568,10 +568,234 @@
     {
       "archive_frame": 18,
       "index": 17,
+      "target_time_s": 3.4,
+      "actual_time_s": 3.4,
+      "absolute_sim_time_s": 3.4,
+      "physics_step": 1700,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.22960015893031663,
+          0.0,
+          1.1003708615272303
+        ],
+        "blue_part_position": [
+          0.23,
+          0.0,
+          0.8549539392709123
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 19,
+      "index": 18,
+      "target_time_s": 3.6,
+      "actual_time_s": 3.6,
+      "absolute_sim_time_s": 3.6,
+      "physics_step": 1800,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.231140028156831,
+          3.730817031418393e-43,
+          1.0997925276680487
+        ],
+        "blue_part_position": [
+          0.23,
+          0.0,
+          0.8549539392709123
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 20,
+      "index": 19,
+      "target_time_s": 3.8,
+      "actual_time_s": 3.8,
+      "absolute_sim_time_s": 3.8,
+      "physics_step": 1900,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.23197452017400877,
+          0.0,
+          1.0714804007738197
+        ],
+        "blue_part_position": [
+          0.23,
+          0.0,
+          0.8549539392709123
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 21,
+      "index": 20,
+      "target_time_s": 4.0,
+      "actual_time_s": 4.0,
+      "absolute_sim_time_s": 4.0,
+      "physics_step": 2000,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.2318722995787237,
+          0.0,
+          1.0264158846673275
+        ],
+        "blue_part_position": [
+          0.23,
+          0.0,
+          0.8549539392709123
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 22,
+      "index": 21,
+      "target_time_s": 4.2,
+      "actual_time_s": 4.2,
+      "absolute_sim_time_s": 4.2,
+      "physics_step": 2100,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.23182088163548073,
+          1.1658803223182478e-44,
+          0.9800289450689337
+        ],
+        "blue_part_position": [
+          0.23,
+          0.0,
+          0.8549539392709123
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 23,
+      "index": 22,
+      "target_time_s": 4.4,
+      "actual_time_s": 4.4,
+      "absolute_sim_time_s": 4.4,
+      "physics_step": 2200,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.23171084397777686,
+          0.0,
+          0.9317483824334907
+        ],
+        "blue_part_position": [
+          0.23,
+          0.0,
+          0.8549539392709123
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 24,
+      "index": 23,
+      "target_time_s": 4.6,
+      "actual_time_s": 4.6,
+      "absolute_sim_time_s": 4.6,
+      "physics_step": 2300,
+      "phase": "approach_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [],
+        "arm_state": "home",
+        "gripper_state": "open",
+        "blue_part_state": "on_conveyor",
+        "arm_tcp_position": [
+          0.23172983021351976,
+          0.0,
+          0.8811082117406595
+        ],
+        "blue_part_position": [
+          0.23,
+          0.0,
+          0.8549539392709123
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 25,
+      "index": 24,
       "target_time_s": null,
-      "actual_time_s": 3.384,
-      "absolute_sim_time_s": 3.384,
-      "physics_step": 1692,
+      "actual_time_s": 4.724,
+      "absolute_sim_time_s": 4.724,
+      "physics_step": 2362,
       "phase": "approach_blue_part",
       "event_frame": true,
       "rgb_shape": [
@@ -587,25 +811,25 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.2313011514636907,
-          0.0,
-          0.855414962792283
+          0.22987088027426988,
+          -1.4231937528298924e-48,
+          0.8580786547104005
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
     },
     {
-      "archive_frame": 19,
-      "index": 18,
-      "target_time_s": 3.4,
-      "actual_time_s": 3.4,
-      "absolute_sim_time_s": 3.4,
-      "physics_step": 1700,
+      "archive_frame": 26,
+      "index": 25,
+      "target_time_s": 4.8,
+      "actual_time_s": 4.8,
+      "absolute_sim_time_s": 4.8,
+      "physics_step": 2400,
       "phase": "grasp_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -621,25 +845,25 @@
         "gripper_state": "open",
         "blue_part_state": "on_conveyor",
         "arm_tcp_position": [
-          0.22922522524540753,
-          0.0,
-          0.8532388438050231
+          0.22966662763601292,
+          3.6433760072445245e-46,
+          0.8556223508594267
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
     },
     {
-      "archive_frame": 20,
-      "index": 19,
+      "archive_frame": 27,
+      "index": 26,
       "target_time_s": null,
-      "actual_time_s": 3.542,
-      "absolute_sim_time_s": 3.542,
-      "physics_step": 1771,
+      "actual_time_s": 4.83,
+      "absolute_sim_time_s": 4.83,
+      "physics_step": 2415,
       "phase": "grasp_blue_part",
       "event_frame": true,
       "rgb_shape": [
@@ -656,259 +880,14 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.2280196848259582,
-          0.0,
-          0.8527939731106922
+          0.22975790880995214,
+          3.6433760072445245e-46,
+          0.8553320168948991
         ],
         "blue_part_position": [
           0.23,
           0.0,
-          0.8549304592645249
-        ],
-        "blue_part_inside_bin": false
-      }
-    },
-    {
-      "archive_frame": 21,
-      "index": 20,
-      "target_time_s": 3.6,
-      "actual_time_s": 3.6,
-      "absolute_sim_time_s": 3.6,
-      "physics_step": 1800,
-      "phase": "transfer_to_blue_bin",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "approach_blue_part",
-          "grasp_blue_part"
-        ],
-        "arm_state": "at_pick_pose",
-        "gripper_state": "closed",
-        "blue_part_state": "grasped",
-        "arm_tcp_position": [
-          0.22178332386666177,
-          0.0,
-          0.8665742428534794
-        ],
-        "blue_part_position": [
-          0.2236386770685591,
-          0.0,
-          0.8681845161728523
-        ],
-        "blue_part_inside_bin": false
-      }
-    },
-    {
-      "archive_frame": 22,
-      "index": 21,
-      "target_time_s": 3.8,
-      "actual_time_s": 3.8,
-      "absolute_sim_time_s": 3.8,
-      "physics_step": 1900,
-      "phase": "transfer_to_blue_bin",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "approach_blue_part",
-          "grasp_blue_part"
-        ],
-        "arm_state": "at_pick_pose",
-        "gripper_state": "closed",
-        "blue_part_state": "grasped",
-        "arm_tcp_position": [
-          0.2231807884942454,
-          0.0,
-          0.9325221564102075
-        ],
-        "blue_part_position": [
-          0.22517828302080686,
-          0.0,
-          0.9339001818857435
-        ],
-        "blue_part_inside_bin": false
-      }
-    },
-    {
-      "archive_frame": 23,
-      "index": 22,
-      "target_time_s": 4.0,
-      "actual_time_s": 4.0,
-      "absolute_sim_time_s": 4.0,
-      "physics_step": 2000,
-      "phase": "transfer_to_blue_bin",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "approach_blue_part",
-          "grasp_blue_part"
-        ],
-        "arm_state": "at_pick_pose",
-        "gripper_state": "closed",
-        "blue_part_state": "grasped",
-        "arm_tcp_position": [
-          0.22448369281623307,
-          0.0,
-          0.9977299561606188
-        ],
-        "blue_part_position": [
-          0.22661130370825952,
-          0.0,
-          0.9992083227347842
-        ],
-        "blue_part_inside_bin": false
-      }
-    },
-    {
-      "archive_frame": 24,
-      "index": 23,
-      "target_time_s": 4.2,
-      "actual_time_s": 4.2,
-      "absolute_sim_time_s": 4.2,
-      "physics_step": 2100,
-      "phase": "transfer_to_blue_bin",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "approach_blue_part",
-          "grasp_blue_part"
-        ],
-        "arm_state": "at_pick_pose",
-        "gripper_state": "closed",
-        "blue_part_state": "grasped",
-        "arm_tcp_position": [
-          0.2253213754317965,
-          0.0,
-          1.0638907281176007
-        ],
-        "blue_part_position": [
-          0.22714309074564482,
-          0.0,
-          1.0654287718337765
-        ],
-        "blue_part_inside_bin": false
-      }
-    },
-    {
-      "archive_frame": 25,
-      "index": 24,
-      "target_time_s": 4.4,
-      "actual_time_s": 4.4,
-      "absolute_sim_time_s": 4.4,
-      "physics_step": 2200,
-      "phase": "transfer_to_blue_bin",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "approach_blue_part",
-          "grasp_blue_part"
-        ],
-        "arm_state": "at_pick_pose",
-        "gripper_state": "closed",
-        "blue_part_state": "grasped",
-        "arm_tcp_position": [
-          0.25867077928317755,
-          0.0,
-          1.091503131515799
-        ],
-        "blue_part_position": [
-          0.2598430419526656,
-          0.0,
-          1.0936525118003786
-        ],
-        "blue_part_inside_bin": false
-      }
-    },
-    {
-      "archive_frame": 26,
-      "index": 25,
-      "target_time_s": 4.6,
-      "actual_time_s": 4.6,
-      "absolute_sim_time_s": 4.6,
-      "physics_step": 2300,
-      "phase": "transfer_to_blue_bin",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "approach_blue_part",
-          "grasp_blue_part"
-        ],
-        "arm_state": "at_pick_pose",
-        "gripper_state": "closed",
-        "blue_part_state": "grasped",
-        "arm_tcp_position": [
-          0.32464632203936966,
-          0.0,
-          1.0927950641141848
-        ],
-        "blue_part_position": [
-          0.3261181552987116,
-          0.0,
-          1.0950163736887786
-        ],
-        "blue_part_inside_bin": false
-      }
-    },
-    {
-      "archive_frame": 27,
-      "index": 26,
-      "target_time_s": 4.8,
-      "actual_time_s": 4.8,
-      "absolute_sim_time_s": 4.8,
-      "physics_step": 2400,
-      "phase": "transfer_to_blue_bin",
-      "event_frame": false,
-      "rgb_shape": [
-        480,
-        640,
-        3
-      ],
-      "observation": {
-        "history": [
-          "approach_blue_part",
-          "grasp_blue_part"
-        ],
-        "arm_state": "at_pick_pose",
-        "gripper_state": "closed",
-        "blue_part_state": "grasped",
-        "arm_tcp_position": [
-          0.39126882314997136,
-          0.0,
-          1.0933583035641616
-        ],
-        "blue_part_position": [
-          0.39259295411162254,
-          0.0,
-          1.09541244877544
+          0.8549539392709123
         ],
         "blue_part_inside_bin": false
       }
@@ -936,14 +915,14 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.45682796386303476,
+          0.22831043422175112,
           0.0,
-          1.093825540722214
+          0.8912650963313993
         ],
         "blue_part_position": [
-          0.4579997156511164,
-          0.0,
-          1.0959785846515309
+          0.22864248311279153,
+          -6.965210744108322e-12,
+          0.8908596558843861
         ],
         "blue_part_inside_bin": false
       }
@@ -971,14 +950,14 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.522272048843168,
+          0.22875590476096727,
           0.0,
-          1.0947372171722107
+          0.9411132504029429
         ],
         "blue_part_position": [
-          0.5236986137283197,
-          0.0,
-          1.0969466701074997
+          0.22910842228484235,
+          -3.1493866758120194e-12,
+          0.940716964203509
         ],
         "blue_part_inside_bin": false
       }
@@ -1006,14 +985,14 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.5889378043053238,
+          0.22878439114539026,
           0.0,
-          1.0951775574795137
+          0.9893821329196455
         ],
         "blue_part_position": [
-          0.590308051843464,
-          0.0,
-          1.0972439144451993
+          0.2291232658106029,
+          2.471272578628313e-12,
+          0.9889963438379525
         ],
         "blue_part_inside_bin": false
       }
@@ -1041,14 +1020,14 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.6545725494561643,
+          0.22878000699001505,
           0.0,
-          1.0955405827487692
+          1.035632892665465
         ],
         "blue_part_position": [
-          0.6557153592832494,
-          0.0,
-          1.0976824284297795
+          0.22898329842774795,
+          -6.515015726057643e-13,
+          1.0352308812737245
         ],
         "blue_part_inside_bin": false
       }
@@ -1076,14 +1055,14 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7197742253200091,
+          0.22915448534649255,
           0.0,
-          1.0963291345651514
+          1.0802317625671072
         ],
         "blue_part_position": [
-          0.7211652106335643,
-          0.0,
-          1.0985376572607672
+          0.22956755059857586,
+          -1.7176759016819033e-11,
+          1.079856950005656
         ],
         "blue_part_inside_bin": false
       }
@@ -1091,10 +1070,465 @@
     {
       "archive_frame": 33,
       "index": 32,
+      "target_time_s": 6.0,
+      "actual_time_s": 6.0,
+      "absolute_sim_time_s": 6.0,
+      "physics_step": 3000,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.24231526229743403,
+          0.0,
+          1.096807170840519
+        ],
+        "blue_part_position": [
+          0.2424950492015731,
+          -1.4318529856522794e-11,
+          1.0963427546462128
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 34,
+      "index": 33,
+      "target_time_s": 6.2,
+      "actual_time_s": 6.2,
+      "absolute_sim_time_s": 6.2,
+      "physics_step": 3100,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.2981622849658245,
+          1.2818989709841442e-32,
+          1.097327025137578
+        ],
+        "blue_part_position": [
+          0.2985541304378774,
+          -4.5675984006301355e-12,
+          1.0969649910328227
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 35,
+      "index": 34,
+      "target_time_s": 6.4,
+      "actual_time_s": 6.4,
+      "absolute_sim_time_s": 6.4,
+      "physics_step": 3200,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.3542874502030474,
+          0.0,
+          1.0976238701206387
+        ],
+        "blue_part_position": [
+          0.35457261396748563,
+          6.450904028050563e-12,
+          1.0972073177681123
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 36,
+      "index": 35,
+      "target_time_s": 6.6,
+      "actual_time_s": 6.6,
+      "absolute_sim_time_s": 6.6,
+      "physics_step": 3300,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.40979638450282296,
+          2.0510383535746308e-31,
+          1.098083298209211
+        ],
+        "blue_part_position": [
+          0.4099111262973766,
+          -1.829831407096877e-11,
+          1.0976224245072779
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 37,
+      "index": 36,
+      "target_time_s": 6.8,
+      "actual_time_s": 6.8,
+      "absolute_sim_time_s": 6.8,
+      "physics_step": 3400,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.4648386497657706,
+          0.0,
+          1.0983805056761493
+        ],
+        "blue_part_position": [
+          0.46513013078482884,
+          -1.9391276772172023e-11,
+          1.0979686359311218
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 38,
+      "index": 37,
+      "target_time_s": 7.0,
+      "actual_time_s": 7.0,
+      "absolute_sim_time_s": 7.0,
+      "physics_step": 3500,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.5181508917948187,
+          6.409494854920721e-33,
+          1.0987574484929834
+        ],
+        "blue_part_position": [
+          0.5185324642096024,
+          3.87969698653602e-12,
+          1.098379838144671
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 39,
+      "index": 38,
+      "target_time_s": 7.2,
+      "actual_time_s": 7.2,
+      "absolute_sim_time_s": 7.2,
+      "physics_step": 3600,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.5701049711183136,
+          0.0,
+          1.0991317668807328
+        ],
+        "blue_part_position": [
+          0.5703557590841585,
+          -1.2407112813970418e-11,
+          1.0987322967981872
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 40,
+      "index": 39,
+      "target_time_s": 7.4,
+      "actual_time_s": 7.4,
+      "absolute_sim_time_s": 7.4,
+      "physics_step": 3700,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.6207791159039595,
+          5.127595883936577e-32,
+          1.0994131911730065
+        ],
+        "blue_part_position": [
+          0.6209053106009622,
+          -1.7128969397090372e-11,
+          1.098984090116028
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 41,
+      "index": 40,
+      "target_time_s": 7.6,
+      "actual_time_s": 7.6,
+      "absolute_sim_time_s": 7.6,
+      "physics_step": 3800,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.670070560342329,
+          -4.005934284325451e-34,
+          1.0996769305824063
+        ],
+        "blue_part_position": [
+          0.6704636410279456,
+          -8.548379535941101e-13,
+          1.099306953901319
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 42,
+      "index": 41,
+      "target_time_s": 7.8,
+      "actual_time_s": 7.8,
+      "absolute_sim_time_s": 7.8,
+      "physics_step": 3900,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.717934040133883,
+          0.0,
+          1.0998225095056486
+        ],
+        "blue_part_position": [
+          0.7183003812398168,
+          1.1943147228888902e-11,
+          1.0994314690524587
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 43,
+      "index": 42,
+      "target_time_s": 8.0,
+      "actual_time_s": 8.0,
+      "absolute_sim_time_s": 8.0,
+      "physics_step": 4000,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.7633669477203171,
+          0.0,
+          1.1001407224609323
+        ],
+        "blue_part_position": [
+          0.7633867865687721,
+          -2.989275120840473e-11,
+          1.0996873017912316
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 44,
+      "index": 43,
+      "target_time_s": 8.2,
+      "actual_time_s": 8.2,
+      "absolute_sim_time_s": 8.2,
+      "physics_step": 4100,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.7796750933621482,
+          0.0,
+          1.1000484940047477
+        ],
+        "blue_part_position": [
+          0.7798039632670623,
+          0.0002130477999868632,
+          1.0996641091974824
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 45,
+      "index": 44,
+      "target_time_s": 8.4,
+      "actual_time_s": 8.4,
+      "absolute_sim_time_s": 8.4,
+      "physics_step": 4200,
+      "phase": "transfer_to_blue_bin",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part"
+        ],
+        "arm_state": "at_pick_pose",
+        "gripper_state": "closed",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.7794806442003843,
+          0.0,
+          1.0992658572035832
+        ],
+        "blue_part_position": [
+          0.7794870555226348,
+          0.00024225415707599537,
+          1.0988779670046271
+        ],
+        "blue_part_inside_bin": false
+      }
+    },
+    {
+      "archive_frame": 46,
+      "index": 45,
       "target_time_s": null,
-      "actual_time_s": 5.976,
-      "absolute_sim_time_s": 5.976,
-      "physics_step": 2988,
+      "actual_time_s": 8.412,
+      "absolute_sim_time_s": 8.412,
+      "physics_step": 4206,
       "phase": "transfer_to_blue_bin",
       "event_frame": true,
       "rgb_shape": [
@@ -1112,25 +1546,25 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7782879890978192,
-          0.0,
-          1.0969997184884268
+          0.7794878962846153,
+          2.8189256484623116e-20,
+          1.0992742629913392
         ],
         "blue_part_position": [
-          0.7799899206738146,
-          0.0,
-          1.0991015000186184
+          0.7794924333091883,
+          0.00024209711600527067,
+          1.0988858890067652
         ],
         "blue_part_inside_bin": false
       }
     },
     {
-      "archive_frame": 34,
-      "index": 33,
-      "target_time_s": 6.0,
-      "actual_time_s": 6.0,
-      "absolute_sim_time_s": 6.0,
-      "physics_step": 3000,
+      "archive_frame": 47,
+      "index": 46,
+      "target_time_s": 8.6,
+      "actual_time_s": 8.6,
+      "absolute_sim_time_s": 8.6,
+      "physics_step": 4300,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1148,25 +1582,25 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7813674566610818,
-          0.0,
-          1.0934954008252915
+          0.7815759257137485,
+          5.637851296924623e-20,
+          1.0601777259373686
         ],
         "blue_part_position": [
-          0.7834134921777915,
-          0.0,
-          1.0961910717282213
+          0.7816500773423961,
+          0.00024225949948749497,
+          1.0597653087103283
         ],
         "blue_part_inside_bin": false
       }
     },
     {
-      "archive_frame": 35,
-      "index": 34,
-      "target_time_s": 6.2,
-      "actual_time_s": 6.2,
-      "absolute_sim_time_s": 6.2,
-      "physics_step": 3100,
+      "archive_frame": 48,
+      "index": 47,
+      "target_time_s": 8.8,
+      "actual_time_s": 8.8,
+      "absolute_sim_time_s": 8.8,
+      "physics_step": 4400,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1184,25 +1618,25 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7776002959775227,
-          0.0,
-          1.030381094442284
+          0.7802272554464659,
+          1.4094628242311558e-20,
+          1.0004723584115942
         ],
         "blue_part_position": [
-          0.7795430030189282,
-          0.0,
-          1.0331366977061744
+          0.7803159623791895,
+          0.000242321071785495,
+          1.000061485273751
         ],
         "blue_part_inside_bin": false
       }
     },
     {
-      "archive_frame": 36,
-      "index": 35,
-      "target_time_s": 6.4,
-      "actual_time_s": 6.4,
-      "absolute_sim_time_s": 6.4,
-      "physics_step": 3200,
+      "archive_frame": 49,
+      "index": 48,
+      "target_time_s": 9.0,
+      "actual_time_s": 9.0,
+      "absolute_sim_time_s": 9.0,
+      "physics_step": 4500,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1220,25 +1654,25 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7778371199355733,
-          0.0,
-          0.9728297604701791
+          0.7805087814861178,
+          2.8189256484623116e-20,
+          0.9424539413988766
         ],
         "blue_part_position": [
-          0.7796788518947773,
-          0.0,
-          0.9755831768551042
+          0.7805958351513942,
+          0.00024231897648432167,
+          0.9420432428135528
         ],
-        "blue_part_inside_bin": false
+        "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 37,
-      "index": 36,
-      "target_time_s": 6.6,
-      "actual_time_s": 6.6,
-      "absolute_sim_time_s": 6.6,
-      "physics_step": 3300,
+      "archive_frame": 50,
+      "index": 49,
+      "target_time_s": 9.2,
+      "actual_time_s": 9.2,
+      "absolute_sim_time_s": 9.2,
+      "physics_step": 4600,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1256,25 +1690,25 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7780140469907948,
-          0.0,
-          0.91548363369425
+          0.7806178683640199,
+          -1.4094628242311558e-20,
+          0.8842275007023956
         ],
         "blue_part_position": [
-          0.7797874144068213,
-          0.0,
-          0.9182410557576602
+          0.780626240491644,
+          0.00024231563575297975,
+          0.8838161791213635
         ],
         "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 38,
-      "index": 37,
-      "target_time_s": 6.8,
-      "actual_time_s": 6.8,
-      "absolute_sim_time_s": 6.8,
-      "physics_step": 3400,
+      "archive_frame": 51,
+      "index": 50,
+      "target_time_s": 9.4,
+      "actual_time_s": 9.4,
+      "absolute_sim_time_s": 9.4,
+      "physics_step": 4700,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1292,25 +1726,25 @@
         "gripper_state": "closed",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7734515677635911,
+          0.7776643988422265,
           0.0,
-          0.8636882050105597
+          0.8596522642677062
         ],
         "blue_part_position": [
-          0.78,
-          0.0,
-          0.8599279300843098
+          0.7762419242069797,
+          0.00026635964503596087,
+          0.859782043370318
         ],
         "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 39,
-      "index": 38,
-      "target_time_s": 7.0,
-      "actual_time_s": 7.0,
-      "absolute_sim_time_s": 7.0,
-      "physics_step": 3500,
+      "archive_frame": 52,
+      "index": 51,
+      "target_time_s": 9.6,
+      "actual_time_s": 9.6,
+      "absolute_sim_time_s": 9.6,
+      "physics_step": 4800,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1328,25 +1762,25 @@
         "gripper_state": "open",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7753419169525919,
-          0.0,
-          0.8656250203372711
+          0.7802196918200153,
+          -7.047314121155779e-21,
+          0.8617452669832514
         ],
         "blue_part_position": [
-          0.78,
-          0.0,
-          0.8599304592642675
+          0.7762375361279549,
+          0.0002764429384787317,
+          0.859772980484754
         ],
         "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 40,
-      "index": 39,
-      "target_time_s": 7.2,
-      "actual_time_s": 7.2,
-      "absolute_sim_time_s": 7.2,
-      "physics_step": 3600,
+      "archive_frame": 53,
+      "index": 52,
+      "target_time_s": 9.8,
+      "actual_time_s": 9.8,
+      "absolute_sim_time_s": 9.8,
+      "physics_step": 4900,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1364,25 +1798,25 @@
         "gripper_state": "open",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7682944023404085,
+          0.7799726873211668,
           0.0,
-          0.8674520850812534
+          0.8614723445794867
         ],
         "blue_part_position": [
-          0.78,
-          0.0,
-          0.8599304592645249
+          0.7762375252537699,
+          0.00027623940234077556,
+          0.8597727669083967
         ],
         "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 41,
-      "index": 40,
-      "target_time_s": 7.4,
-      "actual_time_s": 7.4,
-      "absolute_sim_time_s": 7.4,
-      "physics_step": 3700,
+      "archive_frame": 54,
+      "index": 53,
+      "target_time_s": 10.0,
+      "actual_time_s": 10.0,
+      "absolute_sim_time_s": 10.0,
+      "physics_step": 5000,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1400,25 +1834,25 @@
         "gripper_state": "open",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7705223118518792,
+          0.7760258140249748,
           0.0,
-          0.9246074878705105
+          0.8772651306765646
         ],
         "blue_part_position": [
-          0.78,
-          0.0,
-          0.8599304592645249
+          0.776237574594251,
+          0.00027633717781421396,
+          0.8597727831950382
         ],
         "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 42,
-      "index": 41,
-      "target_time_s": 7.6,
-      "actual_time_s": 7.6,
-      "absolute_sim_time_s": 7.6,
-      "physics_step": 3800,
+      "archive_frame": 55,
+      "index": 54,
+      "target_time_s": 10.2,
+      "actual_time_s": 10.2,
+      "absolute_sim_time_s": 10.2,
+      "physics_step": 5100,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1436,25 +1870,25 @@
         "gripper_state": "open",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7720522893569742,
-          0.0,
-          0.9823917394394482
+          0.7793886866865183,
+          2.8189256484623116e-20,
+          0.9371355033862265
         ],
         "blue_part_position": [
-          0.78,
-          0.0,
-          0.8599304592645249
+          0.7762376099757409,
+          0.00027642157349295885,
+          0.8597727831241755
         ],
         "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 43,
-      "index": 42,
-      "target_time_s": 7.8,
-      "actual_time_s": 7.8,
-      "absolute_sim_time_s": 7.8,
-      "physics_step": 3900,
+      "archive_frame": 56,
+      "index": 55,
+      "target_time_s": 10.4,
+      "actual_time_s": 10.4,
+      "absolute_sim_time_s": 10.4,
+      "physics_step": 5200,
       "phase": "release_blue_part",
       "event_frame": false,
       "rgb_shape": [
@@ -1472,25 +1906,169 @@
         "gripper_state": "open",
         "blue_part_state": "grasped",
         "arm_tcp_position": [
-          0.7733404022916033,
-          0.0,
-          1.0400047781577073
+          0.7793102169681614,
+          2.8189256484623116e-20,
+          0.9955150671349038
         ],
         "blue_part_position": [
-          0.78,
-          0.0,
-          0.8599304592645249
+          0.7762376470730692,
+          0.0002765045186572511,
+          0.859772783206789
         ],
         "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 44,
-      "index": 43,
+      "archive_frame": 57,
+      "index": 56,
+      "target_time_s": 10.6,
+      "actual_time_s": 10.6,
+      "absolute_sim_time_s": 10.6,
+      "physics_step": 5300,
+      "phase": "release_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "open",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.7793301693838632,
+          0.0,
+          1.0540679235882582
+        ],
+        "blue_part_position": [
+          0.7762376841496534,
+          0.00027658767063676223,
+          0.8597727833975553
+        ],
+        "blue_part_inside_bin": true
+      }
+    },
+    {
+      "archive_frame": 58,
+      "index": 57,
+      "target_time_s": 10.8,
+      "actual_time_s": 10.8,
+      "absolute_sim_time_s": 10.8,
+      "physics_step": 5400,
+      "phase": "release_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "open",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.7825780188722047,
+          0.0,
+          1.1007205283327897
+        ],
+        "blue_part_position": [
+          0.7762377212215837,
+          0.00027667082003146457,
+          0.8597727835791951
+        ],
+        "blue_part_inside_bin": true
+      }
+    },
+    {
+      "archive_frame": 59,
+      "index": 58,
+      "target_time_s": 11.0,
+      "actual_time_s": 11.0,
+      "absolute_sim_time_s": 11.0,
+      "physics_step": 5500,
+      "phase": "release_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "open",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.7799755167951672,
+          0.0,
+          1.0999129846529192
+        ],
+        "blue_part_position": [
+          0.776237758300213,
+          0.0002767539704254572,
+          0.8597727837607424
+        ],
+        "blue_part_inside_bin": true
+      }
+    },
+    {
+      "archive_frame": 60,
+      "index": 59,
+      "target_time_s": 11.2,
+      "actual_time_s": 11.2,
+      "absolute_sim_time_s": 11.2,
+      "physics_step": 5600,
+      "phase": "release_blue_part",
+      "event_frame": false,
+      "rgb_shape": [
+        480,
+        640,
+        3
+      ],
+      "observation": {
+        "history": [
+          "approach_blue_part",
+          "grasp_blue_part",
+          "transfer_to_blue_bin"
+        ],
+        "arm_state": "over_blue_bin",
+        "gripper_state": "open",
+        "blue_part_state": "grasped",
+        "arm_tcp_position": [
+          0.7817231518545761,
+          1.4094628242311558e-20,
+          1.100084887038231
+        ],
+        "blue_part_position": [
+          0.7762377953845808,
+          0.0002768371230649642,
+          0.8597727839423738
+        ],
+        "blue_part_inside_bin": true
+      }
+    },
+    {
+      "archive_frame": 61,
+      "index": 60,
       "target_time_s": null,
-      "actual_time_s": 7.976,
-      "absolute_sim_time_s": 7.976,
-      "physics_step": 3988,
+      "actual_time_s": 11.322,
+      "absolute_sim_time_s": 11.322,
+      "physics_step": 5661,
       "phase": "release_blue_part",
       "event_frame": true,
       "rgb_shape": [
@@ -1509,25 +2087,25 @@
         "gripper_state": "open",
         "blue_part_state": "inside_blue_bin",
         "arm_tcp_position": [
-          0.7753118353386573,
+          0.7807077710547107,
           0.0,
-          1.090459269653178
+          1.1005930884822965
         ],
         "blue_part_position": [
-          0.78,
-          0.0,
-          0.8599304592645249
+          0.7762385554145775,
+          0.0002684246920355165,
+          0.8597752198713396
         ],
         "blue_part_inside_bin": true
       }
     },
     {
-      "archive_frame": 45,
-      "index": 44,
+      "archive_frame": 62,
+      "index": 61,
       "target_time_s": null,
-      "actual_time_s": 7.976,
-      "absolute_sim_time_s": 7.976,
-      "physics_step": 3988,
+      "actual_time_s": 11.322,
+      "absolute_sim_time_s": 11.322,
+      "physics_step": 5661,
       "phase": "inspect_sorting_result",
       "event_frame": true,
       "rgb_shape": [
@@ -1547,14 +2125,14 @@
         "gripper_state": "open",
         "blue_part_state": "inside_blue_bin",
         "arm_tcp_position": [
-          0.7753118353386573,
+          0.7807077710547107,
           0.0,
-          1.090459269653178
+          1.1005930884822965
         ],
         "blue_part_position": [
-          0.78,
-          0.0,
-          0.8599304592645249
+          0.7762385554145775,
+          0.0002684246920355165,
+          0.8597752198713396
         ],
         "blue_part_inside_bin": true
       }
@@ -1562,8 +2140,8 @@
   ],
   "archive_verification": {
     "status": "PASS",
-    "gif_frame_count": 45,
-    "tiff_page_count": 45,
+    "gif_frame_count": 62,
+    "tiff_page_count": 62,
     "gif_frame_durations_ms": [
       200,
       800

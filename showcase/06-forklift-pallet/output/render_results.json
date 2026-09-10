@@ -22,14 +22,14 @@
   "visible_interaction_markers": {
     "status": "PASS",
     "pixels": {
-      "yellow": 1237,
-      "cyan": 8470,
-      "green": 6643,
-      "magenta": 203,
-      "orange": 3838
+      "yellow": 1246,
+      "cyan": 8635,
+      "green": 6901,
+      "magenta": 303,
+      "orange": 3669
     }
   },
-  "forklift_movement_m": 2.2326188277073875,
+  "forklift_movement_m": 2.2363270215806867,
   "screenshots": {
     "initial": {
       "path": "output/screenshots/initial/rgb.png"
@@ -48,7 +48,7 @@
         640
       ],
       "finite_geometry_pixels": 156793,
-      "min_m": 5.403749465942383,
+      "min_m": 5.791985988616943,
       "max_m": 11.841093063354492
     },
     "final": {
@@ -56,8 +56,8 @@
         480,
         640
       ],
-      "finite_geometry_pixels": 155326,
-      "min_m": 5.403749465942383,
+      "finite_geometry_pixels": 155316,
+      "min_m": 5.791985988616943,
       "max_m": 11.841093063354492
     }
   }

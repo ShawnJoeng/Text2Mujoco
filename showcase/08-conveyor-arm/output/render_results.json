@@ -21,14 +21,15 @@
   "visible_interaction_markers": {
     "status": "PASS",
     "pixels": {
-      "yellow": 1639,
-      "cyan": 891,
-      "green": 3642,
-      "magenta": 210,
-      "orange": 2467
+      "yellow": 1406,
+      "cyan": 814,
+      "green": 3619,
+      "magenta": 153,
+      "orange": 2145
     }
   },
-  "tool_movement_m": 1.0571738972939928,
+  "tool_movement_m": 1.2427380195041566,
+  "tool_movement_metric": "peak displacement from the start pose",
   "screenshots": {
     "initial": {
       "path": "output/screenshots/initial/rgb.png"

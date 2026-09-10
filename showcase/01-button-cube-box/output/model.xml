@@ -25,18 +25,33 @@
     <material name="blue_front_material" rgba="0.08 0.32 0.85 0.18" specular="0.1" roughness="0.55"/>
     <material name="dark_material" rgba="0.09 0.1 0.12 1"/>
     <material name="marker_material" rgba="1 0.78 0.05 1" emission="0.25"/>
+    <material name="marker_cyan_material" rgba="0.02 0.95 1 1" emission="0.25"/>
+    <material name="marker_green_material" rgba="0.05 0.85 0.25 1" emission="0.25"/>
+    <material name="marker_magenta_material" rgba="1 0.05 0.78 1" emission="0.25"/>
   </asset>
 
   <default>
     <geom friction="0.8 0.01 0.001" condim="3" solref="0.002 1" solimp="0.98 0.999 0.0005"/>
-    <site type="sphere" material="marker_material" size="0.018" group="2"/>
+    <!-- Every marker in this scene is a decal, so the default is a thin disc and
+         not a sphere. A site carries no collision geometry at all, which is why a
+         floating ball is the wrong shape for one: the cube and the button pass
+         straight through it and it reads as debris. Each disc below is centred
+         its own half-height above the face it is painted on, so its underside is
+         flush and the shape cannot be mistaken for an object. -->
+    <site type="cylinder" material="marker_material" size="0.03 0.004" group="2"/>
   </default>
 
   <worldbody>
     <light name="key_light" pos="-1.2 -1.0 2.8" dir="0.35 0.35 -1" directional="true" castshadow="true"/>
     <light name="fill_light" pos="1.2 -0.2 1.8" dir="-0.7 0.15 -1" directional="true" diffuse="0.35 0.38 0.45" specular="0.05 0.05 0.05"/>
     <camera name="overhead_rgbd" pos="1.2 -1.2 1.4" quat="0.7612142645 0.5235515583 0.2168621560 0.3153052722" fovy="50"/>
-    <site name="inspect_rgbd_marker" pos="1.2 -1.2 1.4" quat="0.7612142645 0.5235515583 0.2168621560 0.3153052722" size="0.001" rgba="0 0 0 0"/>
+    <!-- inspect_rgbd_marker used to be a 1 mm fully transparent site sitting at
+         this camera's own position, 1399 mm above the nearest surface. It was
+         neither a marker (nothing was drawn) nor a reference frame anybody read:
+         the camera already carries that pose, physics_smoke.py checks cam_pos and
+         cam_quat against the spec, and no code looked the site up. The spec still
+         has to name a visible marker for the inspect action, so the name now
+         belongs to a decal on the table, below. -->
 
     <geom name="ground_geom" type="plane" size="2 2 0.1" material="ground_material"/>
 
@@ -46,6 +61,16 @@
       <geom name="table_leg_fr" type="box" pos="0.52 -0.32 -0.375" size="0.035 0.035 0.375" material="dark_material"/>
       <geom name="table_leg_bl" type="box" pos="-0.52 0.32 -0.375" size="0.035 0.035 0.375" material="dark_material"/>
       <geom name="table_leg_br" type="box" pos="0.52 0.32 -0.375" size="0.035 0.035 0.375" material="dark_material"/>
+      <!-- The RGB-D check point, painted on the table where the camera can see
+           it. The table top is at 0.75 + 0.025 = 0.775, so a 4 mm half-height
+           disc centred at local z = 0.029 has its underside flush on that face.
+           The spot is chosen to be unoccluded and to sit on nothing else: the
+           disc spans x 0.10..0.20 and y -0.15..-0.05, which clears the box
+           footprint (y >= 0.03), the button housing (x >= 0.32) and the cube
+           (x <= -0.07), and the ray from the camera at (1.2, -1.2, 1.4) crosses
+           the box's front face plane y = 0.04 only at 1.13 of the way to the
+           disc, i.e. past it, so the box cannot stand in front of it. -->
+      <site name="inspect_rgbd_marker" pos="0.15 -0.10 0.029" size="0.05 0.004" material="marker_magenta_material"/>
     </body>
 
     <!-- The button cap is an actuated body, so it collides. Its 0.02 m stroke
@@ -64,14 +89,32 @@
       <body name="button_cap" pos="0 0 0.055">
         <joint name="button_slide" type="slide" axis="0 0 1" range="-0.02 0" damping="2"/>
         <geom name="start_button_geom" type="cylinder" size="0.04 0.015" mass="0.05" material="green_material"/>
-        <site name="press_start_button_marker" pos="0 0 0.03" size="0.016"/>
+        <!-- The press point was a 0.016 m sphere centred 0.015 m above the cap
+             face, so it stood proud of the cap as a ball with air under most of
+             it. It is now painted on the face: the cap's top is at local
+             z = 0.015, so a 4 mm half-height disc centred at 0.019 sits flush on
+             it, and a 0.026 m radius inside the 0.04 m cap leaves a 14 mm green
+             ring around the decal. In the button_base frame the disc is at
+             0.055 + 0.019 = 0.074 while the bezel tops out at 0.036 + 0.02 =
+             0.056, so nothing shadows it, and it rides the cap's whole 0.02 m
+             stroke, which is what makes the press readable in a render. -->
+        <site name="press_start_button_marker" pos="0 0 0.019" size="0.026 0.004"/>
       </body>
     </body>
 
     <body name="red_cube" pos="-0.12 -0.03 0.825">
       <freejoint name="cube_free"/>
       <geom name="red_cube_geom" type="box" size="0.05 0.05 0.05" mass="0.2" material="red_material"/>
-      <site name="grasp_red_cube_marker" pos="0 0 0.075" size="0.016"/>
+      <!-- The grasp point was a 0.016 m sphere hovering 0.025 m over the cube.
+           It is now painted on the cube's top face, which is at local z = 0.05,
+           so a 4 mm half-height disc centred at 0.054 has its underside flush.
+           It stays on the payload rather than moving to the table because the
+           interaction targets this body: the patch then travels with the cube
+           through the lift, the carry and the drop, and a render shows what is
+           being held. Radius 0.028 of the 0.05 half-width leaves a red border on
+           every side, so the cube is still the red object the render smoke test
+           looks for. -->
+      <site name="grasp_red_cube_marker" pos="0 0 0.054" size="0.028 0.004" material="marker_cyan_material"/>
     </body>
 
     <body name="target_box" pos="0.3 0.18 0.775">
@@ -80,9 +123,34 @@
       <geom name="box_right" type="box" pos="0.17 0 0.11" size="0.01 0.15 0.09" material="blue_material"/>
       <geom name="box_front" type="box" pos="0 -0.14 0.11" size="0.16 0.01 0.09" material="blue_front_material"/>
       <geom name="box_back" type="box" pos="0 0.14 0.11" size="0.16 0.01 0.09" material="blue_material"/>
-      <site name="place_cube_in_box_marker" pos="0 0 0.085" size="0.024"/>
+      <!-- The placement point was a 0.024 m sphere at local z = 0.085, hanging 41
+           mm above the box floor: the interior floor's top face is at
+           0.01 + 0.01 = 0.02. The decal is on that floor, 4 mm half-height
+           centred at 0.024. It is offset to -y instead of sitting at the middle,
+           because the cube lands on the middle: the cube's footprint is local
+           +-0.05 and the disc spans y -0.125..-0.055, so it clears the cube by 5
+           mm and the front panel's inner face at -0.14 + 0.01 = -0.13 by another
+           5 mm. -y is also the camera side, and box_front is the panel drawn at
+           alpha 0.18, so the decal stays visible once the cube is in the box. -->
+      <site name="place_cube_in_box_marker" pos="0 -0.09 0.024" size="0.035 0.004" material="marker_green_material"/>
     </body>
   </worldbody>
+
+  <!-- The carry used to be a qpos write: every step assigned the cube's free-joint
+       coordinates and zeroed its velocity. A cube held that way is indistinguishable
+       from a cube lying on the table - it ignores every contact it is dragged
+       through, and letting go of it is a teleport. This weld is the hold instead.
+       The prompt asked for a button, a cube and a box and gave no manipulator, so
+       there is no tool body to weld to and body1 is the world: the constraint's
+       relpose is then simply the world pose the cube is being held at, and
+       environment.py walks that target while the solver moves the cube. Releasing
+       is one write to eq_active, after which the cube falls under gravity.
+       solimp is softer than the contact default so engaging the weld on a resting
+       cube cannot snap it. -->
+  <equality>
+    <weld name="cube_grasp" body1="world" body2="red_cube" active="false"
+          solref="0.01 1" solimp="0.96 0.99 0.001"/>
+  </equality>
 
   <actuator>
     <position name="button_press" joint="button_slide" kp="400" ctrlrange="-0.02 0"/>

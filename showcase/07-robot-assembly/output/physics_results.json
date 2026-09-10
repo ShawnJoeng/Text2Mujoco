@@ -7,22 +7,23 @@
     "xml_parse": "PASS",
     "mjcf_compile": "PASS",
     "quaternion_conversion": "PASS",
-    "arm_hinge_joints": 3,
-    "explicit_actuators": 5,
+    "arm_hinge_joints": 4,
+    "explicit_actuators": 6,
     "visible_markers": 6
   },
   "physics": {
     "initial_contact": "PASS",
     "sequence_contact": {
-      "steps": 2200,
-      "deepest_overlap_mm": 0.1371,
+      "steps": 3180,
+      "deepest_overlap_mm": 0.2445,
       "limit_mm": 1.0,
       "result": "PASS"
     },
     "mj_step": "PASS",
     "finite_state": "PASS",
     "held_peg_transport": "PASS",
-    "socket_release_tolerance_m": 0.00379422082964099
+    "weld_release_drop_mm": 71.159,
+    "socket_release_tolerance_m": 0.005008556643843596
   },
   "dependency_enforcement": "PASS",
   "deterministic_reset": "PASS",

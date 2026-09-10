@@ -29,14 +29,24 @@
     <material name="marker_orange" rgba="1 0.28 0.02 1" emission="0.35"/>
   </asset>
 
+  <!-- Collision classes. A pair is tested when
+       (contype1 & conaffinity2) || (contype2 & conaffinity1), and every class
+       here now carries conaffinity 7, so no pair is filtered by a mask at all.
+       The two the old masks swallowed were world-against-world ((1 & 6) = 0) and
+       truck-against-truck ((2 & 5) = 0). Neither hid an overlap: every static
+       body shares the world's weld root, and every truck part belongs either to
+       the chassis weld group or to the carriage's, which are weld parent and
+       child, so MuJoCo filters both structurally whatever the masks say. Opening
+       them therefore costs nothing measurable - but a mask that hides a
+       mechanism against itself would equally hide a mechanism that did meet. -->
   <default>
     <joint damping="1.0" armature="0.02"/>
     <geom friction="0.78 0.01 0.002" condim="6" solref="0.008 1" solimp="0.9 0.95 0.001"/>
     <default class="world_part">
-      <geom contype="1" conaffinity="6"/>
+      <geom contype="1" conaffinity="7"/>
     </default>
     <default class="robot_part">
-      <geom contype="2" conaffinity="5"/>
+      <geom contype="2" conaffinity="7"/>
     </default>
     <default class="payload_part">
       <geom contype="4" conaffinity="7"/>
@@ -89,7 +99,12 @@
           <body name="right_fork" pos="0.68 -0.18 0.05">
             <geom name="right_fork" type="box" size="0.55 0.055 0.035" mass="0.45" material="fork_mat"/>
           </body>
-          <site name="fork_tip_site" type="sphere" pos="1.14 0 0.05" size="0.025" rgba="0.98 0.84 0.05 1" group="2"/>
+          <!-- A kinematic reference, not a marker: the contract reads this frame
+               to check fork-to-pallet alignment. Drawn in group 2 it was an
+               emissive ball 60 mm inside the pallet's centre runner whenever the
+               tines were in the channel - which is the whole point of the tines.
+               Group 4 is not rendered, so it stays a frame. -->
+          <site name="fork_tip_site" type="sphere" pos="1.14 0 0.05" size="0.025" rgba="0.98 0.84 0.05 0.4" group="4"/>
         </body>
       </body>
     </body>
@@ -107,6 +122,16 @@
         <geom name="payload_crate_geom" type="box" size="0.32 0.28 0.20" mass="0.8" material="crate_mat"/>
         <geom name="payload_crate_band" type="box" pos="0 0.285 0" size="0.33 0.012 0.21" mass="0.15" material="forklift_dark"/>
       </body>
+      <!-- The engage decal belongs to the pallet, because "engage" names the
+           pallet and not a patch of floor: painted on the deck it travels with
+           the load and still reads correctly on the delivery stand. It lies flat
+           on the deck top (local z 0.07) with its 0.006 half-height above that,
+           so the underside is flush and the audit's downward ray travels exactly
+           0.006 m. Local x 0.41 with radius 0.07 spans 0.34 .. 0.48: clear of
+           the crate footprint (|x| <= 0.32, and the strap band reaches 0.33) and
+           20 mm inside the deck edge at 0.50, so nothing on the pallet covers
+           it. -->
+      <site name="engage_pallet_marker" type="cylinder" pos="0.41 0 0.076" size="0.07 0.006" material="marker_magenta" group="2"/>
     </body>
 
     <!-- The delivery target is a stand with corner blocks, not a walled bin. A
@@ -132,17 +157,94 @@
       <geom name="storage_rack_top" type="box" pos="0 0 1.26" size="0.68 0.30 0.045" material="rack_mat"/>
     </body>
 
-    <site name="drive_to_pallet_marker" type="sphere" pos="-0.98 -0.9 0.98" size="0.055" material="marker_yellow" group="2"/>
-    <site name="raise_forks_marker" type="cylinder" pos="-0.02 -0.9 0.78" size="0.09 0.014" material="marker_cyan" group="2"/>
-    <site name="engage_pallet_marker" type="ellipsoid" pos="-0.15 -0.9 0.92" size="0.08 0.04 0.025" material="marker_magenta" group="2"/>
-    <site name="carry_to_drop_zone_marker" type="sphere" pos="1.55 0.35 1.15" size="0.06" material="marker_green" group="2"/>
-    <site name="lower_forks_release_marker" type="cylinder" pos="1.55 0.35 0.98" size="0.10 0.014" material="marker_orange" group="2"/>
-    <site name="inspect_forklift_delivery_marker" type="sphere" pos="2.35 -0.95 0.90" size="0.06" material="marker_magenta" group="2"/>
+    <!-- Markers are decals painted on the surface each action happens on, not
+         balls hanging in the air that the truck and its load drive straight
+         through. Every one is a cylinder whose 0.006 m half-height equals its
+         height above the surface underneath, so the underside is flush and the
+         audit's downward ray travels exactly its own reach.
+         The two loading-station decals mark the truck's own station: at the stop
+         pose the chassis centre is at x = -2.10 and the mast at -2.10 + 0.42 =
+         -1.68, so the pair sits directly under the stop line and under the lift
+         column. They stand off to y = -1.55, which is 190 mm in front of the
+         loading stand's deck (y >= -1.36) and 310 mm in front of the chassis
+         (y >= -1.24), because a decal inside that footprint is roofed by the
+         truck or the stand and cannot be read at all. The old pair hung at
+         x = -0.02 and -0.15 on the y = -0.9 lane, 766 mm and 895 mm over bare
+         floor at an x the truck never reaches: its stop pose is 1.7 m short of
+         there and its route leaves that lane altogether.
+         The delivery pair splits the same way: the truck's own arrival is a
+         floor decal at its stop pose (0.45, 0.35), and the release is a decal on
+         the stand deck. The deck top is 0.68 + 0.04 = 0.72 and spans
+         x = 1.19 .. 2.13, y = -0.21 .. 0.91; the delivered pallet covers
+         x = 1.05 .. 2.05, y = -0.05 .. 0.75, so the free deck is the two 0.16 m
+         strips at y = -0.13 and y = 0.83. The near strip is the one that is
+         still visible once the load is on the stand - from this camera the far
+         strip disappears behind the pallet's own runners - and x = 1.66 sits
+         between the corner blocks at 1.26 .. 1.34 and 1.98 .. 2.06.
+         The inspection decal drops from 0.90 to the floor it was hovering
+         840 mm above. It stays the standpoint beside the delivery stand, moved
+         in from (2.35, -0.95) to (2.30, -0.82) because on the floor it sits
+         lower in frame: at 0.90 m its line of sight left 12 % of the camera's
+         half-height in hand, and on the floor (2.35, -0.95) read tan_y = -0.381
+         against the 0.414 limit with a rim 0.014 further out. From (2.30, -0.82)
+         the centre reads -0.362 and the rim -0.376. -->
+    <site name="drive_to_pallet_marker" type="cylinder" pos="-2.10 -1.55 0.006" size="0.10 0.006" material="marker_yellow" group="2"/>
+    <site name="raise_forks_marker" type="cylinder" pos="-1.68 -1.55 0.006" size="0.09 0.006" material="marker_cyan" group="2"/>
+    <site name="carry_to_drop_zone_marker" type="cylinder" pos="0.45 0.35 0.006" size="0.10 0.006" material="marker_green" group="2"/>
+    <site name="lower_forks_release_marker" type="cylinder" pos="1.66 -0.13 0.726" size="0.07 0.006" material="marker_orange" group="2"/>
+    <site name="inspect_forklift_delivery_marker" type="cylinder" pos="2.30 -0.82 0.006" size="0.09 0.006" material="marker_magenta" group="2"/>
   </worldbody>
 
+  <!-- The wheels are rigid geoms on a chassis whose only degrees of freedom are
+       x, y and yaw, so they cannot roll: every metre the truck drives, the tread
+       slides on the floor. At the default 0.78 that zero-clearance contact fights
+       the drive hard enough to matter - the y servo saturated at 400 N for 744 of
+       1100 steps and the loaded truck stick-slipped along at 0.09 m/s against a
+       0.8 m/s command, ending a 0.9 m segment 190 mm short. That is the drag the
+       old controller was writing joint coordinates to hide. What a rolling wheel
+       actually costs is rolling resistance, 1 to 2 % of the load for a hard wheel
+       on concrete, so the wheel/floor pairs are declared with friction 0.02 and
+       condim 3: the same 0.9 m segment then finishes 3 mm out with the servo
+       never leaving its force range. The floor keeps its 0.78 for everything
+       else, which is why this is four pairs and not a change to the plane. -->
+  <contact>
+    <pair name="wheel_floor_front_left" geom1="ground_geom" geom2="front_wheel_left" condim="3" friction="0.02 0.02 0.001 0.0001 0.0001"/>
+    <pair name="wheel_floor_front_right" geom1="ground_geom" geom2="front_wheel_right" condim="3" friction="0.02 0.02 0.001 0.0001 0.0001"/>
+    <pair name="wheel_floor_rear_left" geom1="ground_geom" geom2="rear_wheel_left" condim="3" friction="0.02 0.02 0.001 0.0001 0.0001"/>
+    <pair name="wheel_floor_rear_right" geom1="ground_geom" geom2="rear_wheel_right" condim="3" friction="0.02 0.02 0.001 0.0001 0.0001"/>
+  </contact>
+
+  <!-- The pallet is carried by a weld between the fork carriage and the pallet,
+       engaged at the offset the load is measured to be sitting at once the tines
+       have picked it up, so the constraint starts satisfied and nothing snaps.
+       The nominal offset is the one the documented sequence produces: at the
+       stop pose the carriage is at x = -2.10 + 0.42 = -1.68 and the pallet stays
+       at x = -1.0, so 0.68 m along the tines; and with the load riding the tine
+       top the pallet centre is 0.155 m above the carriage centre (tine top
+       0.05 + 0.035 above the carriage plus the deck's 0.07 half-height).
+       Overwriting the pallet's free-joint qpos every step, which is what this
+       replaces, made a pallet in the air indistinguishable from a pallet on the
+       stand and turned every release into a teleport. -->
+  <equality>
+    <weld name="pallet_grasp" body1="fork_carriage" body2="pallet" relpose="0.68 0 0.155 1 0 0 0"
+          active="false" solref="0.01 1" solimp="0.97 0.995 0.001"/>
+  </equality>
+
   <actuator>
-    <position name="forklift_x_motor" joint="forklift_x" kp="240" kv="24" ctrlrange="-0.3 4.8" forcerange="-180 180"/>
-    <position name="forklift_y_motor" joint="forklift_y" kp="240" kv="24" ctrlrange="-0.4 2.5" forcerange="-180 180"/>
+    <!-- The chassis has no vertical degree of freedom, so its wheels carry no
+         load and the only resistance along a drive axis is the joint's own
+         damping plus the servo's kv. At kp 240 that still left the truck a long
+         way behind its command: 17.0 kg of truck (20.35 with the pallet welded
+         on) lags by (3.2 + 24) * 0.8 / 240 = 91 mm at 0.8 m/s and then creeps in
+         at a natural frequency of sqrt(240/17) = 3.8 rad/s with damping ratio
+         27.2 / (2 * sqrt(240 * 17)) = 0.21, which is why the old controller had
+         to write joint coordinates whenever the residual passed 120 mm. At
+         kp 1800 / kv 150 the ratio is 153.2 / (2 * sqrt(1800 * 17)) = 0.44 at
+         10.3 rad/s, the moving lag falls to 68 mm and a held command settles
+         inside a millimetre, so the residual never needs correcting. Peak demand
+         is kp * 0.068 + kv * 0.8 = 242 N, inside the 400 N range. -->
+    <position name="forklift_x_motor" joint="forklift_x" kp="1800" kv="150" ctrlrange="-0.3 4.8" forcerange="-400 400"/>
+    <position name="forklift_y_motor" joint="forklift_y" kp="1800" kv="150" ctrlrange="-0.4 2.5" forcerange="-400 400"/>
     <position name="forklift_yaw_motor" joint="forklift_yaw" kp="80" kv="12" ctrlrange="-0.35 0.35" forcerange="-60 60"/>
     <position name="fork_lift_motor" joint="fork_lift" kp="6000" kv="300" ctrlrange="0 0.35" forcerange="-600 600"/>
   </actuator>

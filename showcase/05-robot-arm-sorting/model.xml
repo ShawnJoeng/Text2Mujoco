@@ -1,7 +1,7 @@
 <mujoco model="robot_arm_sorting">
   <compiler angle="radian" autolimits="true"/>
   <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton" cone="elliptic"/>
-  <size nconmax="500" njmax="1000"/>
+  <size nconmax="800" njmax="1600"/>
   <statistic center="0 0 0.78" extent="2.3"/>
   <visual>
     <global offwidth="640" offheight="480"/>
@@ -19,6 +19,7 @@
     <material name="arm_link_mat" rgba="0.92 0.48 0.06 1" specular="0.38" roughness="0.28"/>
     <material name="joint_mat" rgba="0.06 0.08 0.10 1" specular="0.42" roughness="0.25"/>
     <material name="gripper_mat" rgba="0.14 0.55 0.82 1" specular="0.35" roughness="0.28"/>
+    <material name="steel_mat" rgba="0.74 0.77 0.80 1" specular="0.60" roughness="0.18"/>
     <material name="blue_mat" rgba="0.02 0.32 0.95 1" specular="0.42" roughness="0.24"/>
     <material name="red_mat" rgba="0.92 0.08 0.07 1" specular="0.42" roughness="0.24"/>
     <material name="blue_bin_mat" rgba="0.02 0.43 0.88 1" specular="0.24" roughness="0.42"/>
@@ -30,24 +31,33 @@
     <material name="marker_green" rgba="0.08 1 0.24 1" emission="0.35"/>
   </asset>
 
-  <!-- Collision classes. A pair is tested when
-       (contype1 & conaffinity2) || (contype2 & conaffinity1), so these masks
-       give world-robot, world-payload, robot-payload, and payload-payload
-       contacts while filtering robot self-collision, which this three-link
-       chain does not need. Every moving body carries a collidable geom: a
-       contype="0" conaffinity="0" arm renders normally and sweeps through the
-       table without generating a single contact to report. -->
+  <!-- Collision classes say which groups are allowed to touch; they are not a
+       licence for the arm to pass through itself. A pair is tested when
+       (contype1 & conaffinity2) || (contype2 & conaffinity1), and every class
+       here carries conaffinity 7, so world<->robot, world<->payload,
+       robot<->payload, payload<->payload AND robot<->robot are all live. The
+       arm therefore has a collision boundary against its own links; the one
+       pair that is designed to interpenetrate - the shoulder hub bolted into
+       the pedestal it turns on - is named in the <contact> block below instead
+       of being hidden behind a mask. -->
   <default>
     <joint damping="1.2" armature="0.015"/>
     <geom friction="0.72 0.01 0.002" condim="6" solref="0.008 1" solimp="0.9 0.95 0.001"/>
     <default class="world_part">
-      <geom contype="1" conaffinity="6"/>
+      <geom contype="1" conaffinity="7"/>
     </default>
     <default class="robot_part">
-      <geom contype="2" conaffinity="5"/>
+      <geom contype="2" conaffinity="7"/>
     </default>
     <default class="payload_part">
-      <geom contype="4" conaffinity="7"/>
+      <!-- A machined part landing on a steel bin floor is a hard contact. At the
+           inherited 0.008 s time constant the 1.5 mm set-down drop squashed
+           2.2 mm into the floor before the solver caught it, which is contact
+           softness rather than geometry passing through, but it is still 2 mm of
+           visible interpenetration. 0.005 s is the stiffest value this 0.002 s
+           timestep supports with margin (the solver needs at least 2 steps) and
+           it holds the same landing to 0.6 mm. -->
+      <geom contype="4" conaffinity="7" solref="0.005 1"/>
     </default>
   </default>
 
@@ -65,6 +75,12 @@
       <geom name="worktable_leg_br" class="world_part" type="box" pos="1.18 0.66 -0.38" size="0.055 0.055 0.38" material="frame_mat"/>
     </body>
 
+    <!-- The two rollers stand proud of the belt: r = 0.080 centred at z = 0.800,
+         so they run from 0.720 to 0.880 while the belt top is 0.785. Their world
+         x bands are [-0.040, 0.120] and [0.340, 0.500], which leaves exactly one
+         clear stretch of belt, x in (0.120, 0.340), and that is where the part
+         sits (x in [0.160, 0.300]). Every jaw clearance at the pick station is
+         measured against those two bands. -->
     <body name="conveyor_frame" pos="0.23 0 0.76">
       <geom name="conveyor_belt_geom" class="world_part" type="box" size="0.27 0.23 0.025" material="belt_mat"/>
       <geom name="conveyor_stand_geom" class="world_part" type="box" pos="0 0 -0.0525" size="0.25 0.21 0.0275" material="frame_mat"/>
@@ -82,37 +98,85 @@
     <body name="arm_base" pos="-0.35 0 0.70">
       <geom name="arm_base_geom" class="world_part" type="cylinder" pos="0 0 0.40" size="0.24 0.42" material="arm_base_mat"/>
       <geom name="arm_base_ring" class="world_part" type="cylinder" pos="0 0 0.37" size="0.28 0.035" material="joint_mat"/>
-      <body name="arm_upper_link" pos="0 0 0.82">
+
+      <!-- Six actuated joints: three planar hinges about y, the tool roll about
+           the tool's own z, and the two jaw slides. Every millimetre below is in
+           the gripper frame, whose origin is the tool flange 0.130 m out along
+           the wrist link; z = 0 is the wrist axis.
+             wrist capsule   -0.050 .. +0.050   r 0.050 about the wrist axis
+             palm            -0.100 .. +0.040   fixed to the wrist link
+             jaw sleeve      -0.165 .. -0.085   turns with tool_roll
+             jaw carriage    -0.160 .. -0.110   slides in y inside the sleeve
+             finger pad      -0.285 .. -0.115
+             tool centre     -0.260             the carried part's centre
+             part            -0.330 .. -0.190   r 0.070, half-height 0.070
+           Two clearances are load-bearing and both are fixed by construction,
+           because nothing below the flange can move in z:
+             sleeve bottom to part top   -0.165 - (-0.190) = 25 mm
+             palm bottom to carriage top -0.100 - (-0.110) = 10 mm
+           and everything that turns with tool_roll stays at z <= -0.085, which
+           is 20 mm clear of the forearm's 0.065 m end cap at the wrist origin
+           even when the sleeve is rolled broadside over it. -->
+      <body name="arm_upper_link" pos="0 0 0.82" gravcomp="1">
         <joint name="arm_shoulder" type="hinge" axis="0 1 0" range="-2.8 1.8" damping="3.0" armature="0.02"/>
         <geom name="arm_upper_geom" class="robot_part" type="capsule" fromto="0 0 0 0.72 0 0" size="0.075" mass="1.2" material="arm_link_mat"/>
-        <geom name="arm_shoulder_hub" class="robot_part" type="cylinder" quat="0.7071068 0 0.7071068 0" size="0.115 0.09" material="joint_mat"/>
-        <body name="arm_forearm_link" pos="0.72 0 0">
+        <!-- A hinge hub is coaxial with its hinge, so the disc faces along y.
+             r = 0.115 dips to z = 1.405, i.e. 115 mm inside the pedestal top at
+             1.520: that is the mount, and it is the one declared <exclude>. -->
+        <geom name="arm_shoulder_hub" class="robot_part" type="cylinder" zaxis="0 1 0" size="0.115 0.09" mass="2.40" material="joint_mat"/>
+        <body name="arm_forearm_link" pos="0.72 0 0" gravcomp="1">
           <joint name="arm_elbow" type="hinge" axis="0 1 0" range="-2.8 2.8" damping="2.4" armature="0.018"/>
           <geom name="arm_forearm_geom" class="robot_part" type="capsule" fromto="0 0 0 0.62 0 0" size="0.065" mass="0.9" material="arm_link_mat"/>
-          <geom name="arm_elbow_hub" class="robot_part" type="cylinder" quat="0.7071068 0 0.7071068 0" size="0.095 0.075" material="joint_mat"/>
-          <body name="arm_wrist_link" pos="0.62 0 0">
+          <geom name="arm_elbow_hub" class="robot_part" type="cylinder" zaxis="0 1 0" size="0.095 0.075" mass="1.40" material="joint_mat"/>
+          <body name="arm_wrist_link" pos="0.62 0 0" gravcomp="1">
             <joint name="arm_wrist" type="hinge" axis="0 1 0" range="-2.4 2.4" damping="1.4" armature="0.012"/>
             <geom name="arm_wrist_geom" class="robot_part" type="capsule" fromto="0 0 0 0.13 0 0" size="0.05" mass="0.25" material="gripper_mat"/>
-            <body name="gripper" pos="0.13 0 0">
-              <!-- Palm bottom sits 0.13 m above the tool centre point, so with
-                   the TCP at the 0.07 m-radius part's centre the palm clears
-                   the part top by 0.06 m. The earlier 0.03 m margin was inside
-                   the position servos' sag, and the palm pressed the part off
-                   the belt on the way down. -->
-              <geom name="gripper_palm_geom" class="robot_part" type="box" pos="0 0 0.005" size="0.09 0.14 0.035" material="gripper_mat"/>
-              <!-- Tool centre point: the grasp centre between the finger pads,
-                   0.16 m below the palm mount, not the wrist origin. -->
-              <site name="arm_tcp" type="sphere" pos="0 0 -0.16" size="0.025" rgba="0.02 1 0.95 1" group="2"/>
-              <!-- Pads span TCP-0.04 to TCP+0.11: low enough to grip the part's
-                   upper 0.11 m, high enough to stay 0.03 m off the belt and off
-                   the bin floor at the release pose. -->
-              <body name="left_finger" pos="0 0.135 -0.02">
-                <joint name="gripper_left_slide" type="slide" axis="0 1 0" range="-0.075 0" damping="1.5"/>
-                <geom name="left_finger_geom" class="robot_part" type="box" pos="0 0 -0.105" size="0.035 0.025 0.075" material="gripper_mat"/>
-              </body>
-              <body name="right_finger" pos="0 -0.135 -0.02">
-                <joint name="gripper_right_slide" type="slide" axis="0 1 0" range="0 0.075" damping="1.5"/>
-                <geom name="right_finger_geom" class="robot_part" type="box" pos="0 0 -0.105" size="0.035 0.025 0.075" material="gripper_mat"/>
+            <body name="gripper" pos="0.13 0 0" gravcomp="1">
+              <!-- The palm is bolted to the wrist link, not to the turret, so it
+                   is the housing the wrist capsule and the forearm end cap sit
+                   inside. It also reaches 15 mm past the top of the jaw sleeve,
+                   which is what keeps the seam between the two closed at every
+                   roll angle instead of opening a slot under the flange. -->
+              <geom name="gripper_palm_geom" class="robot_part" type="box" pos="0 0 -0.03" size="0.09 0.17 0.07" mass="2.20" material="gripper_mat"/>
+              <!-- tool_roll is the only axis on this arm outside the
+                   shoulder-elbow-wrist plane, so it is the only one that can
+                   set the part's yaw, and a sorting cell needs that: parts leave
+                   the lane in the lane's orientation and are laid into the bin
+                   in a chosen one. Its limit is not cosmetic either. Rolled 90
+                   deg the jaws span x rather than y, i.e. 0.320 m centred on the
+                   part; at the pick station (part at x = 0.230) that is
+                   [0.070, 0.390], which runs into both rollers, so the roll has
+                   to be unwound to 0 before the tool goes back to the lane.
+                   Inside the bin (interior x in [0.580, 0.980]) the same rolled
+                   span is [0.620, 0.940] and clears both walls by 40 mm.
+                   The tool centre point lies on this axis, so rolling never
+                   moves the TCP and the arm IK is independent of it. -->
+              <body name="tool_turret" pos="0 0 0" gravcomp="1">
+                <joint name="tool_roll" type="hinge" axis="0 0 1" range="-1.65 1.65" damping="1.6" armature="0.008"/>
+                <!-- The sleeve the jaw carriages ride in. Its y half-width 0.170
+                     covers the whole 0.075 m of travel: a carriage centred at
+                     y = 0.135 with 0.025 m half-thickness reaches 0.160 wide
+                     open and 0.1185 closed, so the ram never leaves the sleeve
+                     and there is no unrendered prismatic axis to see through. -->
+                <geom name="gripper_rail_geom" class="robot_part" type="box" pos="0 0 -0.125" size="0.055 0.17 0.04" mass="0.90" material="steel_mat"/>
+                <!-- group 4: the tool centre is a kinematic reference the code
+                     reads, not a marker for the viewer, so it is not drawn. -->
+                <site name="arm_tcp" type="sphere" pos="0 0 -0.26" size="0.018" rgba="0.02 1 0.95 0.35" group="4"/>
+                <!-- Jaws close toward y = 0 from +/-0.135. gripper_left_slide =
+                     -0.0415 puts the pad inner face at
+                     0.135 - 0.0415 - 0.025 = 0.0685, which is 1.5 mm inside the
+                     0.070 m part radius: the jaws close on to the part, and a
+                     weld constraint then carries it. -->
+                <body name="left_finger" pos="0 0.135 -0.135" gravcomp="1">
+                  <joint name="gripper_left_slide" type="slide" axis="0 1 0" range="-0.075 0" damping="1.5"/>
+                  <geom name="left_carriage_geom" class="robot_part" type="box" pos="0 0 0" size="0.035 0.025 0.025" mass="0.12" material="steel_mat"/>
+                  <geom name="left_finger_geom" class="robot_part" type="box" pos="0 0 -0.065" size="0.035 0.025 0.085" mass="0.34" material="gripper_mat"/>
+                </body>
+                <body name="right_finger" pos="0 -0.135 -0.135" gravcomp="1">
+                  <joint name="gripper_right_slide" type="slide" axis="0 1 0" range="0 0.075" damping="1.5"/>
+                  <geom name="right_carriage_geom" class="robot_part" type="box" pos="0 0 0" size="0.035 0.025 0.025" mass="0.12" material="steel_mat"/>
+                  <geom name="right_finger_geom" class="robot_part" type="box" pos="0 0 -0.065" size="0.035 0.025 0.085" mass="0.34" material="gripper_mat"/>
+                </body>
               </body>
             </body>
           </body>
@@ -123,7 +187,6 @@
     <body name="blue_part" pos="0.23 0 0.855">
       <freejoint name="blue_part_free"/>
       <geom name="blue_part_geom" class="payload_part" type="cylinder" size="0.07 0.07" mass="0.16" material="blue_mat" friction="0.72 0.01 0.003"/>
-      <site name="blue_part_top_site" type="sphere" pos="0 0 0.075" size="0.018" rgba="0.02 0.55 1 1" group="2"/>
     </body>
     <body name="red_part" pos="0.43 0.45 0.75">
       <freejoint name="red_part_free"/>
@@ -145,34 +208,61 @@
       <geom name="red_bin_back" class="world_part" type="box" pos="-0.215 0 0.16" size="0.015 0.22 0.115" material="red_bin_mat"/>
     </body>
 
-    <site name="approach_blue_part_marker" type="sphere" pos="0.23 0 1.10" size="0.045" material="marker_yellow" group="2"/>
-    <site name="grasp_blue_part_marker" type="cylinder" pos="0.23 0 0.91" size="0.075 0.012" material="marker_cyan" group="2"/>
-    <site name="transfer_blue_bin_marker" type="cylinder" pos="0.78 0 1.10" size="0.09 0.012" material="marker_magenta" group="2"/>
-    <site name="release_blue_part_marker" type="sphere" pos="0.78 -0.34 1.22" size="0.055" material="marker_green" group="2"/>
-    <site name="inspect_sorting_marker" type="ellipsoid" pos="1.12 -0.62 0.86" size="0.055 0.035 0.018" material="marker_magenta" group="2"/>
+    <!-- Markers are painted-on decals, not floating balls. A site generates no
+         contacts at all, so a glowing sphere hovering over a station is a thing
+         the robot and the part slide straight through, and it reads as a bug.
+         Each one here is a disc whose half-height equals its clearance above the
+         surface it annotates, so the underside is flush: the worktable top at
+         0.680 for the four bench stations, the bin floor top at 0.790 for the
+         release station. The belt is deliberately not used - the rollers stand
+         30 mm above it - and the release decal is offset to y = -0.150 so the
+         part, which comes to rest over y in [-0.070, 0.070], cannot bury it. -->
+    <site name="approach_blue_part_marker" type="cylinder" pos="0.23 -0.42 0.686" size="0.055 0.006" material="marker_yellow" group="2"/>
+    <site name="grasp_blue_part_marker" type="cylinder" pos="0.23 -0.28 0.686" size="0.036 0.006" material="marker_cyan" group="2"/>
+    <site name="transfer_blue_bin_marker" type="cylinder" pos="0.78 -0.42 0.686" size="0.048 0.006" material="marker_magenta" group="2"/>
+    <site name="release_blue_part_marker" type="cylinder" pos="0.78 0.15 0.796" size="0.042 0.006" material="marker_green" group="2"/>
+    <site name="inspect_sorting_marker" type="cylinder" pos="1.12 -0.62 0.686" size="0.042 0.006" material="marker_yellow" group="2"/>
   </worldbody>
 
   <contact>
-    <!-- The shoulder hub is bolted into the pedestal top, so the mount and the
-         first link overlap by design. MuJoCo's parent-child filter does not
-         remove this pair: the filter is skipped when the parent's weld root is
-         the world, which ``arm_base`` is. Excluding the one mount pair keeps
-         every other pedestal-arm pair live, so a forearm or gripper swung into
-         the column still reports contact. -->
-    <exclude body1="arm_base" body2="arm_upper_link"/>
+    <!-- The only overlap in this model that is meant to exist. The shoulder hub
+         is bolted into the pedestal top, so the mount and the first link
+         interpenetrate by design. MuJoCo's parent-child filter does not remove
+         this pair: the filter is skipped when the parent's weld root is the
+         world, which ``arm_base`` is. Excluding the one mount pair keeps every
+         other pedestal-arm pair live, so a forearm or gripper swung into the
+         column still reports contact. -->
+    <exclude name="pedestal_shoulder_mount" body1="arm_base" body2="arm_upper_link"/>
   </contact>
 
+  <!-- A real grasp. The part used to be carried by overwriting its free-joint
+       qpos every step, which meant nothing could ever make it slip and a part
+       lying on the belt was indistinguishable from a part in the hand; release
+       was a second write to a constant, so setting down looked like a teleport.
+       The weld is switched on when the jaws close and off when they open, and
+       relpose is rewritten from the measured turret-to-part offset at that
+       instant, so the constraint engages already satisfied - no jolt, no snap.
+       Let go in mid-air and the part falls, which is the honest outcome. -->
+  <equality>
+    <weld name="blue_part_grasp" body1="tool_turret" body2="blue_part" relpose="0 0 -0.26 1 0 0 0"
+          active="false" solref="0.01 1" solimp="0.96 0.99 0.001"/>
+  </equality>
+
   <actuator>
-    <!-- Gains sized against the load these joints actually carry. The tool and
-         the last two links weigh about 3.4 kg at up to 1.3 m of reach, so the
-         shoulder holds roughly 30 Nm; at the earlier kp="180" that is 0.17 rad
-         of standing sag. Sag is not cosmetic here: the payload is carried by the
-         tool, so a drooping tool takes the part down with it into the conveyor
-         belt it was just lifted off. -->
-    <position name="arm_shoulder_motor" joint="arm_shoulder" kp="20000" kv="500" ctrlrange="-2.8 1.8" forcerange="-600 600"/>
-    <position name="arm_elbow_motor" joint="arm_elbow" kp="12000" kv="160" ctrlrange="-2.8 2.8" forcerange="-400 400"/>
-    <position name="arm_wrist_motor" joint="arm_wrist" kp="4000" kv="45" ctrlrange="-2.4 2.4" forcerange="-200 200"/>
-    <position name="gripper_left_motor" joint="gripper_left_slide" kp="220" kv="22" ctrlrange="-0.075 0" forcerange="-30 30"/>
-    <position name="gripper_right_motor" joint="gripper_right_slide" kp="220" kv="22" ctrlrange="0 0.075" forcerange="-30 30"/>
+    <!-- Gravity on the arm is carried by gravcomp, which is what the feedforward
+         term of a real industrial controller does; the earlier kp="20000" was
+         the alternative, and it still left the tool 10.9 mm low. The servos then
+         only fight inertia and the one load the controller does not know about,
+         the 0.16 kg part in the jaws: at 1.30 m of reach that is
+         0.16 * 9.81 * 1.30 = 2.04 Nm, and kp = 4000 holds it to 0.51 mrad, i.e.
+         0.66 mm at the tool. The payload is deliberately left out of gravcomp -
+         an arm that cannot feel the part it picked up would make the grasp
+         weightless and the weld would be carrying nothing. -->
+    <position name="arm_shoulder_motor" joint="arm_shoulder" kp="4000" kv="260" ctrlrange="-2.8 1.8" forcerange="-400 400"/>
+    <position name="arm_elbow_motor" joint="arm_elbow" kp="2500" kv="150" ctrlrange="-2.8 2.8" forcerange="-300 300"/>
+    <position name="arm_wrist_motor" joint="arm_wrist" kp="1200" kv="70" ctrlrange="-2.4 2.4" forcerange="-150 150"/>
+    <position name="tool_roll_motor" joint="tool_roll" kp="400" kv="26" ctrlrange="-1.65 1.65" forcerange="-60 60"/>
+    <position name="gripper_left_motor" joint="gripper_left_slide" kp="260" kv="16" ctrlrange="-0.075 0" forcerange="-40 40"/>
+    <position name="gripper_right_motor" joint="gripper_right_slide" kp="260" kv="16" ctrlrange="0 0.075" forcerange="-40 40"/>
   </actuator>
 </mujoco>

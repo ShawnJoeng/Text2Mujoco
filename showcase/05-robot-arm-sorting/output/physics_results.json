@@ -8,8 +8,9 @@
   "static_checks": {
     "xml_parse": "PASS",
     "mjcf_compile": "PASS",
-    "articulated_joints": 5,
-    "arm_actuators": 5,
+    "articulated_joints": 6,
+    "arm_actuators": 6,
+    "grasp_constraint": "weld",
     "typed_targets": "PASS",
     "visible_markers": "PASS",
     "quaternion_conversion": "PASS"
@@ -20,8 +21,8 @@
     "finite_state": "PASS"
   },
   "sequence_contact": {
-    "steps": 3928,
-    "deepest_overlap_mm": 0.4052,
+    "steps": 5601,
+    "deepest_overlap_mm": 0.6833,
     "limit_mm": 1.0,
     "result": "PASS"
   },
@@ -32,6 +33,7 @@
     "release_blue_part"
   ],
   "grasp_sync": "PASS",
+  "weld_release_drop_mm": 239.118,
   "release_inside_bin": "PASS",
   "dependency_enforcement": "PASS",
   "deterministic_reset": "PASS",

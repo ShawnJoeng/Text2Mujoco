@@ -124,25 +124,56 @@ class ConveyorArmEnvironment:
     HOME_ANGLES = np.asarray([-0.80, 1.00, -0.20], dtype=float)
     PARCEL_PICK_XY = np.asarray([-0.08, 0.0], dtype=float)
     BIN_XY = np.asarray([0.25, 0.18], dtype=float)
-    PARCEL_Z = 0.934
-    # Tool-lift schedule. arm_tcp is the grasp centre (0.115 m below the tool
-    # frame, which sits 1.26 m up), the position actuator settles 9.3 mm below
-    # its command, and the parcel is a 0.12 m cube.
-    #   GRASP_TOOL_Z:    TCP 0.9437 m, i.e. the centre height of a parcel whose
-    #                    underside is on the 0.874 m belt plate, plus 9.7 mm.
-    #   TRANSFER_TOOL_Z: TCP 1.1457 m, so the carried parcel's underside rides
-    #                    1.086 m, 26 mm above the 1.06 m bin rim, while its top
-    #                    stays 19 mm below arm_link3.
-    #   PLACE_TOOL_Z:    TCP 0.9497 m, 10 mm above where a parcel resting on the
-    #                    0.88 m bin floor centres, so the release is a settle
-    #                    rather than a drop.
-    GRASP_TOOL_Z = -0.192
-    TRANSFER_TOOL_Z = 0.010
-    PLACE_TOOL_Z = -0.186
-    RELEASE_POSITION = np.asarray([0.25, 0.18, 0.94], dtype=float)
+    RETREAT_XY = np.asarray([0.95, -0.42], dtype=float)
+    PARCEL_Z = 0.944
+    # Tool-lift schedule, read off the geometry rather than off wherever a
+    # sagging servo happened to settle. arm_tcp is 0.115 m below the tool frame,
+    # which stands at 1.155 m with tool_z at zero, so TCP = 1.040 + tool_z.
+    #   TRANSIT_TOOL_Z:  TCP 1.100, fingertips 1.160 - 120 mm over both bin
+    #                    rims, which is the clearance the empty hand crosses on.
+    #   GRASP_TOOL_Z:    TCP 0.944, the centre of a parcel standing on the
+    #                    0.884 m belt plate; the jaws take its middle band and
+    #                    still clear the belt by 5 mm.
+    #   TRANSFER_TOOL_Z: TCP 1.128, so the carried parcel's underside rides at
+    #                    1.068 m, 28 mm above the 1.040 m bin rim.
+    #   PLACE_TOOL_Z:    TCP 0.928, parcel underside 0.868, 8 mm above the
+    #                    0.860 m bin floor, so releasing settles it.
+    GRASP_TOOL_Z = -0.096
+    TRANSIT_TOOL_Z = 0.060
+    TRANSFER_TOOL_Z = 0.088
+    PLACE_TOOL_Z = -0.110
+    # The wrist pitch is what keeps setting the parcel down from being undone on
+    # the way out: the tool tips forward to reach in over the belt guard, levels
+    # for the grasp and the carry, and tips back before it retracts across the
+    # parcel it has just released.
+    APPROACH_PITCH = 0.20
+    LEVEL_PITCH = 0.0
+    WITHDRAW_PITCH = -0.30
     CARTESIAN_STEP_M = 0.03
     LINK_1 = 0.32
     LINK_2_EFFECTIVE = 0.44
+    # Belt traction. MuJoCo has no belt primitive, and writing the parcel's qpos
+    # every step is not conveying it but teleporting it - no mass, friction or
+    # obstacle could ever resist that. What the model does contain is a parcel on
+    # a stationary surface, so the drive is a forward-only traction force that has
+    # to beat that surface's own friction, mu*m*g = 0.76 * 0.22 * 9.81 = 1.64 N.
+    # At the 2.60 N cap the net accelerating force is 0.96 N, a = 4.4 m/s^2.
+    # xfrc_applied acts at the centre of mass, and a push 60 mm above the contact
+    # plane tips a 120 mm cube over: the tipping moment F * 0.06 passes the
+    # restoring moment m*g * 0.06 = 0.130 N*m at only 2.16 N. A belt pushes
+    # through the bottom face, so the offset torque r x F is applied with it,
+    # which puts the drive where the friction reaction already is and leaves no
+    # net moment. The parcel therefore accelerates, coasts, is braked by friction
+    # alone once the drive cuts out, and would stall against anything in its way.
+    BELT_TARGET_X = -0.08
+    BELT_FORCE_LIMIT_N = 2.60
+    BELT_FORCE_GAIN = 40.0
+    BELT_STOP_BAND_M = 0.012
+    BELT_CONTACT_OFFSET_M = 0.06
+    FRICTION_DECEL_MPS2 = 7.4556
+    # Cosmetic roller spin: kv 0.35 against joint damping 0.12 settles at 0.745
+    # of the commanded rate, and the 0.055 m roller turns 18.18 rad per metre.
+    ROLLER_CTRL_PER_MPS = 24.4
 
     def __init__(self, model_path: Path, spec: Mapping[str, Any]):
         self.model_path = Path(model_path).resolve()
@@ -161,6 +192,8 @@ class ConveyorArmEnvironment:
         self.arm_actuator_ids = [self.require_id("actuator", name) for name in ("shoulder_motor", "elbow_motor", "wrist_motor")]
         self.tool_joint_id = self.require_id("joint", "tool_z")
         self.tool_actuator_id = self.require_id("actuator", "tool_lift_motor")
+        self.pitch_joint_id = self.require_id("joint", "tool_pitch")
+        self.pitch_actuator_id = self.require_id("actuator", "tool_pitch_motor")
         self.left_gripper_joint_id = self.require_id("joint", "gripper_left_slide")
         self.right_gripper_joint_id = self.require_id("joint", "gripper_right_slide")
         self.left_gripper_actuator_id = self.require_id("actuator", "gripper_left_motor")
@@ -174,6 +207,7 @@ class ConveyorArmEnvironment:
         self.bin_body_id = self.require_id("body", "blue_target_bin")
         self.bin_bottom_geom_id = self.require_id("geom", "blue_bin_bottom")
         self.tcp_site_id = self.require_id("site", "arm_tcp")
+        self.grasp_eq_id = self._require_weld("parcel_grasp")
         camera = next(sensor for sensor in self.spec["sensors"] if sensor.get("type") == "camera")
         self.camera_name = str(camera["camera_name"])
         self.camera_id = self.require_id("camera", self.camera_name)
@@ -184,6 +218,7 @@ class ConveyorArmEnvironment:
 
         self.arm_qpos_adrs = [int(self.model.jnt_qposadr[joint_id]) for joint_id in self.arm_joint_ids]
         self.tool_qpos_adr = int(self.model.jnt_qposadr[self.tool_joint_id])
+        self.pitch_qpos_adr = int(self.model.jnt_qposadr[self.pitch_joint_id])
         self.left_gripper_qpos_adr = int(self.model.jnt_qposadr[self.left_gripper_joint_id])
         self.right_gripper_qpos_adr = int(self.model.jnt_qposadr[self.right_gripper_joint_id])
         self.conveyor_qpos_adr = int(self.model.jnt_qposadr[self.conveyor_joint_id])
@@ -199,6 +234,15 @@ class ConveyorArmEnvironment:
         if object_id < 0:
             raise EnvironmentError("required MuJoCo object is missing")
         return object_id
+
+    def _require_weld(self, name: str) -> int:
+        """The grasp has to be a constraint, so refuse to run without one."""
+        equality_id = int(mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_EQUALITY, name))
+        if equality_id < 0:
+            raise EnvironmentError("required equality constraint is missing")
+        if int(self.model.eq_type[equality_id]) != int(mujoco.mjtEq.mjEQ_WELD):
+            raise EnvironmentError("grasp constraint must be a weld")
+        return equality_id
 
     def _validate_manifest_parity(self) -> None:
         if self.manifest.get("schema_version") != self.spec.get("schema_version") or self.manifest.get("backend") != self.spec.get("backend"):
@@ -233,6 +277,7 @@ class ConveyorArmEnvironment:
         for adr, value in zip(self.arm_qpos_adrs, self.HOME_ANGLES):
             self.data.qpos[adr] = value
         self.data.qpos[self.tool_qpos_adr] = 0.0
+        self.data.qpos[self.pitch_qpos_adr] = 0.0
         self.data.qpos[self.left_gripper_qpos_adr] = 0.0
         self.data.qpos[self.right_gripper_qpos_adr] = 0.0
         self.data.qpos[self.conveyor_qpos_adr] = 0.0
@@ -240,6 +285,8 @@ class ConveyorArmEnvironment:
         self.data.qpos[self.parcel_qpos_adr + 3 : self.parcel_qpos_adr + 7] = [1.0, 0.0, 0.0, 0.0]
         self.data.qvel[:] = 0.0
         self.data.ctrl[:] = 0.0
+        self.data.xfrc_applied[:, :] = 0.0
+        self.data.eq_active[self.grasp_eq_id] = 0
         mujoco.mj_forward(self.model, self.data)
         self.completed: list[str] = []
         self.held_parcel = False
@@ -287,43 +334,67 @@ class ConveyorArmEnvironment:
             raise EnvironmentError("IK solution exceeds the declared joint limits")
         return result
 
-    def _pin_parcel_to_tool(self) -> None:
-        """Hold the parcel at the grasp centre with the gripper's own yaw.
+    def _engage_grasp(self) -> None:
+        """Close the weld on the offset measured right now, at jaw close.
 
-        The fingers rotate with the tool, so pinning the parcel with an identity
-        quaternion would drive the closed finger faces into its corners; the
-        4 mm nominal aperture clearance (closed inner face 0.064 m against the
-        0.060 m parcel half-width) only holds while parcel and gripper share an
-        orientation.
+        Writing the relative pose the constraint has to hold from the pose the
+        jaws actually reached means the weld engages already satisfied: no jump,
+        no snap, and the jaws are shut on the parcel rather than around a gap the
+        constraint would silently span.
         """
-        self.data.qpos[self.parcel_qpos_adr : self.parcel_qpos_adr + 3] = self.tcp_position
-        self.data.qpos[self.parcel_qpos_adr + 3 : self.parcel_qpos_adr + 7] = np.asarray(
-            self.data.xquat[self.tool_body_id], dtype=float
+        tool_position = np.asarray(self.data.xpos[self.tool_body_id], dtype=float)
+        tool_frame = np.asarray(self.data.xmat[self.tool_body_id], dtype=float).reshape(3, 3)
+        parcel_frame = np.asarray(self.data.xmat[self.parcel_body_id], dtype=float).reshape(3, 3)
+        relative = tool_frame.T @ (np.asarray(self.data.xpos[self.parcel_body_id], dtype=float) - tool_position)
+        relative_quat = np.zeros(4, dtype=float)
+        mujoco.mju_mat2Quat(relative_quat, np.ascontiguousarray(tool_frame.T @ parcel_frame).reshape(9))
+        self.model.eq_data[self.grasp_eq_id, 3:6] = relative
+        self.model.eq_data[self.grasp_eq_id, 6:10] = relative_quat
+        self.data.eq_active[self.grasp_eq_id] = 1
+        self.held_parcel = True
+
+    def _release_grasp(self) -> None:
+        self.data.eq_active[self.grasp_eq_id] = 0
+        self.held_parcel = False
+
+    def _apply_belt_traction(self) -> None:
+        """Drive the parcel forward with a real force, then let friction stop it.
+
+        A belt can only push downstream, so the force is clipped at zero from
+        below. It has to overcome the surface friction it slides against - mu*m*g
+        = 0.76 * 0.22 * 9.81 = 1.64 N - which is why the 2.60 N cap sits above
+        that number rather than below it: the net accelerating force is 0.96 N.
+        The push is placed on the bottom face by carrying the r x F torque that
+        moving it there implies, because a 2.60 N shove through the centre of mass
+        of a 120 mm cube tips it over. The drive cuts out once the coasting
+        distance v^2 / (2*mu*g) reaches the pickup station, so the parcel is
+        braked by friction alone, exactly as a box released by a belt would be.
+        None of this is available to a per-step qpos write, which no mass,
+        friction or obstruction can resist.
+        """
+        self.data.xfrc_applied[self.parcel_body_id, :] = 0.0
+        if not self.conveyor_running or self.conveyor_speed <= 0.0:
+            return
+        position_x = float(self.data.xpos[self.parcel_body_id][0])
+        velocity_x = float(self.data.qvel[self.parcel_dof_adr])
+        if self.BELT_TARGET_X - position_x <= self.BELT_STOP_BAND_M:
+            return
+        coast_m = max(0.0, velocity_x) ** 2 / (2.0 * self.FRICTION_DECEL_MPS2)
+        if position_x + coast_m >= self.BELT_TARGET_X:
+            return
+        force_x = float(
+            np.clip(self.BELT_FORCE_GAIN * (self.conveyor_speed - velocity_x), 0.0, self.BELT_FORCE_LIMIT_N)
         )
-        self.data.qvel[self.parcel_dof_adr : self.parcel_dof_adr + 6] = 0.0
-        mujoco.mj_forward(self.model, self.data)
+        self.data.xfrc_applied[self.parcel_body_id, 0] = force_x
+        self.data.xfrc_applied[self.parcel_body_id, 4] = -self.BELT_CONTACT_OFFSET_M * force_x
 
     def run_physics(self, steps: int) -> None:
         if not isinstance(steps, int) or isinstance(steps, bool) or steps < 0:
             raise EnvironmentError("steps must be a non-negative integer")
-        timestep = float(self.model.opt.timestep)
         for _ in range(steps):
-            if self.conveyor_running and self.state["parcel_state"] == "on_belt":
-                current_x = float(self.data.qpos[self.parcel_qpos_adr])
-                self.data.qpos[self.parcel_qpos_adr] = min(-0.08, current_x + self.conveyor_speed * timestep)
-                self.data.qpos[self.parcel_qpos_adr + 1] = 0.0
-                self.data.qpos[self.parcel_qpos_adr + 2] = self.PARCEL_Z
-                self.data.qvel[self.parcel_dof_adr : self.parcel_dof_adr + 6] = 0.0
-                mujoco.mj_forward(self.model, self.data)
-            if self.held_parcel:
-                self._pin_parcel_to_tool()
+            self._apply_belt_traction()
             mujoco.mj_step(self.model, self.data)
-            if self.conveyor_running and self.state["parcel_state"] == "on_belt":
-                self.data.qpos[self.parcel_qpos_adr + 1] = 0.0
-                self.data.qpos[self.parcel_qpos_adr + 2] = self.PARCEL_Z
-                self.data.qvel[self.parcel_dof_adr + 1 : self.parcel_dof_adr + 6] = 0.0
-            if self.held_parcel:
-                self._pin_parcel_to_tool()
+        self.data.xfrc_applied[self.parcel_body_id, :] = 0.0
         if not np.isfinite(self.data.qpos).all() or not np.isfinite(self.data.qvel).all():
             raise EnvironmentError("MuJoCo state contains non-finite values")
 
@@ -351,25 +422,25 @@ class ConveyorArmEnvironment:
                 self.run_physics(max(8, steps // (4 * waypoints)))
         self._command_arm(desired)
         self.run_physics(steps)
-        actual = self.arm_angles
-        if float(np.max(np.abs(actual - desired))) > 0.08:
-            for adr, value in zip(self.arm_qpos_adrs, desired):
-                self.data.qpos[adr] = value
-                self.data.qvel[int(self.model.jnt_dofadr[self.arm_joint_ids[self.arm_qpos_adrs.index(adr)]])] = 0.0
-            mujoco.mj_forward(self.model, self.data)
-            if self.held_parcel:
-                self._pin_parcel_to_tool()
-        if float(np.max(np.abs(self.arm_angles - desired))) > 0.10:
+        if float(np.max(np.abs(self.arm_angles - desired))) > 0.05:
             raise EnvironmentError("arm controller did not reach its target")
 
     def _set_tool_target(self, target: float) -> None:
         self.data.ctrl[self.tool_actuator_id] = float(target)
         self.run_physics(260)
-        if abs(float(self.data.qpos[self.tool_qpos_adr]) - target) > 0.014:
+        if abs(float(self.data.qpos[self.tool_qpos_adr]) - target) > 0.005:
             raise EnvironmentError("tool lift actuator did not reach target")
 
+    def _set_pitch_target(self, target: float) -> None:
+        self.data.ctrl[self.pitch_actuator_id] = float(target)
+        self.run_physics(200)
+        if abs(float(self.data.qpos[self.pitch_qpos_adr]) - target) > 0.02:
+            raise EnvironmentError("tool pitch actuator did not reach target")
+
     def _set_gripper(self, closed: bool) -> None:
-        left, right = (-0.040, 0.040) if closed else (0.0, 0.0)
+        # Closed means shut on the parcel, not around it: the inner faces land at
+        # 0.059 m against its 0.060 m half width, so the jaws take a 1 mm bite.
+        left, right = (-0.045, 0.045) if closed else (0.0, 0.0)
         self.data.ctrl[self.left_gripper_actuator_id] = left
         self.data.ctrl[self.right_gripper_actuator_id] = right
         self.run_physics(200)
@@ -393,6 +464,8 @@ class ConveyorArmEnvironment:
             "seed": self.seed,
             "arm_joint_angles_rad": self.arm_angles.tolist(),
             "tool_z_qpos": float(self.data.qpos[self.tool_qpos_adr]),
+            "tool_pitch_qpos": float(self.data.qpos[self.pitch_qpos_adr]),
+            "grasp_weld_active": bool(self.data.eq_active[self.grasp_eq_id]),
             "gripper_left_qpos": float(self.data.qpos[self.left_gripper_qpos_adr]),
             "gripper_right_qpos": float(self.data.qpos[self.right_gripper_qpos_adr]),
             "conveyor_drive_angle_rad": float(self.data.qpos[self.conveyor_qpos_adr]),
@@ -426,28 +499,40 @@ class ConveyorArmEnvironment:
             speed = float(payload.get("speed_mps", 0.6))
             self.conveyor_speed = speed
             self.conveyor_running = True
-            self.data.ctrl[self.conveyor_actuator_id] = min(8.0, speed * 8.0)
-            max_steps = int(math.ceil(0.50 / speed / float(self.model.opt.timestep))) + 30
+            self.state["conveyor_state"] = "running"
+            self.data.ctrl[self.conveyor_actuator_id] = float(np.clip(speed * self.ROLLER_CTRL_PER_MPS, -30.0, 30.0))
+            travel = abs(self.BELT_TARGET_X - float(self.data.xpos[self.parcel_body_id][0]))
+            max_steps = int(math.ceil(4.0 * travel / speed / float(self.model.opt.timestep))) + 400
             for _ in range(max_steps):
                 self.run_physics(1)
-                if float(self.data.qpos[self.parcel_qpos_adr]) >= -0.10:
+                if abs(float(self.data.xpos[self.parcel_body_id][0]) - self.BELT_TARGET_X) < 0.008:
                     break
             self.conveyor_running = False
             self.conveyor_speed = 0.0
             self.data.ctrl[self.conveyor_actuator_id] = 0.0
-            self.data.qpos[self.parcel_qpos_adr] = -0.08
-            self.data.qpos[self.parcel_qpos_adr + 1] = 0.0
-            self.data.qpos[self.parcel_qpos_adr + 2] = self.PARCEL_Z
-            self.data.qvel[self.parcel_dof_adr : self.parcel_dof_adr + 6] = 0.0
-            mujoco.mj_forward(self.model, self.data)
+            self.run_physics(150)
             self.state["conveyor_state"] = "stopped"
+            parcel_x = float(self.data.xpos[self.parcel_body_id][0])
+            if not -0.11 <= parcel_x <= -0.05:
+                raise EnvironmentError("parcel did not index to the pickup station")
+            if self._parcel_speed() > 0.05:
+                raise EnvironmentError("parcel did not come to rest at the pickup station")
             self.state["parcel_state"] = "at_pickup"
         elif point_id == "move_arm_to_parcel":
             if self.state["parcel_state"] != "at_pickup" or self.state["arm_state"] != "home":
                 raise EnvironmentError("parcel or arm is not ready")
-            self._move_arm_to(self.PARCEL_PICK_XY, float(payload.get("speed_rad_s", 1.0)))
+            speed = float(payload.get("speed_rad_s", 1.0))
+            # Lift and tip forward before traversing, then level and descend onto
+            # the parcel where the belt actually left it - not where a constant
+            # says it should be.
+            self._set_tool_target(self.TRANSIT_TOOL_Z)
+            self._set_pitch_target(self.APPROACH_PITCH)
+            measured_xy = self.parcel_position[:2].copy()
+            self._move_arm_to(measured_xy, speed)
+            self._set_pitch_target(self.LEVEL_PITCH)
             self._set_tool_target(self.GRASP_TOOL_Z)
-            if float(np.linalg.norm(self.tcp_position - np.asarray([-0.08, 0.0, 0.98]))) > 0.12:
+            reference = np.append(measured_xy, self.PARCEL_Z)
+            if float(np.linalg.norm(self.tcp_position - reference)) > 0.05:
                 raise EnvironmentError("arm did not reach parcel approach pose")
             self.state["arm_state"] = "at_parcel"
         elif point_id == "grasp_parcel_with_arm":
@@ -456,14 +541,16 @@ class ConveyorArmEnvironment:
             if payload.get("close") is not True:
                 raise EnvironmentError("grasp requires close=true")
             self._set_gripper(True)
-            self.held_parcel = True
-            self._pin_parcel_to_tool()
+            self._engage_grasp()
+            self.run_physics(60)
+            if float(np.linalg.norm(self.parcel_position - self.tcp_position)) > 0.03:
+                raise EnvironmentError("grasped parcel is not held at the tool centre")
             self.state["parcel_state"] = "grasped"
         elif point_id == "move_arm_to_target_bin":
             if self.state["parcel_state"] != "grasped" or self.state["gripper_state"] != "closed":
                 raise EnvironmentError("parcel must be grasped before transport")
             speed = float(payload.get("speed_rad_s", 1.0))
-            # lift -> traverse -> lower. The rim of the target bin is at 1.06 m and
+            # lift -> traverse -> lower. The rim of the target bin is at 1.04 m and
             # the only path from the pickup into the bin crosses blue_bin_left, so
             # the parcel's underside is raised above the rim before any horizontal
             # travel starts and only comes back down inside the bin footprint.
@@ -472,25 +559,31 @@ class ConveyorArmEnvironment:
             self._set_tool_target(self.PLACE_TOOL_Z)
             if float(np.linalg.norm(self.tcp_position[:2] - self.BIN_XY)) > 0.12:
                 raise EnvironmentError("arm did not reach target bin")
+            if not self.held_parcel or float(np.linalg.norm(self.parcel_position - self.tcp_position)) > 0.03:
+                raise EnvironmentError("parcel was dropped during transport")
             self.state["arm_state"] = "over_target_bin"
         elif point_id == "release_parcel_in_target_bin":
             if self.state["arm_state"] != "over_target_bin" or self.state["parcel_state"] != "grasped":
                 raise EnvironmentError("parcel is not over target bin")
             if payload.get("open") is not True:
                 raise EnvironmentError("release requires open=true")
-            self.data.qpos[self.parcel_qpos_adr : self.parcel_qpos_adr + 3] = self.RELEASE_POSITION
-            self.data.qvel[self.parcel_dof_adr : self.parcel_dof_adr + 6] = 0.0
-            mujoco.mj_forward(self.model, self.data)
-            self.held_parcel = False
+            self._release_grasp()
             self._set_gripper(False)
-            self.run_physics(220)
-            if not self._parcel_inside_bin():
-                self.data.qpos[self.parcel_qpos_adr : self.parcel_qpos_adr + 3] = self.RELEASE_POSITION
-                self.data.qvel[self.parcel_dof_adr : self.parcel_dof_adr + 6] = 0.0
-                mujoco.mj_forward(self.model, self.data)
+            self.run_physics(400)
             if not self._parcel_inside_bin():
                 raise EnvironmentError("released parcel did not settle inside target bin")
+            if self._parcel_speed() > 0.15:
+                raise EnvironmentError("released parcel did not come to rest")
             self.state["parcel_state"] = "inside_target_bin"
+            # Retract along a path that does not cross what was just set down:
+            # rise clear of the rim, tip the tool back, then swing away. An arm
+            # with only one vertical axis has to reverse down its own approach.
+            self._set_tool_target(self.TRANSIT_TOOL_Z)
+            self._set_pitch_target(self.WITHDRAW_PITCH)
+            self._move_arm_to(self.RETREAT_XY, 1.0)
+            if not self._parcel_inside_bin():
+                raise EnvironmentError("withdrawal disturbed the placed parcel")
+            self.state["arm_state"] = "withdrawn"
         elif point_id == "inspect_handoff":
             if self.state["parcel_state"] != "inside_target_bin":
                 raise EnvironmentError("parcel must be in target bin before inspection")

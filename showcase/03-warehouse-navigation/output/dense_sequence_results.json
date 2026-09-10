@@ -67,12 +67,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -2.3343454390367024,
-          -1.3089067774713434,
+          -2.3290939590469337,
+          -1.2951216424982004,
           0.14
         ],
-        "distance_to_a_m": 2.2032464424242493,
-        "distance_to_b_m": 4.419912588030424,
+        "distance_to_a_m": 2.1884949005282057,
+        "distance_to_b_m": 4.40873050208093,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -95,12 +95,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -2.2828773394707773,
-          -1.1738030161107904,
+          -2.271608849824234,
+          -1.1442232307886147,
           0.14
         ],
-        "distance_to_a_m": 2.0586712315245337,
-        "distance_to_b_m": 4.3112465767845665,
+        "distance_to_a_m": 2.0270177552759403,
+        "distance_to_b_m": 4.287738118424798,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -123,12 +123,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -2.212164978624282,
-          -0.9881830688887401,
+          -2.205475533359463,
+          -0.9706232750685906,
           0.14
         ],
-        "distance_to_a_m": 1.860038397423014,
-        "distance_to_b_m": 4.1655112548458435,
+        "distance_to_a_m": 1.841247574211745,
+        "distance_to_b_m": 4.15195174151581,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -151,12 +151,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -2.144847436320535,
-          -0.8114745203414041,
+          -2.147275402009186,
+          -0.8178479302741125,
           0.14
         ],
-        "distance_to_a_m": 1.6709416956233187,
-        "distance_to_b_m": 4.030973543375594,
+        "distance_to_a_m": 1.6777619134758224,
+        "distance_to_b_m": 4.0357499084797634,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -179,12 +179,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -2.088595042192432,
-          -0.6638119857551337,
+          -2.0943323089632027,
+          -0.6788723110284076,
           0.14
         ],
-        "distance_to_a_m": 1.5129272786684567,
-        "distance_to_b_m": 3.9220045143660576,
+        "distance_to_a_m": 1.5290434080839148,
+        "distance_to_b_m": 3.9329659660972878,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -207,12 +207,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -2.038237903716765,
-          -0.5316244972565075,
+          -2.040814634583062,
+          -0.5383884157805375,
           0.14
         ],
-        "distance_to_a_m": 1.3714727859471862,
-        "distance_to_b_m": 3.827358757075606,
+        "distance_to_a_m": 1.3787108889968147,
+        "distance_to_b_m": 3.8321316902517095,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -235,12 +235,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.9867978698551256,
-          -0.3965944083697053,
+          -1.9855408927329476,
+          -0.393294843423987,
           0.14
         ],
-        "distance_to_a_m": 1.226976412330184,
-        "distance_to_b_m": 3.7337350401914433,
+        "distance_to_a_m": 1.2234455313754233,
+        "distance_to_b_m": 3.7314879053172834,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -263,12 +263,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.9319392729459715,
-          -0.25259059148317586,
+          -1.9298426803561914,
+          -0.24708703593500214,
           0.14
         ],
-        "distance_to_a_m": 1.0728772074888542,
-        "distance_to_b_m": 3.6375607285325726,
+        "distance_to_a_m": 1.0669878251647598,
+        "distance_to_b_m": 3.6339642734693625,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -291,12 +291,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.8752748910456611,
-          -0.10384658899486032,
+          -1.8745221708129045,
+          -0.10187069838387508,
           0.14
         ],
-        "distance_to_a_m": 0.9137055063218809,
-        "distance_to_b_m": 3.5425198285493775,
+        "distance_to_a_m": 0.9115910958945085,
+        "distance_to_b_m": 3.541288304415859,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -319,12 +319,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.818955527524333,
-          0.04399174024862629,
+          -1.8194557308186279,
+          0.042678706601101624,
           0.14
         ],
-        "distance_to_a_m": 0.7555029706249046,
-        "distance_to_b_m": 3.452739468197544,
+        "distance_to_a_m": 0.7569080544996805,
+        "distance_to_b_m": 3.45351523282899,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -347,12 +347,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.76369226735983,
-          0.189057798180446,
+          -1.7643632155356852,
+          0.18729655921882626,
           0.14
         ],
-        "distance_to_a_m": 0.6002670563270605,
-        "distance_to_b_m": 3.3695410394776992,
+        "distance_to_a_m": 0.6021517669506339,
+        "distance_to_b_m": 3.370520587511837,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -375,12 +375,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.7089820910148852,
-          0.33267201108592714,
+          -1.7091864046006173,
+          0.332135687923379,
           0.14
         ],
-        "distance_to_a_m": 0.4465847686548767,
-        "distance_to_b_m": 3.2923182894091854,
+        "distance_to_a_m": 0.44715869075412046,
+        "distance_to_b_m": 3.292596700850019,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -403,12 +403,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.6541621110379081,
-          0.4765744585254914,
+          -1.6539887707124508,
+          0.47702947687981556,
           0.14
         ],
-        "distance_to_a_m": 0.29259403976585324,
-        "distance_to_b_m": 3.220443900254898,
+        "distance_to_a_m": 0.2921071223486237,
+        "distance_to_b_m": 3.220225768739827,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -431,12 +431,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.5990158845860338,
-          0.621333302961661,
+          -1.5988091159217157,
+          0.6218760707054962,
           0.14
         ],
-        "distance_to_a_m": 0.13768687616656533,
-        "distance_to_b_m": 3.1540803461557148,
+        "distance_to_a_m": 0.13710605768864656,
+        "distance_to_b_m": 3.153843208325203,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -459,12 +459,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.5472823041406063,
-          0.7571339516309079,
+          -1.5487712294225275,
+          0.7532255227658649,
           0.14
         ],
-        "distance_to_a_m": 0.007634077328420213,
-        "distance_to_b_m": 3.0975789206484032,
+        "distance_to_a_m": 0.003451648047697586,
+        "distance_to_b_m": 3.0991242285551137,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -487,12 +487,12 @@
         "history": [],
         "robot_state": "at_start",
         "robot_position": [
-          -1.5258055268629582,
-          0.8135104919847338,
+          -1.5350872260907162,
+          0.789146031511871,
           0.14
         ],
-        "distance_to_a_m": 0.06796289518937502,
-        "distance_to_b_m": 3.0758351991734525,
+        "distance_to_a_m": 0.04189036415212709,
+        "distance_to_b_m": 3.085106319273301,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -517,12 +517,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.533334604796508,
-          0.7937466624091662,
+          -1.5441237915486616,
+          0.7654250471847632,
           0.14
         ],
-        "distance_to_a_m": 0.046813522290361106,
-        "distance_to_b_m": 3.0833409460140246,
+        "distance_to_a_m": 0.01650642015749487,
+        "distance_to_b_m": 3.0943169625605003,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -547,12 +547,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.5348314438345851,
-          0.7893119830810158,
+          -1.5451855577873659,
+          0.7618373720475211,
           0.14
         ],
-        "distance_to_a_m": 0.042136885384487295,
-        "distance_to_b_m": 3.084849959167582,
+        "distance_to_a_m": 0.012778976125270281,
+        "distance_to_b_m": 3.0954208152216927,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -577,12 +577,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.535423279737272,
-          0.7166084786914575,
+          -1.5390497402424521,
+          0.6809340442421776,
           0.14
         ],
-        "distance_to_a_m": 0.03643452303676658,
-        "distance_to_b_m": 3.086550009471879,
+        "distance_to_a_m": 0.06992863814989715,
+        "distance_to_b_m": 3.091343558958222,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -607,12 +607,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.511735720781493,
-          0.5749896522619309,
+          -1.511889454819351,
+          0.5206538942750507,
           0.14
         ],
-        "distance_to_a_m": 0.17914456977400053,
-        "distance_to_b_m": 3.0699927166849394,
+        "distance_to_a_m": 0.23249096727650712,
+        "distance_to_b_m": 3.0746058739808646,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -637,12 +637,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.4796720969265236,
-          0.3929093183669916,
+          -1.4836331130529516,
+          0.34023069374148607,
           0.14
         ],
-        "distance_to_a_m": 0.36395022854758435,
-        "distance_to_b_m": 3.0568997101585755,
+        "distance_to_a_m": 0.41510895923194197,
+        "distance_to_b_m": 3.068276010985449,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -667,12 +667,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.4530520470281518,
-          0.2150538713741348,
+          -1.4612496091808067,
+          0.17655610908286468,
           0.14
         ],
-        "distance_to_a_m": 0.5436600648541627,
-        "distance_to_b_m": 3.059490737125112,
+        "distance_to_a_m": 0.580271081392777,
+        "distance_to_b_m": 3.0751108100218856,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -697,12 +697,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.4339163023000627,
-          0.058503507352469786,
+          -1.441181907733561,
+          0.024540042684656926,
           0.14
         ],
-        "distance_to_a_m": 0.7011724639598493,
-        "distance_to_b_m": 3.074666412432521,
+        "distance_to_a_m": 0.7335758494337765,
+        "distance_to_b_m": 3.090065913625808,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -727,12 +727,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.4173318699145647,
-          -0.08564122313286604,
+          -1.4201547810880975,
+          -0.12849936907949755,
           0.14
         ],
-        "distance_to_a_m": 0.8461070183725924,
-        "distance_to_b_m": 3.0966786727594044,
+        "distance_to_a_m": 0.8880433110762983,
+        "distance_to_b_m": 3.111901428709063,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -757,12 +757,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.3990487796235707,
-          -0.23116136029048984,
+          -1.39811471512362,
+          -0.2853481771610309,
           0.14
         ],
-        "distance_to_a_m": 0.9927053368750557,
-        "distance_to_b_m": 3.12412907152624,
+        "distance_to_a_m": 1.0464296382044271,
+        "distance_to_b_m": 3.141553921102612,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -787,12 +787,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.3784587091487719,
-          -0.3832675573077917,
+          -1.3760163196748383,
+          -0.4431840344044705,
           0.14
         ],
-        "distance_to_a_m": 1.1461770242476834,
-        "distance_to_b_m": 3.158479463819013,
+        "distance_to_a_m": 1.205801999076638,
+        "distance_to_b_m": 3.179163104718231,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -817,12 +817,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.3570916695374424,
-          -0.539177068450801,
+          -1.3541990005486704,
+          -0.600223003175706,
           0.14
         ],
-        "distance_to_a_m": 1.3035302596339113,
-        "distance_to_b_m": 3.200715106934461,
+        "distance_to_a_m": 1.364346066689446,
+        "distance_to_b_m": 3.224127214210117,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -847,12 +847,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.3362545883649857,
-          -0.6946401051249591,
+          -1.3324942605631385,
+          -0.7566987563230219,
           0.14
         ],
-        "distance_to_a_m": 1.4603671231339312,
-        "distance_to_b_m": 3.250294539377298,
+        "distance_to_a_m": 1.5223172760608468,
+        "distance_to_b_m": 3.2759859859463805,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -877,12 +877,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.3161285815039665,
-          -0.848067303566034,
+          -1.3107441931198214,
+          -0.9132203153430247,
           0.14
         ],
-        "distance_to_a_m": 1.6150897644143998,
-        "distance_to_b_m": 3.306178894554461,
+        "distance_to_a_m": 1.6803407864167423,
+        "distance_to_b_m": 3.3345136358055028,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -907,12 +907,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.2962391439556655,
-          -1.000328574789335,
+          -1.288945328344732,
+          -1.069924673258007,
           0.14
         ],
-        "distance_to_a_m": 1.7686279121919393,
-        "distance_to_b_m": 3.367827228613202,
+        "distance_to_a_m": 1.8385525170433135,
+        "distance_to_b_m": 3.399445375497221,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -937,12 +937,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.2761843984175743,
-          -1.152734401562565,
+          -1.2671433887148094,
+          -1.2266773763370376,
           0.14
         ],
-        "distance_to_a_m": 1.9223353470608602,
-        "distance_to_b_m": 3.4351841139747976,
+        "distance_to_a_m": 1.9968127885884586,
+        "distance_to_b_m": 3.4704060368112457,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -967,12 +967,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.255960090760443,
-          -1.305394219376919,
+          -1.248222907925571,
+          -1.3627646122713615,
           0.14
         ],
-        "distance_to_a_m": 2.076320029589288,
-        "distance_to_b_m": 3.5080046821414164,
+        "distance_to_a_m": 2.1342079842805983,
+        "distance_to_b_m": 3.5366088574413674,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -997,12 +997,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.2425957225592594,
-          -1.4059633536372576,
+          -1.2443061516960219,
+          -1.3909527849283436,
           0.14
         ],
-        "distance_to_a_m": 2.17776843856634,
-        "distance_to_b_m": 3.5587729890015196,
+        "distance_to_a_m": 2.162666769565604,
+        "distance_to_b_m": 3.550833842239242,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1027,12 +1027,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.2422990043074311,
-          -1.4080043127668633,
+          -1.2459470341581378,
+          -1.3606041989506188,
           0.14
         ],
-        "distance_to_a_m": 2.1798308458847395,
-        "distance_to_b_m": 3.5598057214760104,
+        "distance_to_a_m": 2.132392621133645,
+        "distance_to_b_m": 3.5334869919586134,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1057,12 +1057,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.2259050907058178,
-          -1.374075569906613,
+          -1.1623080480495718,
+          -1.3526782485501843,
           0.14
         ],
-        "distance_to_a_m": 2.1486587762845235,
-        "distance_to_b_m": 3.525940109569537,
+        "distance_to_a_m": 2.1381208727602847,
+        "distance_to_b_m": 3.46275014826302,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1087,12 +1087,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -1.106667801010641,
-          -1.3716419475287622,
+          -0.9822765715910884,
+          -1.3617699525666886,
           0.14
         ],
-        "distance_to_a_m": 2.1674657995397255,
-        "distance_to_b_m": 3.4313135317532892,
+        "distance_to_a_m": 2.1867515230880445,
+        "distance_to_b_m": 3.3295155748020315,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1117,12 +1117,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -0.9087672561180047,
-          -1.3839565376391292,
+          -0.7929865446047133,
+          -1.3659257484718403,
           0.14
         ],
-        "distance_to_a_m": 2.228216761529096,
-        "distance_to_b_m": 3.288647530224964,
+        "distance_to_a_m": 2.247267484011556,
+        "distance_to_b_m": 3.190739772543671,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1147,12 +1147,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -0.705053507880788,
-          -1.3904561078971094,
+          -0.6291874995715734,
+          -1.3633545337446242,
           0.14
         ],
-        "distance_to_a_m": 2.3011925005045977,
-        "distance_to_b_m": 3.143781844217121,
+        "distance_to_a_m": 2.3052468514769107,
+        "distance_to_b_m": 3.0706613289261364,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1177,12 +1177,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -0.5333230607540909,
-          -1.3863138460515236,
+          -0.47677700691415437,
+          -1.3599695408472268,
           0.14
         ],
-        "distance_to_a_m": 2.3658970492449334,
-        "distance_to_b_m": 3.0199674185173584,
+        "distance_to_a_m": 2.3672302499315943,
+        "distance_to_b_m": 2.9619745868497387,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1207,12 +1207,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -0.3857626606024904,
-          -1.3776654682638032,
+          -0.3206551885275726,
+          -1.3583066910280308,
           0.14
         ],
-        "distance_to_a_m": 2.4253677921687715,
-        "distance_to_b_m": 2.913658176562831,
+        "distance_to_a_m": 2.440542105542894,
+        "distance_to_b_m": 2.856158015044248,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1237,12 +1237,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -0.23986912006490924,
-          -1.3708413997274354,
+          -0.15989321204473583,
+          -1.3574691589353374,
           0.14
         ],
-        "distance_to_a_m": 2.492872071598806,
-        "distance_to_b_m": 2.8135713692267528,
+        "distance_to_a_m": 2.524643170387237,
+        "distance_to_b_m": 2.7528908384376263,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1267,12 +1267,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          -0.08406813653551115,
-          -1.3673008283596135,
+          0.0013390217086826084,
+          -1.3563998445129202,
           0.14
         ],
-        "distance_to_a_m": 2.575251254944413,
-        "distance_to_b_m": 2.714290248932289,
+        "distance_to_a_m": 2.6160223747590745,
+        "distance_to_b_m": 2.6548843882733517,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1297,12 +1297,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.07915888887750411,
-          -1.3651368642573136,
+          0.16135249205937274,
+          -1.3550068602341552,
           0.14
         ],
-        "distance_to_a_m": 2.669824458601884,
-        "distance_to_b_m": 2.6174780257213337,
+        "distance_to_a_m": 2.712891673788447,
+        "distance_to_b_m": 2.563668556768988,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1327,12 +1327,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.2428611529415048,
-          -1.362400773996998,
+          0.32081326331854987,
+          -1.353573025561863,
           0.14
         ],
-        "distance_to_a_m": 2.770665649931413,
-        "distance_to_b_m": 2.5267744404422467,
+        "distance_to_a_m": 2.815130856653042,
+        "distance_to_b_m": 2.479672722369077,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1357,12 +1357,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.40349462076003695,
-          -1.3586516236316852,
+          0.48044870167048037,
+          -1.352221477145405,
           0.14
         ],
-        "distance_to_a_m": 2.8744656726395155,
-        "distance_to_b_m": 2.4442281842810587,
+        "distance_to_a_m": 2.922679775323795,
+        "distance_to_b_m": 2.4033304530264474,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1387,12 +1387,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.5618466359913583,
-          -1.354481977644908,
+          0.6403074858626465,
+          -1.3509099476949478,
           0.14
         ],
-        "distance_to_a_m": 2.98139910246519,
-        "distance_to_b_m": 2.3702826124321774,
+        "distance_to_a_m": 3.035007329636872,
+        "distance_to_b_m": 2.335370221907144,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1417,12 +1417,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.7183544538552855,
-          -1.350531307849606,
+          0.7711447509577227,
+          -1.3498302220212974,
           0.14
         ],
-        "distance_to_a_m": 3.091547137531868,
-        "distance_to_b_m": 2.305736155865124,
+        "distance_to_a_m": 3.1300159610156304,
+        "distance_to_b_m": 2.286566308349016,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1447,12 +1447,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.8122066461187742,
-          -1.348366945878834,
+          0.7897446137291282,
+          -1.3496722079051133,
           0.14
         ],
-        "distance_to_a_m": 3.159614545878116,
-        "distance_to_b_m": 2.271523622412071,
+        "distance_to_a_m": 3.1437283976392747,
+        "distance_to_b_m": 2.2801488665860212,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1477,12 +1477,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.8062908336566248,
-          -1.3486588898370204,
+          0.7623434252865504,
+          -1.3458253392357773,
           0.14
         ],
-        "distance_to_a_m": 3.1553883483124845,
-        "distance_to_b_m": 2.2737278528836327,
+        "distance_to_a_m": 3.1208037376689832,
+        "distance_to_b_m": 2.285819167431156,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1507,12 +1507,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.7915860539698136,
-          -1.3295140152877691,
+          0.8244697929165654,
+          -1.2766722330132627,
           0.14
         ],
-        "distance_to_a_m": 3.1316774718869413,
-        "distance_to_b_m": 2.260535700855024,
+        "distance_to_a_m": 3.1217794825291874,
+        "distance_to_b_m": 2.1997639975140113,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1537,12 +1537,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          0.8765857945290199,
-          -1.2368964116540693,
+          0.9608374957672048,
+          -1.1456794807384665,
           0.14
         ],
-        "distance_to_a_m": 3.136251898182582,
-        "distance_to_b_m": 2.1453283394248386,
+        "distance_to_a_m": 3.146093708687551,
+        "distance_to_b_m": 2.032924272608443,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1567,12 +1567,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.0199620685883866,
-          -1.0940103970481263,
+          1.0934350770165753,
+          -1.0123662401789648,
           0.14
         ],
-        "distance_to_a_m": 3.1630806784533156,
-        "distance_to_b_m": 1.9667779724365186,
+        "distance_to_a_m": 3.1770558337750643,
+        "distance_to_b_m": 1.868989812021269,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1597,12 +1597,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.1540415423981525,
-          -0.9536109621869115,
+          1.176328158635851,
+          -0.9241735754589631,
           0.14
         ],
-        "distance_to_a_m": 3.1959554085591355,
-        "distance_to_b_m": 1.7977581892035814,
+        "distance_to_a_m": 3.199331553517984,
+        "distance_to_b_m": 1.7642009985654747,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1627,12 +1627,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.2113883780219492,
-          -0.8874727764016912,
+          1.1757223011217413,
+          -0.9227247375280658,
           0.14
         ],
-        "distance_to_a_m": 3.2103867162277124,
-        "distance_to_b_m": 1.7211107464760769,
+        "distance_to_a_m": 3.1980572400084926,
+        "distance_to_b_m": 1.7629135875500954,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1657,12 +1657,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.189456208648712,
-          -0.9062857490387493,
+          1.1542210392679677,
+          -0.9376951671631295,
           0.14
         ],
-        "distance_to_a_m": 3.2012345745935002,
-        "distance_to_b_m": 1.7439618352632282,
+        "distance_to_a_m": 3.1876521777768216,
+        "distance_to_b_m": 1.7821968128521115,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1687,12 +1687,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.1690319152309367,
-          -0.8993099894248735,
+          1.1764140441826898,
+          -0.835773445747905,
           0.14
         ],
-        "distance_to_a_m": 3.1801506249328964,
-        "distance_to_b_m": 1.7414910627883715,
+        "distance_to_a_m": 3.1540467595702815,
+        "distance_to_b_m": 1.6778919012254359,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1717,12 +1717,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.2036984941183624,
-          -0.7576415664302125,
+          1.2240553861678896,
+          -0.6507352082263061,
           0.14
         ],
-        "distance_to_a_m": 3.139400976195599,
-        "distance_to_b_m": 1.5956728933108617,
+        "distance_to_a_m": 3.107642580653681,
+        "distance_to_b_m": 1.4869003112763102,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1747,12 +1747,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.2624503130965952,
-          -0.5435302908560836,
+          1.266112726656806,
+          -0.47341804458360015,
           0.14
         ],
-        "distance_to_a_m": 3.0956578262138987,
-        "distance_to_b_m": 1.373957228186554,
+        "distance_to_a_m": 3.070381507410959,
+        "distance_to_b_m": 1.3046783129328676,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1777,12 +1777,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.3121435150171004,
-          -0.34228145025904455,
+          1.2987195010534776,
+          -0.32340318898935694,
           0.14
         ],
-        "distance_to_a_m": 3.0634856401058004,
-        "distance_to_b_m": 1.1667830214115762,
+        "distance_to_a_m": 3.044240003977166,
+        "distance_to_b_m": 1.1511631570643104,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1807,12 +1807,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.344752172259303,
-          -0.18274196849851632,
+          1.3297819834942897,
+          -0.18034777095478294,
           0.14
         ],
-        "distance_to_a_m": 3.041315129775019,
-        "distance_to_b_m": 1.0039464365396262,
+        "distance_to_a_m": 3.026332970341968,
+        "distance_to_b_m": 1.0047774513839973,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1837,12 +1837,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.3700002999670988,
-          -0.04539420660347493,
+          1.3631279402376455,
+          -0.031542058898548,
           0.14
         ],
-        "distance_to_a_m": 3.0263928521767167,
-        "distance_to_b_m": 0.8643444085378544,
+        "distance_to_a_m": 3.0161436282147784,
+        "distance_to_b_m": 0.8522812695566302,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1867,12 +1867,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.398092195245754,
-          0.09605568560942523,
+          1.3977064100330976,
+          0.12127935549945357,
           0.14
         ],
-        "distance_to_a_m": 3.0197501151573265,
-        "distance_to_b_m": 0.7201483034126169,
+        "distance_to_a_m": 3.014011069749312,
+        "distance_to_b_m": 0.6955969025349698,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1897,12 +1897,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.4314559274205858,
-          0.25039151898987067,
+          1.4320243779073811,
+          0.2737538271466884,
           0.14
         ],
-        "distance_to_a_m": 3.0230263117360714,
-        "distance_to_b_m": 0.5622474362253466,
+        "distance_to_a_m": 3.019814531985587,
+        "distance_to_b_m": 0.5393081511074146,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1927,12 +1927,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.46706878430287,
-          0.41152483806093376,
+          1.4658880056433774,
+          0.42491805466845745,
           0.14
         ],
-        "distance_to_a_m": 3.0359956331431825,
-        "distance_to_b_m": 0.3972285714555131,
+        "distance_to_a_m": 3.0333576666400766,
+        "distance_to_b_m": 0.3843973117860514,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1957,12 +1957,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.5017892353247229,
-          0.5713514238824147,
+          1.4996750292839005,
+          0.5757412899042635,
           0.14
         ],
-        "distance_to_a_m": 3.057013714492085,
-        "distance_to_b_m": 0.2336759491072502,
+        "distance_to_a_m": 3.0546495514677274,
+        "distance_to_b_m": 0.22983596700990874,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -1987,12 +1987,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.5348830189356573,
-          0.7271971647695765,
+          1.5335710316340965,
+          0.7268381083694071,
           0.14
         ],
-        "distance_to_a_m": 3.0849672947718783,
-        "distance_to_b_m": 0.07435573907969643,
+        "distance_to_a_m": 3.083658019358968,
+        "distance_to_b_m": 0.07498382084512957,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -2017,12 +2017,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.559766187480935,
-          0.845683409862418,
+          1.5570961108307562,
+          0.831635728237325,
           0.14
         ],
-        "distance_to_a_m": 3.1112378655002595,
-        "distance_to_b_m": 0.046715654277452154,
+        "distance_to_a_m": 3.1081683728627785,
+        "distance_to_b_m": 0.032421815032910396,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -2047,12 +2047,12 @@
         ],
         "robot_state": "at_checkpoint_a",
         "robot_position": [
-          1.5634683367716264,
-          0.8639546494990791,
+          1.5572842512774,
+          0.8324503217630816,
           0.14
         ],
-        "distance_to_a_m": 3.1155530401875584,
-        "distance_to_b_m": 0.06535742718271577,
+        "distance_to_a_m": 3.108377948994521,
+        "distance_to_b_m": 0.03325783665844531,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -2078,12 +2078,12 @@
         ],
         "robot_state": "at_checkpoint_b",
         "robot_position": [
-          1.5596321650165361,
-          0.8459603219645082,
+          1.5536230516617535,
+          0.8161343386636695,
           0.14
         ],
-        "distance_to_a_m": 3.1111124353029997,
-        "distance_to_b_m": 0.046958809588692016,
+        "distance_to_a_m": 3.1043275918557147,
+        "distance_to_b_m": 0.01653612371318359,
         "shelf_collision_count": 0,
         "camera_inspection_complete": false
       }
@@ -2110,12 +2110,12 @@
         ],
         "robot_state": "at_checkpoint_b",
         "robot_position": [
-          1.5596321650165361,
-          0.8459603219645082,
+          1.5536230516617535,
+          0.8161343386636695,
           0.14
         ],
-        "distance_to_a_m": 3.1111124353029997,
-        "distance_to_b_m": 0.046958809588692016,
+        "distance_to_a_m": 3.1043275918557147,
+        "distance_to_b_m": 0.01653612371318359,
         "shelf_collision_count": 0,
         "camera_inspection_complete": true
       }

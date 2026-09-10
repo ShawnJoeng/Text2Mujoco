@@ -46,9 +46,11 @@
     <site name="checkpoint_a_marker" type="cylinder" pos="-1.55 0.75 0.014" size="0.30 0.014" material="yellow_marker" group="2"/>
     <site name="checkpoint_b_marker" type="cylinder" pos="1.55 0.80 0.014" size="0.30 0.014" material="green_marker" group="2"/>
     <site name="inspect_top_camera_marker" type="cylinder" pos="2.45 1.65 0.018" size="0.24 0.018" material="camera_marker" group="2"/>
-    <site name="bypass_1_marker" type="sphere" pos="-1.25 -1.35 0.025" size="0.04" rgba="1 1 1 0.55" group="3"/>
-    <site name="bypass_2_marker" type="sphere" pos="0.75 -1.35 0.025" size="0.04" rgba="1 1 1 0.55" group="3"/>
-    <site name="bypass_3_marker" type="sphere" pos="1.15 -0.95 0.025" size="0.04" rgba="1 1 1 0.55" group="3"/>
+    <!-- The three south-bypass waypoints used to be 0.04 m spheres centred 0.025 m
+         up, so each one sank 15 mm through the floor plane and read as a bug.
+         Nothing referenced them: the route is WarehouseNavigationEnv.SOUTH_BYPASS,
+         a table of plain coordinates, and no spec interaction_point named them.
+         A site nothing reads and nobody should see is deleted, not moved. -->
 
     <body name="central_shelf" childclass="world_part" pos="0 0.25 0.7">
       <geom name="central_shelf_geom" type="box" size="0.35 1.10 0.70" material="shelf_mat"/>
@@ -68,8 +70,15 @@
       <joint name="robot_x" type="slide" axis="1 0 0" range="-0.35 5.0" damping="40"/>
       <joint name="robot_y" type="slide" axis="0 1 0" range="-0.45 3.25" damping="40"/>
       <geom name="mobile_robot_geom" type="cylinder" size="0.23 0.12" mass="6" material="orange_mat"/>
-      <geom name="robot_top" type="cylinder" pos="0 0 0.13" size="0.13 0.035" material="robot_dark"/>
-      <geom name="robot_heading" type="box" pos="0.14 0 0.13" size="0.08 0.025 0.025" material="orange_mat"/>
+      <!-- Both of these used to state no mass and no density, so the compiler gave
+           them density 1000: the sensor dome is pi * 0.13^2 * 0.07 = 3.72e-3 m^3,
+           i.e. 3.72 kg of solid water on a 6 kg chassis, and the heading fin
+           0.16 * 0.05 * 0.05 = 4.0e-4 m^3, another 0.40 kg. Both are moulded
+           plastic shells: 0.45 kg over the dome's volume is density 121, and
+           0.06 kg over the fin's is density 150. The chassis therefore carries
+           6.51 kg in total, which is what scene_spec.json now reports. -->
+      <geom name="robot_top" type="cylinder" pos="0 0 0.13" size="0.13 0.035" mass="0.45" material="robot_dark"/>
+      <geom name="robot_heading" type="box" pos="0.14 0 0.13" size="0.08 0.025 0.025" mass="0.06" material="orange_mat"/>
     </body>
   </worldbody>
   <actuator>

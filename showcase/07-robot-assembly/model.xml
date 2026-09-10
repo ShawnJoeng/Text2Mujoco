@@ -1,8 +1,8 @@
 <mujoco model="robot_peg_insertion_assembly">
   <compiler angle="radian" autolimits="true"/>
   <option timestep="0.002" gravity="0 0 -9.81" integrator="implicitfast" solver="Newton" cone="elliptic"/>
-  <size nconmax="400" njmax="900"/>
-  <statistic center="0 0.08 0.85" extent="1.35"/>
+  <size nconmax="500" njmax="1200"/>
+  <statistic center="0 0.08 0.9" extent="1.35"/>
   <visual>
     <global offwidth="640" offheight="480"/>
     <quality shadowsize="2048"/>
@@ -17,6 +17,7 @@
     <material name="frame_mat" rgba="0.08 0.10 0.13 1" specular="0.20" roughness="0.48"/>
     <material name="arm_mat" rgba="0.95 0.31 0.07 1" specular="0.35" roughness="0.30"/>
     <material name="arm_dark_mat" rgba="0.20 0.23 0.27 1" specular="0.25" roughness="0.42"/>
+    <material name="arm_steel_mat" rgba="0.74 0.77 0.80 1" specular="0.60" roughness="0.18"/>
     <material name="peg_mat" rgba="0.88 0.05 0.04 1" specular="0.34" roughness="0.28"/>
     <material name="fixture_mat" rgba="0.08 0.32 0.78 1" specular="0.24" roughness="0.42"/>
     <material name="socket_mat" rgba="0.03 0.12 0.25 1" specular="0.26" roughness="0.30"/>
@@ -27,19 +28,22 @@
     <material name="marker_orange" rgba="1 0.35 0.02 1" emission="0.35"/>
   </asset>
 
-  <!-- Collision classes make the intent of every contact pair explicit.
-       A pair collides when (contype1 & conaffinity2) || (contype2 & conaffinity1),
-       so world<->robot, world<->payload, robot<->payload and payload<->payload all
-       collide while robot<->robot is filtered: this arm is a short chain of
-       primitives that cannot fold onto itself, and its links deliberately nest
-       inside the shoulder/elbow/wrist hubs and the tool palm. -->
+  <!-- Collision classes say which groups are allowed to touch; they are not a
+       licence for the arm to pass through itself. A pair collides when
+       (contype1 & conaffinity2) || (contype2 & conaffinity1), and every class
+       here carries conaffinity 7, so world<->robot, world<->payload,
+       robot<->payload, payload<->payload AND robot<->robot are all tested. The
+       arm therefore has a collision boundary against its own links, and the
+       handful of pairs that are designed to interpenetrate - a hinge hub inside
+       the link it turns in, a ram inside its sleeve - are named one by one in
+       the <contact> block below instead of being hidden behind a mask. -->
   <default>
     <geom friction="0.72 0.01 0.002" condim="6" solref="0.008 1" solimp="0.90 0.95 0.001"/>
     <default class="world_part">
-      <geom contype="1" conaffinity="6"/>
+      <geom contype="1" conaffinity="7"/>
     </default>
     <default class="robot_part">
-      <geom contype="2" conaffinity="5"/>
+      <geom contype="2" conaffinity="7"/>
     </default>
     <default class="payload_part">
       <geom contype="4" conaffinity="7"/>
@@ -60,72 +64,94 @@
       <geom name="workbench_leg_br" class="world_part" type="box" pos="0.70 0.40 -0.38" size="0.04 0.04 0.38" material="frame_mat"/>
     </body>
 
-    <!-- The arm is a deterministic planar manipulator with an independently actuated
-         tool lift. Its rotation plane is at z = 1.175 so that the lowest link surface
-         (1.130) stays above the fixture guide rims (0.940); the base geom is a column
-         standing on the bench top (0.780) rather than a hub floating in the air.
-         Vertical budget of the tool, all relative to the arm_tool frame:
-           palm bottom       -0.050
-           fingertips        -0.110
-           tool_center_site  -0.125   (the carried peg's center)
-           peg bottom        -0.195   (site - the 0.070 peg half-height)
-         The lift slide therefore needs 0.200 m of travel: the tool frame is at
-         1.175 when parked, the peg has to be picked off the bench top
-         (0.780 + 0.070 = 0.850 -> tool_z = -0.200) and pressed onto the socket
-         floor top (0.900 + 0.070 = 0.970 -> tool_z = -0.080). -->
-    <body name="arm_base" pos="-0.55 0 1.175">
-      <geom name="arm_base_geom" class="robot_part" type="cylinder" pos="0 0 -0.1975" size="0.12 0.1975" material="arm_dark_mat"/>
+    <!-- Six actuated joints: three planar hinges, a lift slide, a wrist pitch and
+         the jaw. The pitch is what lets the arm walk away from a seated part by
+         tilting the hand back, instead of dragging the whole tool column down
+         through the fixture.
+
+         Every millimetre below is measured from the arm plane at z = 1.235.
+         Chain, all in the arm_link3 frame (x = 0.16 is the lift axis):
+           lift_sleeve   -0.040 .. +0.064   fixed to the forearm
+           lift_ram      -0.075 + tool_z .. +0.175 + tool_z, always inside it
+           arm_tool      -0.105 + tool_z    pitch axis, world 1.130 + tool_z
+         and from the arm_tool frame downward:
+           pitch hub     +0.040 .. -0.040
+           palm bottom   -0.050
+           fingertips    -0.110
+           tool_center   -0.125   the carried peg's centre
+           peg bottom    -0.195
+         So the peg centre rides at world 1.005 + tool_z, which fixes the three
+         lift stations: pick the peg off the bench top (0.780 + 0.070 = 0.850,
+         tool_z = -0.155), cross the 0.940 fixture rims with 35 mm to spare
+         (tool_z = +0.040) and press the peg onto the socket floor top
+         (0.900 + 0.070 = 0.970, tool_z = -0.035). The +0.045 end stop keeps the
+         closed jaw 60 mm below the forearm capsule it would otherwise clip. -->
+    <body name="arm_base" pos="-0.55 0 1.235">
+      <geom name="arm_base_geom" class="robot_part" type="cylinder" pos="0 0 -0.2275" size="0.12 0.2275" material="arm_dark_mat"/>
       <body name="arm_link1" pos="0 0 0">
         <joint name="arm_shoulder" type="hinge" axis="0 0 1" range="-3.05 3.05" damping="1.5" armature="0.015"/>
         <geom name="arm_link1_geom" class="robot_part" type="capsule" fromto="0 0 0 0.32 0 0" size="0.045" mass="0.65" material="arm_mat"/>
-        <geom name="arm_shoulder_hub" class="robot_part" type="cylinder" size="0.065 0.035" material="arm_dark_mat"/>
+        <geom name="arm_shoulder_hub" class="robot_part" type="cylinder" size="0.065 0.035" mass="0.30" material="arm_dark_mat"/>
         <body name="arm_link2" pos="0.32 0 0">
-          <joint name="arm_elbow" type="hinge" axis="0 0 1" range="-2.8 2.8" damping="1.2" armature="0.012"/>
+          <!-- +-2.75 rather than +-2.8: at 2.8 the wrist hub folds to 93.8 mm from
+               the upper-arm axis, 1.2 mm inside the 95 mm the two radii need, and
+               robot<->robot is a real contact now. 2.75 leaves 11.9 mm. -->
+          <joint name="arm_elbow" type="hinge" axis="0 0 1" range="-2.75 2.75" damping="1.2" armature="0.012"/>
           <geom name="arm_link2_geom" class="robot_part" type="capsule" fromto="0 0 0 0.28 0 0" size="0.040" mass="0.52" material="arm_mat"/>
-          <geom name="arm_elbow_hub" class="robot_part" type="cylinder" size="0.058 0.032" material="arm_dark_mat"/>
+          <geom name="arm_elbow_hub" class="robot_part" type="cylinder" size="0.058 0.032" mass="0.22" material="arm_dark_mat"/>
           <body name="arm_link3" pos="0.28 0 0">
             <joint name="arm_wrist" type="hinge" axis="0 0 1" range="-2.8 2.8" damping="1.0" armature="0.010"/>
             <geom name="arm_link3_geom" class="robot_part" type="capsule" fromto="0 0 0 0.16 0 0" size="0.035" mass="0.30" material="arm_mat"/>
-            <geom name="arm_wrist_hub" class="robot_part" type="cylinder" size="0.050 0.028" material="arm_dark_mat"/>
-            <!-- gravcomp models the counterbalanced lift axis. Without it the P
-                 servo droops 9.3 mm under the 0.40 kg tool, and because the grasp
-                 is a position-level hold the droop would be handed straight to the
-                 peg, pressing it that far into the bench and the socket floor. -->
-            <body name="arm_tool" pos="0.16 0 0" gravcomp="1">
-              <joint name="tool_z" type="slide" axis="0 0 1" range="-0.21 0" damping="3.0" armature="0.008"/>
-              <geom name="tool_palm_geom" class="robot_part" type="box" pos="0 0 -0.025" size="0.075 0.075 0.025" mass="0.24" material="arm_dark_mat"/>
-              <geom name="fixed_finger_geom" class="robot_part" type="box" pos="0 0.048 -0.055" size="0.035 0.012 0.055" mass="0.08" material="arm_mat"/>
-              <!-- The jaw closes toward +y (axis is -y with a negative range), so
-                   gripper_slide = -0.040 puts the inner face at
-                   -0.0835 + 0.040 + 0.012 = -0.0315: 1.5 mm outside the 0.030 m
-                   peg radius. The fixed jaw's inner face sits at 0.036, 6 mm clear,
-                   so the open jaws also drop past the peg without touching it. -->
-              <body name="moving_finger" pos="0 0 0" gravcomp="1">
-                <joint name="gripper_slide" type="slide" axis="0 -1 0" range="-0.045 0" damping="2.0" armature="0.004"/>
-                <geom name="moving_finger_geom" class="robot_part" type="box" pos="0 -0.0835 -0.055" size="0.035 0.012 0.055" mass="0.08" material="arm_mat"/>
+            <geom name="arm_wrist_hub" class="robot_part" type="cylinder" size="0.050 0.028" mass="0.18" material="arm_dark_mat"/>
+            <geom name="lift_sleeve" class="robot_part" type="cylinder" pos="0.16 0 0.012" size="0.048 0.052" mass="0.22" material="arm_dark_mat"/>
+            <!-- The lift is its own body so that the sliding ram can be drawn.
+                 Before it existed the tool hung off an invisible prismatic axis
+                 and opened a 165 mm gap under the forearm at full extension,
+                 which reads in a render as the hand having fallen off.
+                 gravcomp models the counterbalance: without it the P servo
+                 droops 9.3 mm under the tool, and the grasp would hand that
+                 droop straight to the peg. -->
+            <body name="arm_lift" pos="0.16 0 -0.075" gravcomp="1">
+              <joint name="tool_z" type="slide" axis="0 0 1" range="-0.17 0.045" damping="3.0" armature="0.008"/>
+              <geom name="lift_ram" class="robot_part" type="cylinder" pos="0 0 0.125" size="0.026 0.125" mass="0.20" material="arm_steel_mat"/>
+              <body name="arm_tool" pos="0 0 -0.030" gravcomp="1">
+                <joint name="tool_pitch" type="hinge" axis="0 1 0" range="-0.35 0.35" damping="2.5" armature="0.006"/>
+                <geom name="tool_pitch_hub" class="robot_part" type="cylinder" zaxis="0 1 0" size="0.040 0.036" mass="0.16" material="arm_dark_mat"/>
+                <geom name="tool_palm_geom" class="robot_part" type="box" pos="0 0 -0.025" size="0.075 0.075 0.025" mass="0.24" material="arm_dark_mat"/>
+                <geom name="fixed_finger_geom" class="robot_part" type="box" pos="0 0.048 -0.055" size="0.035 0.012 0.055" mass="0.08" material="arm_mat"/>
+                <!-- The jaw closes toward +y (axis -y, negative range), so
+                     gripper_slide = -0.043 puts the inner face at
+                     -0.0835 + 0.043 + 0.012 = -0.0285, 1.5 mm inside the peg
+                     radius. The peg is held by a real weld constraint, and the
+                     jaws close on to it rather than around a gap. -->
+                <body name="moving_finger" pos="0 0 0" gravcomp="1">
+                  <joint name="gripper_slide" type="slide" axis="0 -1 0" range="-0.045 0" damping="2.0" armature="0.004"/>
+                  <geom name="moving_finger_geom" class="robot_part" type="box" pos="0 -0.0835 -0.055" size="0.035 0.012 0.055" mass="0.08" material="arm_mat"/>
+                </body>
+                <!-- group 4: the tool centre is a kinematic reference the code
+                     reads, not a marker for the viewer, so it is not drawn. -->
+                <site name="tool_center_site" type="sphere" pos="0 0 -0.125" size="0.010" rgba="1 0.45 0.02 0.4" group="4"/>
               </body>
-              <site name="tool_center_site" type="sphere" pos="0 0 -0.125" size="0.012" rgba="1 0.45 0.02 1" group="2"/>
             </body>
           </body>
         </body>
       </body>
     </body>
 
-    <!-- Peg center = bench top + peg half-height = 0.780 + 0.070. Its x is the tool
-         centre with every arm joint at zero (-0.55 + 0.32 + 0.28 + 0.16 = 0.21), so
-         the task-level hold picks the peg up without displacing it sideways. -->
+    <!-- Peg centre = bench top + peg half-height = 0.780 + 0.070. Its x is the
+         tool centre with every arm joint at zero (-0.55 + 0.32 + 0.28 + 0.16 =
+         0.21), so the weld closes with no offset error and the peg is not
+         nudged sideways as it is picked up. -->
     <body name="red_peg" pos="0.21 0 0.85">
       <freejoint name="peg_free"/>
       <geom name="red_peg_geom" class="payload_part" type="cylinder" size="0.030 0.070" mass="0.16" material="peg_mat" friction="0.65 0.01 0.002"/>
-      <site name="peg_top_site" type="sphere" pos="0 0 0.075" size="0.010" rgba="1 0.2 0.05 1" group="2"/>
     </body>
 
-    <!-- Fixture base bottom = bench top: 0.830 - 0.050 = 0.780. The guides stand on
-         the base top (0.880) and rise 0.060 to 0.940, which is 40 mm below the
-         carried peg's lowest surface while the lift slide is parked. The base is
-         0.20 m deep rather than 0.30 m so that its near edge (y = 0.110) stays
-         clear of the tool palm (y <= 0.075) while the palm dives to 0.925 over the
-         pick station; the guide pocket is still 0.114 x 0.104, i.e. 22 mm or more
+    <!-- Fixture base bottom = bench top: 0.830 - 0.050 = 0.780. The guides stand
+         on the base top (0.880) and rise 0.060 to 0.940. The base is 0.20 m deep
+         rather than 0.30 m so that its near edge (y = 0.110) stays clear of the
+         tool palm (y <= 0.075) while the palm dives to 0.925 over the pick
+         station; the guide pocket is still 0.114 x 0.104, i.e. 22 mm or more
          around the 0.060 m peg. -->
     <body name="insertion_fixture" pos="0.17 0.21 0.83">
       <geom name="fixture_base_geom" class="world_part" type="box" size="0.17 0.10 0.05" material="fixture_mat" friction="0.82 0.01 0.001"/>
@@ -133,27 +159,60 @@
       <geom name="fixture_guide_right" class="world_part" type="box" pos="0.075 0 0.080" size="0.018 0.10 0.030" material="fixture_mat"/>
       <geom name="fixture_guide_front" class="world_part" type="box" pos="0 -0.070 0.080" size="0.075 0.018 0.030" material="fixture_mat"/>
       <geom name="fixture_guide_back" class="world_part" type="box" pos="0 0.070 0.080" size="0.075 0.018 0.030" material="fixture_mat"/>
-      <site name="fixture_center_site" type="cylinder" pos="0 0 0.12" size="0.048 0.006" rgba="0.02 0.95 0.95 1" group="2"/>
     </body>
     <!-- Socket floor bottom = fixture base top: 0.890 - 0.010 = 0.880, top = 0.900. -->
     <body name="socket_floor" pos="0.17 0.21 0.89">
       <geom name="socket_floor_geom" class="world_part" type="cylinder" size="0.055 0.010" material="socket_mat" friction="0.72 0.01 0.002"/>
     </body>
 
-    <!-- Fixed, non-colliding markers are intentionally large enough for render validation. -->
-    <site name="peg_approach_marker" type="sphere" pos="0.21 0 1.01" size="0.030" material="marker_yellow" group="2"/>
-    <site name="grasp_peg_marker" type="sphere" pos="0.21 0 0.94" size="0.028" material="marker_cyan" group="2"/>
-    <site name="socket_approach_marker" type="sphere" pos="0.17 0.21 1.26" size="0.045" material="marker_green" group="2"/>
-    <site name="insertion_marker" type="cylinder" pos="0.17 0.21 1.14" size="0.055 0.012" material="marker_magenta" group="2"/>
-    <site name="release_marker" type="sphere" pos="0.17 0.21 1.08" size="0.026" material="marker_orange" group="2"/>
-    <site name="inspection_marker" type="sphere" pos="0.48 0.36 1.02" size="0.028" material="marker_yellow" group="2"/>
+    <!-- Markers are painted-on decals, not floating balls. Each one is a disc
+         whose half-height equals its clearance above the surface it annotates,
+         so its underside is flush with that surface: the bench top at 0.780 for
+         the pick, transit and inspection stations, the socket floor top at 0.900
+         for the insertion station. A marker that hovers in mid-air reads as a
+         bug, and nothing can pass through a decal that is lying on the table. -->
+    <site name="peg_approach_marker" type="cylinder" pos="0.21 -0.155 0.786" size="0.050 0.006" material="marker_yellow" group="2"/>
+    <site name="grasp_peg_marker" type="cylinder" pos="0.21 -0.070 0.786" size="0.036 0.006" material="marker_cyan" group="2"/>
+    <site name="socket_approach_marker" type="cylinder" pos="0.17 0.045 0.786" size="0.048 0.006" material="marker_green" group="2"/>
+    <site name="insertion_marker" type="cylinder" pos="0.17 0.21 0.906" size="0.050 0.006" material="marker_magenta" group="2"/>
+    <site name="release_marker" type="cylinder" pos="0.42 0.21 0.786" size="0.042 0.006" material="marker_orange" group="2"/>
+    <site name="inspection_marker" type="cylinder" pos="0.48 0.36 0.786" size="0.042 0.006" material="marker_yellow" group="2"/>
   </worldbody>
+
+  <!-- The only overlaps in this model that are meant to exist. Each pair is a
+       joint drawn as a hub nested in the link it turns, or the lift telescope
+       whose ram and pitch hub ride inside the sleeve. Naming them here keeps
+       robot<->robot collision switched on everywhere else: the forearm, the
+       palm and the jaw now stop against the upper arm and the column instead of
+       sliding through them. -->
+  <contact>
+    <exclude name="base_shoulder_nest" body1="arm_base" body2="arm_link1"/>
+    <exclude name="shoulder_elbow_nest" body1="arm_link1" body2="arm_link2"/>
+    <exclude name="elbow_wrist_nest" body1="arm_link2" body2="arm_link3"/>
+    <exclude name="lift_sleeve_nest" body1="arm_link3" body2="arm_lift"/>
+    <exclude name="lift_pitch_nest" body1="arm_link3" body2="arm_tool"/>
+    <exclude name="pitch_hub_nest" body1="arm_lift" body2="arm_tool"/>
+    <exclude name="jaw_palm_nest" body1="arm_tool" body2="moving_finger"/>
+  </contact>
+
+  <!-- A real grasp. The peg used to be carried by overwriting its free-joint
+       qpos every step, which meant nothing could ever make it slip and a part
+       lying on the bench was indistinguishable from a part in the hand. The
+       weld is switched on when the jaws close and off when they open; relpose is
+       rewritten from the measured tool-to-peg offset at that instant, so the
+       constraint engages with no jolt and no teleport. Let go in mid-air and
+       the peg falls, which is the honest outcome. -->
+  <equality>
+    <weld name="peg_grasp" body1="arm_tool" body2="red_peg" relpose="0 0 -0.125 1 0 0 0"
+          active="false" solref="0.01 1" solimp="0.96 0.99 0.001"/>
+  </equality>
 
   <actuator>
     <position name="shoulder_motor" joint="arm_shoulder" kp="140" kv="14" ctrlrange="-3.05 3.05"/>
-    <position name="elbow_motor" joint="arm_elbow" kp="140" kv="14" ctrlrange="-2.8 2.8"/>
+    <position name="elbow_motor" joint="arm_elbow" kp="140" kv="14" ctrlrange="-2.75 2.75"/>
     <position name="wrist_motor" joint="arm_wrist" kp="110" kv="11" ctrlrange="-2.8 2.8"/>
-    <position name="tool_lift_motor" joint="tool_z" kp="420" kv="40" ctrlrange="-0.21 0"/>
+    <position name="tool_lift_motor" joint="tool_z" kp="420" kv="40" ctrlrange="-0.17 0.045"/>
+    <position name="tool_pitch_motor" joint="tool_pitch" kp="90" kv="9" ctrlrange="-0.35 0.35"/>
     <position name="gripper_motor" joint="gripper_slide" kp="260" kv="16" ctrlrange="-0.045 0"/>
   </actuator>
 </mujoco>

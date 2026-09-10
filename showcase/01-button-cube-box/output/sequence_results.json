@@ -24,7 +24,7 @@
         640,
         3
       ],
-      "rgb_std": 64.85533349731817,
+      "rgb_std": 64.886297647307,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -57,7 +57,7 @@
         640,
         3
       ],
-      "rgb_std": 64.85228198055276,
+      "rgb_std": 64.85640915847696,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -92,13 +92,13 @@
         640,
         3
       ],
-      "rgb_std": 64.77432522892892,
+      "rgb_std": 64.74240949298455,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
         640
       ],
-      "finite_depth_pixels": 161568,
+      "finite_depth_pixels": 161514,
       "finite_depth_min_m": 1.1489711999893188,
       "finite_depth_max_m": 3.6283583641052246,
       "observation": {
@@ -108,13 +108,13 @@
         ],
         "button_state": "pressed",
         "cube_state": "grasped",
-        "button_joint_qpos": -0.01922576187529882,
+        "button_joint_qpos": -0.019226250311860663,
         "cube_position": [
           -0.12,
           -0.03,
-          0.9
+          0.8999574634038808
         ],
-        "cube_speed_mps": 0.0,
+        "cube_speed_mps": 6.649778852429937e-05,
         "cube_contacts_box_bottom": false
       }
     },
@@ -128,7 +128,7 @@
         640,
         3
       ],
-      "rgb_std": 65.19890957017704,
+      "rgb_std": 65.20942857959233,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -145,13 +145,13 @@
         ],
         "button_state": "pressed",
         "cube_state": "inside_box",
-        "button_joint_qpos": -0.019226250000007074,
+        "button_joint_qpos": -0.019226249999999993,
         "cube_position": [
-          0.3,
-          0.17999999999999997,
+          0.3000491754567116,
+          0.18002458772835583,
           0.8449997860059927
         ],
-        "cube_speed_mps": 4.8802900664467246e-14,
+        "cube_speed_mps": 4.8812303556019387e-14,
         "cube_contacts_box_bottom": true
       }
     },
@@ -165,7 +165,7 @@
         640,
         3
       ],
-      "rgb_std": 65.19890957017704,
+      "rgb_std": 65.20942857959233,
       "rgb_dynamic_range": 255,
       "depth_shape": [
         480,
@@ -183,13 +183,13 @@
         ],
         "button_state": "pressed",
         "cube_state": "inside_box",
-        "button_joint_qpos": -0.019226250000007074,
+        "button_joint_qpos": -0.019226249999999993,
         "cube_position": [
-          0.3,
-          0.17999999999999997,
+          0.3000491754567116,
+          0.18002458772835583,
           0.8449997860059927
         ],
-        "cube_speed_mps": 4.8802900664467246e-14,
+        "cube_speed_mps": 4.8812303556019387e-14,
         "cube_contacts_box_bottom": true
       }
     }
