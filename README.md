@@ -349,39 +349,6 @@ MUJOCO_GL=disable python3 physics_smoke.py     # spec, static, t=0 contact, phys
 MUJOCO_GL=glfw mjpython render_smoke.py        # RGB-D evidence; headless Linux: MUJOCO_GL=egl python3
 ```
 
-### Reproduce the captures and figures
-
-From the repository root:
-
-```bash
-# Paced keyframe storyboards: one frame per verified interaction
-MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --scene all
-
-# Dense sequences sampled every 0.20 s of simulation time
-MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --dense --scene all
-
-# Archive and path regressions
-python3 showcase/dense_archive_test.py
-python3 showcase/artifact_path_test.py
-python3 showcase/validate_manifests.py
-
-# The eight-check model audit, all eight scenes
-# (--report is resolved inside showcase/, and must stay there)
-MUJOCO_GL=disable python3 showcase/model_audit.py \
-  --report output/model_audit_report.json
-
-# The narrower predecessor: collision geometry and sequence contact only
-MUJOCO_GL=disable python3 showcase/sequence_contact_test.py \
-  --report output/sequence_contact_report.json
-
-# Recompose the two README figures from the committed captures
-python3 showcase/build_readme_figures.py
-```
-
-Pass `--dense-interval <seconds>` to change the sampling interval. The collector writes only under the repository `showcase/` tree so sensor and artifact paths stay portable; its `--output-root` option accepts that tree only.
-
-Keyframe GIFs hold `1.6 s` per frame with a `2.6 s` final state and their sequence retains RGB-D arrays; dense GIFs are RGB-only at `200 ms` per frame. Both TIFFs are full-resolution archives, and because TIFF playback timing is viewer-dependent the GIF carries the timing contract that `dense_archive_test.py` checks.
-
 <details>
 <summary>Generated package structure and interaction API</summary>
 

@@ -349,39 +349,6 @@ MUJOCO_GL=disable python3 physics_smoke.py     # 规范、静态、t=0 接触、
 MUJOCO_GL=glfw mjpython render_smoke.py        # RGB-D 证据；无头 Linux：MUJOCO_GL=egl python3
 ```
 
-### 复现这些截图与图表
-
-在仓库根目录执行：
-
-```bash
-# 有节奏的关键帧故事板：每个已验证交互一帧
-MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --scene all
-
-# 按仿真时间每 0.20 s 采样的密集序列
-MUJOCO_GL=glfw mjpython showcase/capture_sequences.py --dense --scene all
-
-# 归档与路径回归
-python3 showcase/dense_archive_test.py
-python3 showcase/artifact_path_test.py
-python3 showcase/validate_manifests.py
-
-# 八项检查的模型审计，全部八个场景
-#（--report 在 showcase/ 内部解析，且必须留在其中）
-MUJOCO_GL=disable python3 showcase/model_audit.py \
-  --report output/model_audit_report.json
-
-# 范围更窄的前身：只做碰撞几何与序列接触
-MUJOCO_GL=disable python3 showcase/sequence_contact_test.py \
-  --report output/sequence_contact_report.json
-
-# 从已提交的截图重新拼合 README 的两张图
-python3 showcase/build_readme_figures.py
-```
-
-传 `--dense-interval <秒>` 可以改变采样间隔。采集器只往仓库的 `showcase/` 树下写入，因此传感器和产物路径保持可移植；它的 `--output-root` 选项只接受这棵树。
-
-关键帧 GIF 每帧停留 `1.6 s`、末态停留 `2.6 s`，其序列还保留了 RGB-D 数组；密集 GIF 只有 RGB，每帧 `200 ms`。两种 TIFF 都是全分辨率归档，而 TIFF 的播放时序取决于查看器，所以时序契约由 GIF 承担，并由 `dense_archive_test.py` 核对。
-
 <details>
 <summary>生成出来的包结构与交互 API</summary>
 
