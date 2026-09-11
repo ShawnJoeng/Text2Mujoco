@@ -1,12 +1,14 @@
 # Forklift Pallet Delivery
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This MuJoCo 3.2.7 showcase demonstrates a mobile forklift delivering a loaded pallet around a storage rack. The orange forklift drives to the pallet, raises powered forks, engages the free pallet body, carries it through a marked route, lowers the forks into a green delivery zone, and verifies the result with a fixed RGB-D camera.
 
 ## Interaction sequence
 
 `drive_to_pallet` -> `raise_forks` -> `engage_pallet` -> `carry_to_drop_zone` -> `lower_forks_release` -> `inspect_forklift_delivery`
 
-The forklift has powered planar base slides, a steering hinge, and a vertical fork-lift slide. Once engaged, the pallet follows the fork anchor through the route while MuJoCo continues to advance physics. Release disables the hold, lowers the forks, and lets gravity and delivery-zone contacts settle the pallet. Every interaction has a visible named marker site and an explicit dependency.
+The forklift has powered planar base slides, a steering hinge, and a vertical fork-lift slide. Once engaged, the pallet is carried by the `pallet_grasp` weld between `fork_carriage` and the pallet while MuJoCo continues to advance physics. Release deactivates the weld, lowers the forks, and lets gravity and delivery-zone contacts settle the pallet. Every interaction has a visible named marker site and an explicit dependency.
 
 The environment exposes `list_interaction_points()`, `get_action_schema()`, `reset(seed=None)`, `step({"id": "<interaction_id>", "payload": {}})`, `observe()`, and `is_success()`.
 

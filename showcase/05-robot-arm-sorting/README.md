@@ -1,12 +1,14 @@
 # Robotic Arm Sorting Cell
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This MuJoCo showcase is a compact industrial pick-and-place cell. A powered shoulder, elbow, and wrist arm approaches a blue cylindrical part on a conveyor, closes a parallel gripper, transfers the part over a blue receptacle, releases it, and verifies the sorted result with a fixed RGB-D camera. A red part and red receptacle provide a visible distractor lane.
 
 ## Interaction sequence
 
 `approach_blue_part` -> `grasp_blue_part` -> `transfer_to_blue_bin` -> `release_blue_part` -> `inspect_sorting_result`
 
-The first four actions are executable robot controls. The arm uses three hinge joints and position actuators; the two gripper fingers use powered slide joints. During the grasped phase the environment keeps the blue free body synchronized with the `arm_tcp` site while MuJoCo continues to advance physics. Release places the part above the open blue bin and runs settling steps before checking its local interior bounds. `inspect_sorting_result` requires an enabled MuJoCo rendering backend and writes RGB and depth arrays under the package directory.
+The first four actions are executable robot controls. The arm uses three hinge joints and position actuators; the two gripper fingers use powered slide joints. During the grasped phase the blue part is carried by the `blue_part_grasp` weld between `tool_turret` and the part, engaged from the offset measured at jaw close, while MuJoCo continues to advance physics. Release places the part above the open blue bin and runs settling steps before checking its local interior bounds. `inspect_sorting_result` requires an enabled MuJoCo rendering backend and writes RGB and depth arrays under the package directory.
 
 The public API is `list_interaction_points()`, `get_action_schema()`, `reset(seed=None)`, `step({"id": "<interaction_id>", "payload": {}})`, `observe()`, and `is_success()`.
 

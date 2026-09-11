@@ -1,5 +1,7 @@
 # Smart Tool Cabinet (MuJoCo 3.2.7)
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This generated package implements a three-step task: press the green button to unlock a desktop tool cabinet, pull the drawer forward by `0.22 m`, then capture RGB-D evidence from a fixed inspection camera.
 
 ## Scene and Interaction

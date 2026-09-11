@@ -1,5 +1,7 @@
 # Text2MuJoCo for Claude Code
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This directory is a Claude Code Agent Skill. [`SKILL.md`](SKILL.md) is the discoverable skill entrypoint; `references/` and `scripts/` provide the scene contract, MuJoCo runtime guidance, examples, validation checklist, and deterministic validator.
 
 ## Install

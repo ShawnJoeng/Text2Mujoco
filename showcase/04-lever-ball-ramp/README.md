@@ -1,5 +1,7 @@
 # Lever and Ramp Ball Workbench
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This generated MuJoCo 3.2.7 scene models a workbench where a blue lever raises an amber gate, a purple ball rolls down a guarded ramp into a green target tray, and a fixed RGB-D camera verifies the result. All four interaction points have visible MJCF site markers and are declared in `interaction_manifest.json` with typed targets, dependencies, effects, and reset state.
 
 ## Interaction Sequence

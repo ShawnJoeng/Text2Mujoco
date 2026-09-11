@@ -1,10 +1,12 @@
 # Text2MuJoCo end-to-end test
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This is the generated package for:
 
 > Put a button, a red cube, and an open box on a table. After the button is pressed, grasp the cube and place it inside the box. Observe the result with an RGB-D camera.
 
-The button uses a real slide joint and position actuator; its action uses `press_depth_m` in meters, matching the actuator's position target. The cube uses a free joint. Grasp is explicitly a task-level qpos abstraction because no robot was requested; while grasped, the generated environment holds the free-joint pose until release, after which gravity, contact, and settling are simulated by MuJoCo. The receptacle is five separate colliders rather than a solid box.
+The button uses a real slide joint and position actuator; its action uses `press_depth_m` in meters, matching the actuator's position target. The cube uses a free joint. Grasp is a `<weld>` equality constraint named `cube_grasp`, declared inactive and toggled at runtime; no robot was requested, so it anchors the cube to the world at the offset measured when it is picked up. Release deactivates the weld, after which gravity, contact, and settling are simulated by MuJoCo. The receptacle is five separate colliders rather than a solid box.
 
 The checks in this directory target this axis-aligned button/cube/box example. A new package should regenerate its runtime handlers and checks for its own assets and interaction conditions. The scene uses the declared grasp pose and supplied placement height as the release target; the final resting pose is determined by physics. The first three interaction points are covered by the physics checks, and the inspection point is covered by the RGB-D render checks.
 

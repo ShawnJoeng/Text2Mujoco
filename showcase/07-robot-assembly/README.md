@@ -1,11 +1,13 @@
 # Robot Peg Assembly Cell
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This MuJoCo 3.2.7 showcase is a compact robot workcell: a planar orange arm lowers a gripper onto a red locating peg, transports it to a blue fixture, inserts it, releases it, and verifies the seated result with a fixed RGB-D camera.
 
 ## Interaction sequence
 
 1. `move_arm_to_peg` moves three hinge joints to the peg approach pose.
-2. `grasp_peg_with_arm` closes the actuated gripper and enables a deterministic task-level hold for the free peg.
+2. `grasp_peg_with_arm` closes the actuated gripper and engages the `peg_grasp` weld from the offset measured at jaw close.
 3. `move_arm_to_socket` transports the held peg with the arm actuators.
 4. `insert_peg_into_socket` drives the tool lift slide joint down into the guide fixture.
 5. `release_assembled_peg` opens the gripper and lets gravity/contact settle the peg in the socket.

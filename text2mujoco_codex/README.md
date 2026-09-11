@@ -1,5 +1,7 @@
 # Text2MuJoCo for Codex
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This directory is the Codex adapter for the Text2MuJoCo environment-generation workflow. The discoverable entrypoint is [`SKILL.md`](SKILL.md); `agents/openai.yaml` supplies the Codex UI metadata, while `references/` and `scripts/` contain the scene contract and validator.
 
 ## Install

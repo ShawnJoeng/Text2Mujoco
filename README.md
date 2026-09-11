@@ -39,14 +39,12 @@ Text2MuJoCo is an **agent skill package** that runs inside an existing coding ag
 
 ## What you get
 
-- **A normalized request** — `scene_spec.json` keeps the original prompt as `source_prompt`, records assumptions explicitly, and is schema-validated before any XML is written.
-- **Physically seated geometry** — full metric dimensions are converted to MJCF half-sizes, `orientation_xyzw` is converted to `quat="w x y z"`, and resting bodies are seated by half-size arithmetic so nothing interpenetrates at `t=0`.
-- **Bodies that actually collide, including against themselves** — every moving body carries a real collider, and every collision class carries `conaffinity="7"` so the arm has a boundary against its own links. Visual-only geometry (`contype="0" conaffinity="0"`) and a narrowed mask (`contype="2" conaffinity="5"`) both render and carry mass while passing through everything, so the skill forbids both and the audit fails a scene that ships either. The pairs that are *meant* to nest are named in `<contact><exclude>`, where a reader can check them.
-- **A hand that stays on the arm** — every prismatic axis is drawn as a sleeve and a ram, every geom on a jointed body states its `mass`, and every position servo holds `qpos0` within 2 mm, so the tool column does not open a visible gap under the forearm or droop away from where the model says it is.
-- **Grasps that can fail** — a payload is carried by an `<equality><weld>` toggled at runtime. Released in mid-air it falls, which is what makes a part in the hand distinguishable from a part on the bench.
-- **Markers you cannot walk through** — task markers are thin discs painted flush onto the surface they annotate, over real geometry, because a `<site>` never generates a contact and an emissive sphere hovering in mid-air is something every object visibly passes through.
-- **Executable interaction points** — every affordance is a real handler with a typed payload schema and declared dependencies, mirrored in the canonical `interaction_manifest.json`. Out-of-order or malformed actions are rejected.
-- **Committed evidence** — each package ships `physics_smoke.py` and `render_smoke.py`, and each showcase commits the resulting JSON reports, RGB-D screenshots, and frame archives.
+- **A whole package from one request** — `scene_spec.json`, `model.xml`, `environment.py`, `interaction_manifest.json`, and two runnable smoke tests, generated together and kept consistent with one another.
+- **A uniform interaction API** — `list_interaction_points()`, `get_action_schema()`, `reset()`, `step()`, `observe()`, and `is_success()` on every generated environment. Each affordance is a real handler with a typed payload schema and declared dependencies, so out-of-order and malformed actions are rejected.
+- **Geometry that behaves like geometry** — metric dimensions become MJCF half-sizes, `orientation_xyzw` becomes `quat="w x y z"`, resting bodies are seated by half-size arithmetic, and every collision class carries `conaffinity="7"` so a robot has a boundary against its own links.
+- **Grasps as constraints** — a carried payload is held by an `<equality><weld>` engaged from the offset measured at jaw close and toggled at runtime, so releasing it in mid-air drops it.
+- **Measured validation** — the checks report collision coverage, declared mass, servo hold, marker grounding, and contact depth as numbers in JSON, down to a tenth of a millimetre.
+- **Committed RGB-D evidence** — each showcase carries its own reports, screenshots, depth arrays, keyframe storyboard, and a dense capture sampled every `0.20 s` of simulation time.
 - **Two adapters, one behavior** — [`text2mujoco_codex`](text2mujoco_codex) and [`text2mujoco_claude`](text2mujoco_claude) carry identical validation scripts and reference guides; CI diffs the scripts on every push so the two cannot drift.
 
 ## How it works
@@ -68,163 +66,38 @@ The spec is the canonical input, but handlers are code: when a pose, condition, 
 
 ## Validation layers
 
-Fifteen checks stand between a request and a package anyone can trust. Each one is a script: `physics_smoke.py` and `render_smoke.py` ship inside every generated package, and the rest live in [showcase/](showcase). Eight of the fifteen belong to [`model_audit.py`](showcase/model_audit.py), which compiles the scene, holds every servo, replays the documented sequence, and reports each measurement as a number, so a defect that looks correct on camera still lands in JSON.
+The skill checks four things about every package it produces: that the request, the spec, and the manifest still describe the same scene; that the model is physically buildable and physically honest; that the documented interaction sequence runs to its success condition; and that the committed evidence matches the reports beside it. Each check is a script. `physics_smoke.py` and `render_smoke.py` ship inside every generated package; the rest live in [showcase/](showcase), with the model measurements gathered in [`model_audit.py`](showcase/model_audit.py), which compiles the scene, holds every servo, replays the sequence, and reports each measurement as a number.
 
-| Check | Runs in | Rejects |
+| What is checked | Runs in | Rejects |
 | --- | --- | --- |
-| Manifest parity | `validate_manifests.py` | spec/manifest drift: differing interaction IDs, dependency order, poses, or marker sites |
-| Static model | `physics_smoke.py` | MJCF that will not compile, a bad quaternion or half-size conversion |
-| Collision geometry | `model_audit.py` | a moving geom that belongs to no live collision pair — a link, fork, or button that renders while passing through everything |
-| Undeclared self-overlap | `model_audit.py` | geoms that interpenetrate only because a `contype`/`conaffinity` mask filtered the pair out of the solver |
-| Declared mass | `model_audit.py` | a geom on a jointed body with neither `mass` nor `density`, silently compiled at density 1000 |
-| Servo hold | `model_audit.py` | a position servo that settles more than `2 mm` or `1°` below the pose it is holding — the `weight / kp` droop, visible in a render |
-| Link continuity | `model_audit.py` | a gap wider than `5 mm` between a jointed body and its nearest *drawn* ancestor, at any point in the replay |
-| Marker grounding | `model_audit.py` | a marker site more than `3 mm` above the surface it annotates, or more than `1 mm` inside another geom |
-| Start pose | `physics_smoke.py`, `model_audit.py` | geoms overlapping by more than `0.1 mm` at the compiled `qpos0` or after `reset()` |
+| Spec and contract | `validate_scene_spec.py`, `validate_manifests.py` | a spec that fails its schema; spec/manifest drift in interaction IDs, dependency order, poses, or marker sites |
+| Start pose | `physics_smoke.py`, `model_audit.py` | MJCF that will not compile; geoms overlapping by more than `0.1 mm` at the compiled `qpos0` or after `reset()` |
+| Collision coverage | `model_audit.py` | a moving geom that belongs to no live collision pair; an overlap that exists only because a `contype`/`conaffinity` mask filtered the pair out of the solver |
+| Mechanical honesty | `model_audit.py` | a geom on a jointed body with no declared `mass`; a position servo settling more than `2 mm` or `1°` below the pose it holds; a gap wider than `5 mm` between a jointed body and its nearest drawn ancestor |
 | Sequence contact | `physics_smoke.py`, `model_audit.py`, `sequence_contact_test.py` | an overlap deeper than `1 mm` at any step of the documented sequence, endpoints and everything between them |
 | Grasp honesty | `physics_smoke.py` | a payload that hangs in place when its weld is released in mid-air — the signature of a carry written into `qpos` |
-| Physics | `physics_smoke.py` | non-finite state, dead actuators, unmet task predicates, a reset whose state differs between runs |
-| Render | `render_smoke.py` | blank RGB, non-finite depth, a marker with no visible pixels, no visible change across the interaction |
-| Archive | `dense_archive_test.py` | GIF/TIFF frame counts or timing that disagree with the dense report |
-| Paths | `artifact_path_test.py` | artifacts escaping the package root, symlink traversal |
+| Markers | `model_audit.py`, `render_smoke.py` | a marker site more than `3 mm` above the surface it annotates, buried more than `1 mm` inside another geom, or with no visible pixels in the render |
+| Behavior | `physics_smoke.py`, `render_smoke.py` | non-finite state, dead actuators, unmet task predicates, a reset whose state differs between runs, blank RGB, no visible change across the interaction |
+| Evidence | `dense_archive_test.py`, `artifact_path_test.py` | GIF/TIFF frame counts or timing that disagree with the dense report; artifacts escaping the package root |
 
-Two overlap thresholds run through that table, because a contact solver approximates: **0.1 mm** for the static poses, where any measurable overlap is a modeling error, and **1.0 mm** across the sequence, where sub-millimetre penetration under load is the solver's documented softness. A scene that breaches a limit is repaired in the model or the controller, and the threshold stays where it is. The forklift's `fork_lift` servo is the clearest example: a stiff position actuator handed a `0.18 m` step accelerated the tines to `~1.7 m/s` and drove them `4.49 mm` into the pallet deck, so the command is now ramped at roughly `0.25 m/s`.
+Two overlap thresholds run through that table, because a contact solver approximates: **0.1 mm** for the static poses, where any measurable overlap is a modeling error, and **1.0 mm** across the sequence, where sub-millimetre penetration under load is the solver's documented softness. A scene that breaches a limit is repaired in the model or the controller, and the threshold stays where it is.
 
-The sections below take the five checks that shape how a model gets built — a start pose, a collision mask, a joint's travel, a marker, and a grasp — and show the MJCF each one demands.
-
-### A start pose that already overlaps
-
-A start pose whose geoms interpenetrate is the failure mode that hides from every other check: the solver pushes the overlap out during warmup, so physics, rendering, and task assertions all pass afterwards. The measurement runs after the first `mj_forward` and before any `mj_step`, for the compiled `qpos0` **and** again for the post-`reset()` state — a reset that assigns positions from constants can reintroduce overlap the MJCF does not have.
-
-```python
-for label, data in (("model_qpos0", mujoco.MjData(env.model)), ("post_reset", env.data)):
-    mujoco.mj_forward(env.model, data)
-    for index in range(data.ncon):
-        if data.contact[index].dist < -1e-4:
-            raise AssertionError(f"{label}: geoms interpenetrate before the first step")
-```
-
-All eight showcases report `initial_contact: "PASS"`. The requirement is part of the skill's output contract, so generated packages carry it too — see [validation_checklist.md](text2mujoco_codex/references/validation_checklist.md) and the resting-pose rules in [mujoco_patterns.md](text2mujoco_codex/references/mujoco_patterns.md).
-
-### The robot needs a boundary against itself
-
-A pair of geoms collides when `(contype1 & conaffinity2) || (contype2 & conaffinity1)`, so a `robot_part` class written as `contype="2" conaffinity="5"` computes `2 & 5 == 0` and no two robot geoms are ever tested. That reads as an optimization — a short kinematic chain does not need self-collision — and what it buys is an arm with no boundary against itself, free to fold through its own forearm where **no audit can see it**, because a filtered pair generates no contact to report. Every class carries `conaffinity="7"`:
-
-```xml
-<default>
-  <geom friction="0.72 0.01 0.002" condim="6" solref="0.008 1" solimp="0.90 0.95 0.001"/>
-  <default class="world_part">   <geom contype="1" conaffinity="7"/></default>
-  <default class="robot_part">   <geom contype="2" conaffinity="7"/></default>
-  <default class="payload_part"> <geom contype="4" conaffinity="7"/></default>
-</default>
-```
-
-Bodies pick a class with `childclass="robot_part"`, individual geoms with `class="world_part"`, and the shared friction, `condim`, and `solref` still apply because the classes nest inside the existing default.
-
-With `robot↔robot` live, invisible self-penetration becomes real contact, and the links that nest at a joint immediately fight each other. Those pairs — a hinge hub drawn inside the link it turns, a ram inside its sleeve — are named one at a time, so an intentional overlap is a design decision a reader can check:
-
-```xml
-<contact>
-  <exclude name="elbow_wrist_nest" body1="arm_link2" body2="arm_link3"/>
-  <exclude name="lift_sleeve_nest" body1="arm_link3" body2="arm_lift"/>
-</contact>
-```
-
-The audit measures with `mujoco.mj_geomDistance`, which returns a signed distance whether or not the pair is filtered, and accepts an overlap only when the bodies are welded neighbours or appear in `model.exclude_signature`. Anything else fails. Measuring straight through the mask this way exposed a real defect the mask had been hiding: in scene 07 the closed jaw clipped into the forearm capsule above it, repaired by tightening the lift's upper end stop.
-
-```python
-RUN_LIMIT = -1e-3                        # contact.dist is a signed gap, so 1 mm of overlap is -1e-3
-
-def watched(model, data, *args, **kwargs):
-    genuine(model, data, *args, **kwargs)          # the real mujoco.mj_step
-    dist, pair = deepest_contact(model, data)      # most negative gap in this state
-    if dist < worst["dist"]:
-        worst.update(dist=dist, pair=pair, time_s=float(data.time))
-
-mujoco.mj_step = watched                 # settle loops bypass env.step and call the module function
-```
-
-The module-level `mj_step` is the hook, because settle loops and generated controllers call the module function directly; wrapping `env.step` would miss most of the simulation.
-
-### The hand stays on the arm
-
-Three separate defects render identically — the hand has fallen off the arm — and all three leave the kinematic chain intact the whole time. The loudest is an undrawn prismatic axis: a slide joint whose moving body carries geometry while its *travel* carries none opens a gap under the parent link that grows with the joint value. At full extension scene 07's tool hung 165 mm below the forearm with nothing in between, invisible to every contact, pose, and task assertion. The axis is a body of its own with two geoms that always overlap:
-
-```xml
-<geom name="lift_sleeve" class="robot_part" type="cylinder" pos="0.16 0 0.012" size="0.048 0.052" mass="0.22"/>
-<body name="arm_lift" pos="0.16 0 -0.075" gravcomp="1">
-  <joint name="tool_z" type="slide" axis="0 0 1" range="-0.17 0.045" damping="3.0" armature="0.008"/>
-  <geom name="lift_ram" class="robot_part" type="cylinder" pos="0 0 0.125" size="0.026 0.125" mass="0.20"/>
-```
-
-The other two are quieter. A geom with neither `mass` nor `density` compiles at density 1000, so a 58 mm decorative hinge hub weighs 1.1 kg and can outweigh the arm it decorates. And a position servo holding a load settles at `weight / kp` below its target — a 0.08 kg fingertip on `kp="420"` sags exactly 1.87 mm, which is why `gravcomp="1"` belongs on *every* body the axis carries, leaves included. The link-continuity check covers all three at once: the widest gap from each jointed body to its nearest drawn ancestor, over the whole replay.
-
-### Markers are decals on real geometry
-
-The colourful spheres hovering over a bench are `<site>` elements. A site never generates a contact — that is by design and cannot be changed — so every payload and every robot link passes visibly straight through one. Each viewer-facing marker is a thin cylinder painted onto the surface it annotates, with half-height equal to its height above that surface so the underside sits flush:
-
-```xml
-<site name="insertion_marker" type="cylinder" pos="0.17 0.21 0.906" size="0.050 0.006" material="marker_magenta" group="2"/>
-```
-
-The audit ray-casts downward to confirm real geometry underneath, so a decal over open floor the robot never reaches fails, and it rejects a centre buried inside another geom, so a decal has to stay off the footprint of the payload it marks. Sites the code reads as kinematic references — a tool centre, a fork tip — live at `group="4"` and are never drawn. Sites nothing referenced were deleted. Across the eight scenes that reclassified 51 sites: 31 were floating or buried, several were duplicates of a camera position, and three in scene 03 were spheres sunk 15 mm into the floor.
-
-### A grasp is an equality constraint
-
-A payload carried by overwriting its free joint's `qpos` every step can never slip, releasing it is a teleport to a hard-coded constant, and — this is the reported defect — a part lying on the bench is **indistinguishable in state** from a part in the hand, so a dropped part keeps being treated as the object under manipulation. The carry is an equality constraint, declared inactive and toggled at runtime:
-
-```xml
-<equality>
-  <weld name="peg_grasp" body1="arm_tool" body2="red_peg" relpose="0 0 -0.125 1 0 0 0"
-        active="false" solref="0.01 1" solimp="0.96 0.99 0.001"/>
-</equality>
-```
-
-A weld's `eq_data` row is `[anchor(3), relpose_pos(3), relpose_quat(4), torquescale(1)]`. The offset written into it is measured at the instant the jaws close, so the constraint engages already satisfied — no jolt, no snap into place — and the jaws close *onto* the payload, 1.5 mm inside its radius, with no gap left for the constraint to span invisibly. Release deactivates the weld and lets gravity and contact settle the part. The regression that proves it is a mid-air release: drop the constraint with the payload still in the air and require it to fall. A welded payload falls; a `qpos`-driven one hangs there. Scene 07's peg falls `71.2 mm`, scene 08's parcel `153.6 mm`, scene 05's part `239.1 mm`, and scene 01's cube `225 mm`. Scene 06 is the same test in the form a fork truck allows: the pallet slips `0.303 mm` while welded and `73.3 mm` once released, against a `20 mm` minimum.
-
-Setting a part down also needs somewhere for the hand to go. An arm whose only vertical freedom is one lift axis has to retract back along the path it came down, which drags the tool through the part it just placed — so the hand carries a wrist pitch hinge with its own position servo, tipping forward on approach and back to withdraw. An extra joint no interaction commands is decoration, so the scripted sequence exercises it.
-
-| # | Scene | Moving bodies without a collider | `qpos0` | post-`reset()` | Sequence | Deepest overlap |
-| --- | --- | --- | --- | --- | --- | --- |
-| 01 | Button, Cube, and Box | 0 | `0.0000 mm` | `0.0000 mm` | 2,660 steps / `2.660 s` | `0.4332 mm` |
-| 02 | Smart Tool Cabinet | 0 | `0.0000 mm` | `0.0000 mm` | 358 steps / `0.716 s` | `0.0000 mm` |
-| 03 | Warehouse Navigation | 0 | `0.0000 mm` | `0.0000 mm` | 3,375 steps / `13.500 s` | `0.0000 mm` |
-| 04 | Lever and Ramp Ball | 0 | `0.0000 mm` | `0.0000 mm` | 1,519 steps / `1.519 s` | `0.3121 mm` |
-| 05 | Robotic Arm Sorting Cell | 0 | `0.0000 mm` | `0.0000 mm` | 5,661 steps / `11.322 s` | `0.6833 mm` |
-| 06 | Forklift Pallet Delivery | 0 | `0.0000 mm` | `0.0000 mm` | 5,386 steps / `10.772 s` | `0.4821 mm` |
-| 07 | Robot Peg Assembly | 0 | `0.0000 mm` | `0.0000 mm` | 3,400 steps / `6.800 s` | `0.5034 mm` |
-| 08 | Conveyor-to-Arm Handoff | 0 | `0.0000 mm` | `0.0000 mm` | 5,078 steps / `10.156 s` | `0.7728 mm` |
-
-**8/8 scenes pass**, `27,437` audited steps in total, deepest overlap anywhere `0.7728 mm` against the `1.0 mm` bound. The full record is [sequence_contact_report.json](showcase/output/sequence_contact_report.json), the eight-check audit is [model_audit_report.json](showcase/output/model_audit_report.json), and each scene's own `physics_smoke.py` carries the same audit so a generated package is self-checking.
+Across the eight showcases the audit replays `27,437` steps and the deepest overlap anywhere is `0.7728 mm`. The full record is [model_audit_report.json](showcase/output/model_audit_report.json) and [sequence_contact_report.json](showcase/output/sequence_contact_report.json), and each scene's own `physics_smoke.py` carries the same measurements so a generated package is self-checking.
 
 ## Showcase
 
 Eight packages generated by the skill, each committed with its reports and captures. Every row below is read from the JSON in that scene's `output/` directory.
 
-| # | Scene | Interaction points | Dense pages | Sim span | Headline verified result |
-| --- | --- | --- | --- | --- | --- |
-| 01 | [Button, Cube, and Box](#01--button-cube-and-box) | 4 | 18 | 2.660 s | cube seated in the open box, `130.36 px` of image motion |
-| 02 | [Smart Tool Cabinet](#02--smart-tool-cabinet) | 3 | 7 | 0.716 s | drawer travel `0.218023 m` against a `0.22 m` target |
-| 03 | [Warehouse Navigation](#03--warehouse-navigation) | 3 | 71 | 13.500 s | `0` shelf contacts, `0.270 m` minimum clearance |
-| 04 | [Lever and Ramp Ball](#04--lever-and-ramp-ball) | 4 | 12 | 1.519 s | gate lift `0.11650 m`, ball settles in the tray |
-| 05 | [Robotic Arm Sorting Cell](#05--robotic-arm-sorting-cell) | 5 | 62 | 11.322 s | `0.546 m` of part transport into the blue bin |
-| 06 | [Forklift Pallet Delivery](#06--forklift-pallet-delivery) | 6 | 60 | 10.772 s | `2.236 m` drive, pallet set on the delivery stand |
-| 07 | [Robot Peg Assembly](#07--robot-peg-assembly) | 6 | 41 | 6.800 s | `0.362 m` tool travel, peg released `0.0050 m` from the socket |
-| 08 | [Conveyor-to-Arm Handoff](#08--conveyor-to-arm-handoff) | 6 | 57 | 10.156 s | `1.243 m` tool travel, parcel settled in the green bin |
-
-### Reading the dense captures
-
-Each scene ships a **dense sequence sampled every `0.20 s` of MuJoCo simulation time**, read from `data.time`, so the cadence is independent of wall-clock speed and of how often a frame is rendered. The sampler keeps the first post-step state at or beyond each `0.20 s` boundary and adds one event frame at each action boundary, so the cadence stays exact while nothing important is skipped.
-
-<p align="center">
-  <img src="docs/dense_filmstrip.png" alt="Six evenly spaced pages of the forklift dense TIFF, labelled with recorded simulation time" width="920">
-</p>
-
-<p align="center">
-  <sub>Six pages of <a href="showcase/06-forklift-pallet/output/screenshots/dense_sequence.tif">06's dense TIFF</a>, labelled with the simulation time recorded for each page in the <a href="showcase/06-forklift-pallet/output/dense_sequence_results.json">dense report</a>.</sub>
-</p>
-
-The same sampling produces two archives per scene: `dense_sequence.tif`, the full-resolution multi-page TIFF that is the canonical `0.20 s`-interval record, and `dense_sequence.gif`, a browser-viewable animation at `200 ms` per frame (final frame `800 ms`) so it plays back at roughly simulation speed. GitHub cannot preview TIFF, so each section below embeds the GIF and links the TIFF next to it; `dense_archive_test.py` asserts that page count, frame count, and timing all match the report.
+| # | Scene | Interaction points | Dense pages | Sim span |
+| --- | --- | --- | --- | --- |
+| 01 | [Button, Cube, and Box](#01--button-cube-and-box) | 4 | 18 | 2.660 s |
+| 02 | [Smart Tool Cabinet](#02--smart-tool-cabinet) | 3 | 7 | 0.716 s |
+| 03 | [Warehouse Navigation](#03--warehouse-navigation) | 3 | 71 | 13.500 s |
+| 04 | [Lever and Ramp Ball](#04--lever-and-ramp-ball) | 4 | 12 | 1.519 s |
+| 05 | [Robotic Arm Sorting Cell](#05--robotic-arm-sorting-cell) | 5 | 62 | 11.322 s |
+| 06 | [Forklift Pallet Delivery](#06--forklift-pallet-delivery) | 6 | 60 | 10.772 s |
+| 07 | [Robot Peg Assembly](#07--robot-peg-assembly) | 6 | 41 | 6.800 s |
+| 08 | [Conveyor-to-Arm Handoff](#08--conveyor-to-arm-handoff) | 6 | 57 | 10.156 s |
 
 ### 01 / Button, Cube, and Box
 
@@ -238,18 +111,12 @@ The same sampling produces two archives per scene: `dense_sequence.tif`, the ful
   </a>
 </p>
 
-**Verified — PASS.** The cube settles inside the five-sided open box, contacts its bottom, comes to rest at `4.9e-14 m/s`, and moves `130.36 px` in the camera image. Released in mid-air the cube falls `225 mm`, which is what a weld-carried payload does under gravity.
-
-**Dense capture** — 18 pages across `2.660 s`: 14 regular frames exactly `0.20 s` apart plus 4 action-boundary event frames.
-
 [Environment](showcase/01-button-cube-box) &middot; [Test report](showcase/01-button-cube-box/TEST_REPORT.md) &middot; [Physics](showcase/01-button-cube-box/output/physics_results.json) &middot; [Render](showcase/01-button-cube-box/output/render_results.json) &middot; [Dense report](showcase/01-button-cube-box/output/dense_sequence_results.json) &middot; [Dense TIFF](showcase/01-button-cube-box/output/screenshots/dense_sequence.tif)
 
 <details>
-<summary>Scene and validation details</summary>
+<summary>Scene details</summary>
 
 - **Scene** — table, actuated button, free rigid cube, five-geom open box, fixed RGB-D camera; 20 named objects, `0.002 s` timestep, `0.2 kg` cube.
-- **Validation** — spec, MJCF compile, `t=0` contact, typed targets, 11 invalid-action rejections, dependency order, grasp hold, deterministic reset, `.mjb` reload, RGB-D, task success.
-- **Contact audit** — every moving body collides; deepest overlap `0.4332 mm` over 2,660 audited steps.
 - **Contract** — [interaction_manifest.json](showcase/01-button-cube-box/interaction_manifest.json)
 - **Keyframe archive** — [report](showcase/01-button-cube-box/output/sequence_results.json) &middot; [GIF](showcase/01-button-cube-box/output/screenshots/sequence.gif) &middot; [TIFF](showcase/01-button-cube-box/output/screenshots/sequence.tif)
 
@@ -269,18 +136,12 @@ The same sampling produces two archives per scene: `dense_sequence.tif`, the ful
   </a>
 </p>
 
-**Verified — PASS.** The slide joint reaches `0.218023 m` against the `0.22 m` target, all three interaction markers stay visible, and depth changes across `13,638` pixels.
-
-**Dense capture** — 7 pages across `0.716 s`: 4 regular frames exactly `0.20 s` apart plus 3 action-boundary event frames.
-
 [Environment](showcase/02-smart-drawer) &middot; [Physics](showcase/02-smart-drawer/output/physics_results.json) &middot; [Render](showcase/02-smart-drawer/output/render_results.json) &middot; [Dense report](showcase/02-smart-drawer/output/dense_sequence_results.json) &middot; [Dense TIFF](showcase/02-smart-drawer/output/screenshots/dense_sequence.tif)
 
 <details>
-<summary>Scene and validation details</summary>
+<summary>Scene details</summary>
 
 - **Scene** — desktop cabinet, unlock button, slide-joint drawer, three marker sites (`unlock_point_marker`, `drawer_handle_marker`, `camera_check_marker`), fixed RGB-D camera.
-- **Validation** — both actuators, `t=0` contact, marker visibility, 5 invalid-action rejections, deterministic reset, MJCF and `.mjb` reload, drawer travel, RGB-D, task success.
-- **Contact audit** — every moving body collides; no measurable overlap across 358 audited steps.
 - **Contract** — [interaction_manifest.json](showcase/02-smart-drawer/interaction_manifest.json)
 - **Keyframe archive** — [report](showcase/02-smart-drawer/output/sequence_results.json) &middot; [GIF](showcase/02-smart-drawer/output/screenshots/sequence.gif) &middot; [TIFF](showcase/02-smart-drawer/output/screenshots/sequence.tif)
 
@@ -300,18 +161,12 @@ The same sampling produces two archives per scene: `dense_sequence.tif`, the ful
   </a>
 </p>
 
-**Verified — PASS.** The robot takes the south-side bypass with `0` shelf contacts, holds `0.270 m` minimum clearance from `central_shelf_geom` over 330 route samples, moves `282.60 px` in the image, and returns to its start centroid with `0.0 px` error after reset.
-
-**Dense capture** — 71 pages across `13.500 s`: 68 regular frames exactly `0.20 s` apart plus 3 action-boundary event frames.
-
 [Environment](showcase/03-warehouse-navigation) &middot; [Physics](showcase/03-warehouse-navigation/output/physics_results.json) &middot; [Render](showcase/03-warehouse-navigation/output/render_results.json) &middot; [Dense report](showcase/03-warehouse-navigation/output/dense_sequence_results.json) &middot; [Dense TIFF](showcase/03-warehouse-navigation/output/screenshots/dense_sequence.tif)
 
 <details>
-<summary>Scene and validation details</summary>
+<summary>Scene details</summary>
 
 - **Scene** — warehouse floor, collidable shelves, planar mobile robot, two checkpoints, angled overhead RGB-D camera; four required waypoints drive the bypass.
-- **Validation** — route dependencies, per-leg clearance sampling, zero shelf contact, `t=0` contact, marker visibility, 7 invalid-action rejections, deterministic reset, reset render, task success.
-- **Contact audit** — the robot's turret and heading block are part of its collidable hull, so they can genuinely touch a shelf; no measurable overlap across 3,375 audited steps. The clearance is earned by the route it drives.
 - **Contract** — [interaction_manifest.json](showcase/03-warehouse-navigation/interaction_manifest.json)
 - **Keyframe archive** — [report](showcase/03-warehouse-navigation/output/sequence_results.json) &middot; [GIF](showcase/03-warehouse-navigation/output/screenshots/sequence.gif) &middot; [TIFF](showcase/03-warehouse-navigation/output/screenshots/sequence.tif)
 
@@ -331,18 +186,12 @@ The same sampling produces two archives per scene: `dense_sequence.tif`, the ful
   </a>
 </p>
 
-**Verified — PASS.** The lever actuator lifts the gate `0.11650 m`; the ball rolls the ramp under gravity alone and reaches the target tray at `[0.5529, 0.0000, 0.8100]` with `7.0e-10 m/s` residual speed against a `0.15 m/s` bound, in contact with the tray. All four marker colour families stay visible and `7,616` RGB pixels change.
-
-**Dense capture** — 12 pages across `1.519 s`: 8 regular frames exactly `0.20 s` apart plus 4 action-boundary event frames.
-
 [Environment](showcase/04-lever-ball-ramp) &middot; [Physics](showcase/04-lever-ball-ramp/output/physics_results.json) &middot; [Render](showcase/04-lever-ball-ramp/output/render_results.json) &middot; [Dense report](showcase/04-lever-ball-ramp/output/dense_sequence_results.json) &middot; [Dense TIFF](showcase/04-lever-ball-ramp/output/screenshots/dense_sequence.tif)
 
 <details>
-<summary>Scene and validation details</summary>
+<summary>Scene details</summary>
 
 - **Scene** — workbench, actuated lever and gate, guarded ramp, free ball, open target tray, fixed RGB-D camera.
-- **Validation** — typed targets, four marker sites, `t=0` contact, 3 invalid-action rejections, `xyzw`→`wxyz` conversion, physical release and settling, tray contact, deterministic reset, RGB-D, task success.
-- **Contact audit** — every moving body collides; deepest overlap `0.3121 mm` over 1,519 audited steps, all of it the ball loading the ramp and tray.
 - **Contract** — [interaction_manifest.json](showcase/04-lever-ball-ramp/interaction_manifest.json)
 - **Keyframe archive** — [report](showcase/04-lever-ball-ramp/output/sequence_results.json) &middot; [GIF](showcase/04-lever-ball-ramp/output/screenshots/sequence.gif) &middot; [TIFF](showcase/04-lever-ball-ramp/output/screenshots/sequence.tif)
 
@@ -362,19 +211,14 @@ The same sampling produces two archives per scene: `dense_sequence.tif`, the ful
   </a>
 </p>
 
-**Verified — PASS.** MuJoCo 3.2.7 physics confirms six articulated joints, six arm and gripper actuators, a weld-constraint grasp, dependency enforcement, and release inside the blue bin. Released in mid-air the part falls `239.118 mm`. Rendering measures `0.546 m` of blue-part motion, finite RGB-D, and all six marker colour families.
-
-**Dense capture** — 62 pages across `11.322 s`: 57 regular frames exactly `0.20 s` apart plus 5 action-boundary event frames.
-
 [Environment](showcase/05-robot-arm-sorting) &middot; [Physics](showcase/05-robot-arm-sorting/output/physics_results.json) &middot; [Render](showcase/05-robot-arm-sorting/output/render_results.json) &middot; [Dense report](showcase/05-robot-arm-sorting/output/dense_sequence_results.json) &middot; [Dense TIFF](showcase/05-robot-arm-sorting/output/screenshots/dense_sequence.tif)
 
 <details>
-<summary>Scene and validation details</summary>
+<summary>Scene details</summary>
 
 - **Scene** — worktable, conveyor, three-link arm, dual-finger gripper, blue and red parts and bins, five visible interaction markers, fixed RGB-D camera.
 - **Synchronization** — the blue part is carried by the `blue_part_grasp` weld between `tool_turret` and the part, switched on when the jaws close and off when they open; nothing writes the part's `qpos`.
 - **Seating** — the blue part rests on the conveyor belt at `z = 0.855 m`, clear of both rollers; the red part sits on the worktable at `[0.43, 0.45, 0.75]`. Model, spec, manifest, and the reset constants all agree.
-- **Contact audit** — all three arm links, both fingers, and the gripper mount carry colliders; deepest overlap `0.6833 mm` over 5,661 audited steps.
 - **Contract** — [interaction_manifest.json](showcase/05-robot-arm-sorting/interaction_manifest.json)
 - **Keyframe archive** — [report](showcase/05-robot-arm-sorting/output/sequence_results.json) &middot; [storyboard](showcase/05-robot-arm-sorting/output/screenshots/sequence.png) &middot; [TIFF](showcase/05-robot-arm-sorting/output/screenshots/sequence.tif)
 
@@ -394,20 +238,15 @@ The same sampling produces two archives per scene: `dense_sequence.tif`, the ful
   </a>
 </p>
 
-**Verified — PASS.** Physics confirms the three mobile base joints, the powered fork lift, `0` rack contacts, welded pallet transport that slips `0.303 mm`, release settling on the delivery stand, and deterministic reset. Rendering measures `2.236 m` of forklift travel, finite RGB-D, and all five marker colour families.
-
-**Dense capture** — 60 pages across `10.772 s`: 54 regular frames exactly `0.20 s` apart plus 6 action-boundary event frames. This is the scene shown in the [filmstrip](#reading-the-dense-captures) above.
-
 [Environment](showcase/06-forklift-pallet) &middot; [Physics](showcase/06-forklift-pallet/output/physics_results.json) &middot; [Render](showcase/06-forklift-pallet/output/render_results.json) &middot; [Dense report](showcase/06-forklift-pallet/output/dense_sequence_results.json) &middot; [Dense TIFF](showcase/06-forklift-pallet/output/screenshots/dense_sequence.tif)
 
 <details>
-<summary>Scene and validation details</summary>
+<summary>Scene details</summary>
 
 - **Scene** — legged loading and delivery stands, mobile forklift on wheels that reach the floor, two-rail mast with a lifting carriage, three-runner pallet and crate, storage rack obstacle, six markers, fixed three-quarter overhead RGB-D camera.
 - **Synchronization** — the pallet is carried by the `pallet_grasp` weld between `fork_carriage` and the pallet, engaged from the offset measured when the tines seat. The honesty test a fork truck allows is slip: welded, the pallet holds to `0.303 mm`; released, it slips `73.287 mm` against a `20 mm` minimum.
 - **Fork channel** — the tines sweep `0.715..0.785 m` at zero lift and enter a real `150 mm` channel between the stand deck at `0.66 m` and the pallet deck bottom at `0.81 m`. The runners lie *along* the fork axis; across it, the tines would ram the near runner head-on and the lift would only work because the pallet was pinned.
 - **Ordering** — `lower_forks_release` sets the pallet down on the delivery stand *before* lowering the empty forks, then withdraws at `0.045 m` of lift — mid-channel, `40 mm` clear of the stand deck below and the pallet deck above. The delivery target is a stand with locating blocks, because a fork truck has to reverse its tines out at deck height and a `0.24 m` wall on the approach side is geometry the documented sequence cannot clear.
-- **Contact audit** — deepest overlap `0.4821 mm` over 5,386 audited steps. Getting there took two real fixes: `fork_carriage_geom` carried no `mass` attribute and therefore weighed `28.7 kg` from MuJoCo's default density, which no `kp=300` servo can hold — the tines dropped to the joint limit the instant the engagement pin released. With explicit masses and `kp=6000 kv=300`, a step command then hammered the tines `4.49 mm` into the pallet deck, so `_set_lift` now ramps at roughly `0.25 m/s`.
 - **Contract** — [interaction_manifest.json](showcase/06-forklift-pallet/interaction_manifest.json)
 - **Keyframe archive** — [report](showcase/06-forklift-pallet/output/sequence_results.json) &middot; [storyboard](showcase/06-forklift-pallet/output/screenshots/sequence.png) &middot; [TIFF](showcase/06-forklift-pallet/output/screenshots/sequence.tif)
 
@@ -427,18 +266,13 @@ The same sampling produces two archives per scene: `dense_sequence.tif`, the ful
   </a>
 </p>
 
-**Verified — PASS.** Physics confirms four arm hinges, six explicit actuators, six visible markers, welded peg transport, finite state, and a peg released `0.0050 m` from the socket axis. Released in mid-air the peg falls `71.159 mm`. Rendering measures `0.362 m` of tool motion and finite RGB-D.
-
-**Dense capture** — 41 pages across `6.800 s`: 35 regular frames exactly `0.20 s` apart plus 6 action-boundary event frames.
-
 [Environment](showcase/07-robot-assembly) &middot; [Physics](showcase/07-robot-assembly/output/physics_results.json) &middot; [Render](showcase/07-robot-assembly/output/render_results.json) &middot; [Dense report](showcase/07-robot-assembly/output/dense_sequence_results.json) &middot; [Dense TIFF](showcase/07-robot-assembly/output/screenshots/dense_sequence.tif)
 
 <details>
-<summary>Scene and validation details</summary>
+<summary>Scene details</summary>
 
 - **Scene** — workbench, three-link arm, drawn vertical tool lift (sleeve plus ram), wrist pitch hinge, gripper, free red peg, blue insertion fixture, six visible markers, fixed RGB-D camera.
 - **Synchronization** — the peg is carried by the `peg_grasp` weld, engaged at jaw close and released as its own dependency-checked action; insertion and release are separate steps.
-- **Contact audit** — arm links, tool lift, and both gripper fingers collide; deepest overlap `0.5034 mm` over 3,400 audited steps, including the insertion.
 - **Contract** — [interaction_manifest.json](showcase/07-robot-assembly/interaction_manifest.json)
 - **Keyframe archive** — [report](showcase/07-robot-assembly/output/sequence_results.json) &middot; [storyboard](showcase/07-robot-assembly/output/screenshots/sequence.png) &middot; [TIFF](showcase/07-robot-assembly/output/screenshots/sequence.tif)
 
@@ -458,19 +292,14 @@ The same sampling produces two archives per scene: `dense_sequence.tif`, the ful
   </a>
 </p>
 
-**Verified — PASS.** Physics confirms a powered conveyor hinge, three arm hinges, tool lift, wrist pitch, dual gripper slides, eight explicit actuators, parcel delivery to the pickup point, welded transport, and target-bin settling. Released in mid-air the parcel falls `153.571 mm`. Rendering measures `1.243 m` of peak tool displacement and all five marker colour families.
-
-**Dense capture** — 57 pages across `10.156 s`: 51 regular frames exactly `0.20 s` apart plus 6 action-boundary event frames.
-
 [Environment](showcase/08-conveyor-arm) &middot; [Physics](showcase/08-conveyor-arm/output/physics_results.json) &middot; [Render](showcase/08-conveyor-arm/output/render_results.json) &middot; [Dense report](showcase/08-conveyor-arm/output/dense_sequence_results.json) &middot; [Dense TIFF](showcase/08-conveyor-arm/output/screenshots/dense_sequence.tif)
 
 <details>
-<summary>Scene and validation details</summary>
+<summary>Scene details</summary>
 
 - **Scene** — powered conveyor, three-link arm, drawn vertical tool lift, wrist pitch hinge, dual-finger gripper, blue parcel, green and red bins, six visible markers, fixed RGB-D camera.
 - **Conveying without a belt primitive** — MuJoCo has no belt, and writing the parcel's `qpos` every step is teleporting it: no mass, friction, or obstacle could resist that. The drive is a forward-only traction force that has to beat the surface's own static friction, `mu*m*g = 0.76 * 0.22 * 9.81 = 1.64 N`, so the `2.60 N` cap leaves `0.96 N` of net accelerating force. `xfrc_applied` acts at the centre of mass, and a `2.60 N` push `60 mm` above the contact plane tips a `120 mm` cube — the tipping moment passes the restoring `m*g*0.06 = 0.130 N*m` at only `2.16 N` — so the offset torque `r × F` is applied with it, putting the drive where the friction reaction already is. Power cuts out once the coast distance `v²/(2*mu*g)` reaches the pickup point, and friction alone brakes the parcel; anything in its path would stall it.
 - **Synchronization** — the parcel is carried by the `parcel_grasp` weld, declared inactive and engaged from the offset measured at jaw close, then deactivated on release so gravity and contact settle it in the bin.
-- **Contact audit** — the belt, arm links, and fingers all collide; deepest overlap `0.7728 mm` over 5,078 audited steps, the deepest in the set and still inside the `1 mm` bound.
 - **Contract** — [interaction_manifest.json](showcase/08-conveyor-arm/interaction_manifest.json)
 - **Keyframe archive** — [report](showcase/08-conveyor-arm/output/sequence_results.json) &middot; [storyboard](showcase/08-conveyor-arm/output/screenshots/sequence.png) &middot; [TIFF](showcase/08-conveyor-arm/output/screenshots/sequence.tif)
 
@@ -517,10 +346,8 @@ python -m pip install "mujoco==3.2.7" numpy pillow
 cd showcase/02-smart-drawer
 python3 ../../text2mujoco_codex/scripts/validate_scene_spec.py scene_spec.json --json
 MUJOCO_GL=disable python3 physics_smoke.py     # spec, static, t=0 contact, physics
-MUJOCO_GL=glfw mjpython render_smoke.py        # RGB-D evidence
+MUJOCO_GL=glfw mjpython render_smoke.py        # RGB-D evidence; headless Linux: MUJOCO_GL=egl python3
 ```
-
-**Rendering backends.** Physics needs no GPU and no GL context at all — `MUJOCO_GL=disable` is the correct setting for `physics_smoke.py`. For rendering, macOS uses `mjpython` with `MUJOCO_GL=glfw`, which gives MuJoCo the native CGL context — every committed showcase report records its `renderer_context` as CGL through the glfw backend, a hardware context. On headless Linux, prefer `MUJOCO_GL=egl` and fall back to `MUJOCO_GL=osmesa` in a *separate process*, because the backend is chosen when MuJoCo first imports OpenGL. Do not label an OSMesa image as GPU-rendered.
 
 ### Reproduce the captures and figures
 
@@ -553,7 +380,7 @@ python3 showcase/build_readme_figures.py
 
 Pass `--dense-interval <seconds>` to change the sampling interval. The collector writes only under the repository `showcase/` tree so sensor and artifact paths stay portable; its `--output-root` option accepts that tree only.
 
-The two GIF families answer different questions. Keyframe GIFs are readable storyboards of discrete, physically verified interactions — each frame holds `1.6 s`, the final state holds `2.6 s` — and the keyframe sequence retains RGB-D arrays. Dense GIFs are RGB-only and play the `0.20 s` simulation sampling at `200 ms` per frame. Both TIFFs are full-resolution archives; TIFF playback timing is viewer-dependent, which is why the GIF carries the timing contract.
+Keyframe GIFs hold `1.6 s` per frame with a `2.6 s` final state and their sequence retains RGB-D arrays; dense GIFs are RGB-only at `200 ms` per frame. Both TIFFs are full-resolution archives, and because TIFF playback timing is viewer-dependent the GIF carries the timing contract that `dense_archive_test.py` checks.
 
 <details>
 <summary>Generated package structure and interaction API</summary>

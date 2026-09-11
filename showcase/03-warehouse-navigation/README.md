@@ -1,5 +1,7 @@
 # Small Warehouse Navigation (MuJoCo 3.2.7)
 
+[English](README.md) · [中文](README.zh-CN.md)
+
 This generated package implements an ordered warehouse-navigation task. An orange planar robot starts in the southwest corner, reaches yellow checkpoint A, follows three safe waypoints along the south side of the main shelves to green checkpoint B, and finally captures `640 x 480` RGB-D evidence with a fixed three-quarter overhead camera.
 
 ## Scene and Interaction
